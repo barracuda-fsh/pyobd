@@ -1,0 +1,5 @@
+wxpython==4.1.1
+pyserial==3.5
+numpy==1.23
+tornado==3.2.1
+pint
