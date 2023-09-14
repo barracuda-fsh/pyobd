@@ -465,6 +465,9 @@ class MyApp(wx.App):
                 self.graph_counter2 = 0
                 self.graph_counter3 = 0
                 self.graph_counter4 = 0
+
+
+
             init_all_graphs()
             def reconnect():
                 init_all_graphs()
@@ -496,6 +499,22 @@ class MyApp(wx.App):
                     self.graph_x_vals = np.array([])
                     self.graph_y_vals = np.array([])
                     self.graph_counter = 0
+                    self.first_time_graph_plot = True
+                    if self.first_time_graph_plot:
+                        self.unit = 'unit'
+                    if self.current_command == None:
+                        desc = 'None'
+                    else:
+                        desc = self.current_command.desc
+                    wx.PostEvent(self._notify_window,
+                                 GraphEvent(
+                                     [(self.graph_x_vals, self.graph_y_vals, self.unit, desc, self.graph_counter),
+                                      (self.first_time_graph_plot)
+                                      ]))
+                    self.first_time_graph_plot = False
+                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 0, self.current_command.command]))
+                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 1, self.current_command.desc]))
+
 
 
                 if curstate != 6 and self.graph_counter1 != 0:
@@ -511,6 +530,25 @@ class MyApp(wx.App):
                     self.graph_counter2 = 0
                     self.graph_counter3 = 0
                     self.graph_counter4 = 0
+                    self.first_time_graphs_plot = True
+                    wx.PostEvent(self._notify_window, GraphsEvent(
+                        [(self.graph_x_vals1, self.graph_y_vals1, self.unit1, desc1, self.graph_counter1),
+                         (self.graph_x_vals2, self.graph_y_vals2, self.unit2, desc2, self.graph_counter2),
+                         (self.graph_x_vals3, self.graph_y_vals3, self.unit3, desc3, self.graph_counter3),
+                         (self.graph_x_vals4, self.graph_y_vals4, self.unit4, desc4, self.graph_counter4),
+                         (self.first_time_graphs_plot)
+                         ]))
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([0, 0, self.current_command1.command]))
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([0, 1, self.current_command1.desc]))
+
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([1, 0, self.current_command2.command]))
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([1, 1, self.current_command2.desc]))
+
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([2, 0, self.current_command3.command]))
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([2, 1, self.current_command3.desc]))
+
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([3, 0, self.current_command4.command]))
+                    wx.PostEvent(self._notify_window, GraphsValueEvent([3, 1, self.current_command4.desc]))
 
                 if curstate == 0:  # show status tab
                     s = self.connection.connection.query(obd.commands.RPM)
