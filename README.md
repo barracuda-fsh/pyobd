@@ -1,5 +1,5 @@
 # ![PYOBD](/pyobd.gif) PYOBD 
-This is the remake of the program pyobd, a free and open-source program for autodiagnostics. The program was originally made by Donour Sizemore a long time ago, but it wasn't operational for the last 15 years, so I upgraded it from Python 2 to Python 3 and all the new libraries to make it work again. After that, I deleted the fixed commands and used the Python-OBD library, which supports a lot more commands and auto-detects what an automobile's computer supports, so it displays much more data than before.
+This is the remake of the program pyobd, a free and open-source program for car/auto diagnostics. The program was originally made by Donour Sizemore a long time ago, but it wasn't operational for the last 15 years, so I upgraded it from Python 2 to Python 3 and all the new libraries to make it work again. After that, I deleted the fixed commands and used the Python-OBD library, which supports a lot more commands and auto-detects what an automobile's computer supports, so it displays much more data than before.
 
 # Table of Contents
 1. [PYOBD](#pyobd)
