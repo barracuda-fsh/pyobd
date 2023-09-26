@@ -36,10 +36,10 @@ from .protocol import *
 
 class UnknownProtocol(Protocol):
     """
-        Class representing an unknown protocol.
+    Class representing an unknown protocol.
 
-        Used for when a connection to the ELM has
-        been made, but the car hasn't responded.
+    Used for when a connection to the ELM has
+    been made, but the car hasn't responded.
     """
 
     def parse_frame(self, frame):

@@ -1798,7 +1798,6 @@ DTC = {
     "P3495": "Cylinder 12 Exhaust Valve Control Circuit Low",
     "P3496": "Cylinder 12 Exhaust Valve Control Circuit High",
     "P3497": "Cylinder Deactivation System",
-
     "U0001": "High Speed CAN Communication Bus",
     "U0002": "High Speed CAN Communication Bus (Performance)",
     "U0003": "High Speed CAN Communication Bus (Open)",
@@ -2119,7 +2118,7 @@ SPARK_TESTS = [
     None,
     "OXYGEN_SENSOR_MONITORING",
     "OXYGEN_SENSOR_HEATER_MONITORING",
-    "EGR_VVT_SYSTEM_MONITORING"
+    "EGR_VVT_SYSTEM_MONITORING",
 ]
 
 COMPRESSION_TESTS = [
@@ -2218,7 +2217,10 @@ TEST_IDS = {
     0x01: ("RTL_THRESHOLD_VOLTAGE", "Rich to lean sensor threshold voltage"),
     0x02: ("LTR_THRESHOLD_VOLTAGE", "Lean to rich sensor threshold voltage"),
     0x03: ("LOW_VOLTAGE_SWITCH_TIME", "Low sensor voltage for switch time calculation"),
-    0x04: ("HIGH_VOLTAGE_SWITCH_TIME", "High sensor voltage for switch time calculation"),
+    0x04: (
+        "HIGH_VOLTAGE_SWITCH_TIME",
+        "High sensor voltage for switch time calculation",
+    ),
     0x05: ("RTL_SWITCH_TIME", "Rich to lean sensor switch time"),
     0x06: ("LTR_SWITCH_TIME", "Lean to rich sensor switch time"),
     0x07: ("MIN_VOLTAGE", "Minimum sensor voltage for test cycle"),

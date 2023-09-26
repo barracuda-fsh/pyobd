@@ -130,11 +130,10 @@ UAS_IDS = {
     0x3B: UAS(False, 0.0001, Unit.gram),
     0x3C: UAS(False, 0.1, Unit.microsecond),
     0x3D: UAS(False, 0.01, Unit.milliampere),
-    0x3E: UAS(False, 0.00006103516, Unit.millimeter ** 2),
+    0x3E: UAS(False, 0.00006103516, Unit.millimeter**2),
     0x3F: UAS(False, 0.01, Unit.liter),
     0x40: UAS(False, 1, Unit.ppm),
     0x41: UAS(False, 0.01, Unit.microampere),
-
     # signed -----------------------------------------
     0x81: UAS(True, 1, Unit.count),
     0x82: UAS(True, 0.1, Unit.count),

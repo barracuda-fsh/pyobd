@@ -41,14 +41,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-'''
+"""
 All decoders take the form:
 
 def <name>(<list_of_messages>):
     ...
     return <value>
 
-'''
+"""
 
 
 # drop all messages, return None
@@ -80,7 +80,7 @@ Unit/Scaling in that table, simply to avoid redundant code.
 
 
 def uas(id_):
-    """ get the corresponding decoder for this UAS ID """
+    """get the corresponding decoder for this UAS ID"""
     return functools.partial(decode_uas, id_=id_)
 
 
@@ -94,10 +94,12 @@ General sensor decoders
 Return pint Quantities
 """
 
+
 def count(messages):
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     return v * Unit.count
+
 
 # 0 to 100 %
 def percent(messages):
@@ -262,7 +264,7 @@ def elm_voltage(messages):
     v = messages[0].frames[0].raw
     # Some ELMs provide float V (for example messages[0].frames[0].raw => u'12.3V'
     v = v.lower()
-    v = v.replace('v', '')
+    v = v.replace("v", "")
 
     try:
         return float(v) * Unit.volt
@@ -271,10 +273,10 @@ def elm_voltage(messages):
         return None
 
 
-'''
+"""
 Special decoders
 Return objects, lists, etc
-'''
+"""
 
 
 def status(messages):
@@ -304,15 +306,17 @@ def status(messages):
 
     # different tests for different ignition types
     if bits[12]:  # compression
-        for i, name in enumerate(COMPRESSION_TESTS[::-1]):  # reverse to correct for bit vs. indexing order
-            t = StatusTest(name, bits[(2 * 8) + i],
-                           not bits[(3 * 8) + i])
+        for i, name in enumerate(
+            COMPRESSION_TESTS[::-1]
+        ):  # reverse to correct for bit vs. indexing order
+            t = StatusTest(name, bits[(2 * 8) + i], not bits[(3 * 8) + i])
             output.__dict__[name] = t
 
     else:  # spark
-        for i, name in enumerate(SPARK_TESTS[::-1]):  # reverse to correct for bit vs. indexing order
-            t = StatusTest(name, bits[(2 * 8) + i],
-                           not bits[(3 * 8) + i])
+        for i, name in enumerate(
+            SPARK_TESTS[::-1]
+        ):  # reverse to correct for bit vs. indexing order
+            t = StatusTest(name, bits[(2 * 8) + i], not bits[(3 * 8) + i])
             output.__dict__[name] = t
 
     return output
@@ -389,7 +393,7 @@ def fuel_type(messages):
 
 
 def parse_dtc(_bytes):
-    """ converts 2 bytes into a DTC code """
+    """converts 2 bytes into a DTC code"""
 
     # check validity (also ignores padding that the ELM returns)
     if (len(_bytes) != 2) or (_bytes == (0, 0)):
@@ -402,8 +406,10 @@ def parse_dtc(_bytes):
     #         | / /
     # DTC:    C0123
 
-    dtc = ['P', 'C', 'B', 'U'][_bytes[0] >> 6]  # the last 2 bits of the first byte
-    dtc += str((_bytes[0] >> 4) & 0b0011)  # the next pair of 2 bits. Mask off the bits we read above
+    dtc = ["P", "C", "B", "U"][_bytes[0] >> 6]  # the last 2 bits of the first byte
+    dtc += str(
+        (_bytes[0] >> 4) & 0b0011
+    )  # the next pair of 2 bits. Mask off the bits we read above
     dtc += bytes_to_hex(_bytes)[1:4]
 
     # pull a description if we have one
@@ -411,13 +417,13 @@ def parse_dtc(_bytes):
 
 
 def single_dtc(messages):
-    """ parses a single DTC from a message """
+    """parses a single DTC from a message"""
     d = messages[0].data[2:]
     return parse_dtc(d)
 
 
 def dtc(messages):
-    """ converts a frame of 2-byte DTCs into a list of DTCs """
+    """converts a frame of 2-byte DTCs into a list of DTCs"""
     codes = []
     d = []
     for message in messages:
@@ -426,7 +432,6 @@ def dtc(messages):
     # look at data in pairs of bytes
     # looping through ENDING indices to avoid odd (invalid) code lengths
     for n in range(1, len(d), 2):
-
         # parse the code
         dtc = parse_dtc((d[n - 1], d[n]))
 
@@ -477,13 +482,15 @@ def monitor(messages):
     extra_bytes = len(d) % 9
 
     if extra_bytes != 0:
-        logger.debug("Encountered monitor message with non-multiple of 9 bytes. Truncating...")
-        d = d[:len(d) - extra_bytes]
+        logger.debug(
+            "Encountered monitor message with non-multiple of 9 bytes. Truncating..."
+        )
+        d = d[: len(d) - extra_bytes]
 
     # look at data in blocks of 9 bytes (one test result)
     for n in range(0, len(d), 9):
         # extract the 9 byte block, and parse a new MonitorTest
-        test = parse_monitor_test(d[n:n + 9], mon)
+        test = parse_monitor_test(d[n : n + 9], mon)
         if test is not None:
             mon.add_test(test)
 
@@ -491,7 +498,7 @@ def monitor(messages):
 
 
 def encoded_string(length):
-    """ Extract an encoded string from multi-part messages """
+    """Extract an encoded string from multi-part messages"""
     return functools.partial(decode_encoded_string, length=length)
 
 
@@ -505,7 +512,7 @@ def decode_encoded_string(messages, length):
     # Encoded strings come in bundles of messages with leading null values to
     # pad out the string to the next full message size. We strip off the
     # leading null characters here and return the resulting string.
-    return d.strip().strip(b'\x00' b'\x01' b'\x02' b'\\x00' b'\\x01' b'\\x02')
+    return d.strip().strip(b"\x00" b"\x01" b"\x02" b"\\x00" b"\\x01" b"\\x02")
 
 
 def cvn(messages):

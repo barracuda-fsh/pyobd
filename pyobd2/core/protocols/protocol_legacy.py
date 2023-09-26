@@ -46,7 +46,6 @@ class LegacyProtocol(Protocol):
         Protocol.__init__(self, lines_0100)
 
     def parse_frame(self, frame):
-
         raw = frame.raw
 
         # Handle odd size frames and drop
@@ -80,7 +79,6 @@ class LegacyProtocol(Protocol):
         return True
 
     def parse_message(self, message):
-
         frames = message.frames
 
         # len(frames) will always be >= 1 (see the caller, protocol.py)
@@ -113,7 +111,9 @@ class LegacyProtocol(Protocol):
             # 48 6B 10 43 03 04 00 00 00 00 ck
             #             [     Data      ]
 
-            message.data = bytearray([0x43, 0x00])  # forge the mode byte and CAN's DTC_count byte
+            message.data = bytearray(
+                [0x43, 0x00]
+            )  # forge the mode byte and CAN's DTC_count byte
             for f in frames:
                 message.data += f.data[1:]
 
