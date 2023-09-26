@@ -6,9 +6,9 @@ dependencies = [
     "tornado~=3.2.1",
     "pint",
 ]
-name = "pyobd"
+name = "pyobd2"
 version = "1.15"
-description = "Open source OBD car diagnostics program - reuploaded"
+description = "Open source OBD-II car diagnostics program - reuploaded"
 authors = [{ "name" = "Jure Poljsak" }, { "name" = "Charles Donour Sizemore" }]
 readme = "README.md"
 license = { file = "COPYING" }
