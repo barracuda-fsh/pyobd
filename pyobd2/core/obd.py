@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# obd.py                                                               #
+# core.py                                                               #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -225,7 +225,7 @@ class OBD(object):
             Returns a boolean for whether a connection with the car was made.
 
             Note: this function returns False when:
-            obd.status = OBDStatus.ELM_CONNECTED
+            core.status = OBDStatus.ELM_CONNECTED
         """
         return self.status() == OBDStatus.CAR_CONNECTED
 

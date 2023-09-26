@@ -57,7 +57,7 @@ class OBDResponse:
     @property
     def unit(self):
         # for backwards compatibility
-        from obd import Unit  # local import to avoid cyclic-dependency
+        from pyobd2.core import Unit  # local import to avoid cyclic-dependency
         if isinstance(self.value, Unit.Quantity):
             return str(self.value.u)
         elif self.value is None:

@@ -340,9 +340,9 @@ class Commands():
         """
             commands can be accessed by name, or by mode/pid
 
-            obd.commands.RPM
-            obd.commands["RPM"]
-            obd.commands[1][12] # mode 1, PID 12 (RPM)
+            core.commands.RPM
+            core.commands["RPM"]
+            core.commands[1][12] # mode 1, PID 12 (RPM)
         """
 
         try:

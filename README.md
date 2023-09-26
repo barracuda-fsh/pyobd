@@ -1,4 +1,4 @@
-# ![PYOBD](/pyobd.gif) PYOBD 
+# ![PYOBD](/assets/pyobd.gif) PYOBD 
 This is the remake of the program pyobd, a free and open-source program for car diagnostics. The program was originally made by Donour Sizemore a long time ago, but it wasn't operational for the last 15 years, so I upgraded it from Python 2 to Python 3 and all the new libraries to make it work again. After that, I deleted the fixed commands and used the Python-OBD library, which supports a lot more commands and auto-detects what a cars computer supports, so it displays much more data than before.
 
 # Table of Contents
@@ -169,4 +169,4 @@ python3 -m PyInstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico:." pyobd.
 
 ## TO-DO LIST:
 ### Adding sensor data recording and replay feature.</br>
-![ELM327](/elm327.jpg)
+![ELM327](/assets/elm327.jpg)
