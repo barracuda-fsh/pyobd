@@ -29,7 +29,7 @@ import time
 import wx
 
 from pyobd2 import core
-from pyobd2.debugEvent import DebugEvent
+from pyobd2.debug_event import DebugEvent
 
 
 def truncate(num, n):

@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# OBDResponse.py                                                       #
+# obd_response.py                                                       #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -67,7 +67,7 @@ class OBDResponse:
             return str(type(self.value))
 
     def is_null(self):
-        return (not self.messages) or (self.value == None)
+        return (not self.messages) or (self.value is None)
 
     def __str__(self):
         return str(self.value)

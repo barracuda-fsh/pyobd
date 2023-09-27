@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# OBDCommand.py                                                        #
+# obd_command.py                                                        #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -30,11 +30,9 @@
 #                                                                      #
 ########################################################################
 
-from .utils import *
+from .obd_response import OBDResponse
 from .protocols import ECU, ECU_HEADER
-from .OBDResponse import OBDResponse
-
-import logging
+from .utils import *
 
 logger = logging.getLogger(__name__)
 

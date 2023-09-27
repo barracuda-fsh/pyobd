@@ -25,17 +25,14 @@
 ############################################################################
 
 import configparser  # safe application configuration
-
 # import decimal
 # import glob
 import datetime
 import os  # os.environ
 import sys
 import threading
-
 # import platform
 import time
-
 # from pympler.tracker import SummaryTracker
 # tracker = SummaryTracker()
 import traceback
@@ -47,7 +44,6 @@ import webbrowser  # open browser from python
 import numpy as np
 import serial
 import wx
-
 # import multiprocessing
 # from multiprocessing import Queue, Process
 # import wxversion
@@ -57,11 +53,10 @@ from wx.lib import plot as wxplot
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 
 from pyobd2 import core
-
 # import pdb
 from pyobd2 import obd_io  # OBD2 funcs
 from pyobd2.core.utils import OBDStatus
-from pyobd2.debugEvent import DebugEvent
+from pyobd2.debug_event import DebugEvent
 from pyobd2.obd2_codes import pcodes
 
 # from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -95,7 +90,6 @@ ID_HELP_ORDER = 510
 
 # Define notification event for sensor result window
 EVT_RESULT_ID = 1000
-EVT_DEBUG_ID = 1099
 EVT_GRAPH_VALUE_ID = 1036
 EVT_GRAPHS_VALUE_ID = 1048
 EVT_GRAPH_ID = 1035

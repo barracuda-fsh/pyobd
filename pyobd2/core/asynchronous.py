@@ -30,11 +30,12 @@
 #                                                                      #
 ########################################################################
 
-import time
-import threading
 import logging
-from .OBDResponse import OBDResponse
+import threading
+import time
+
 from .obd import OBD
+from .obd_response import OBDResponse
 
 logger = logging.getLogger(__name__)
 

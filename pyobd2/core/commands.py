@@ -30,10 +30,8 @@
 #                                                                      #
 ########################################################################
 
-import logging
-
-from .OBDCommand import OBDCommand
 from .decoders import *
+from .obd_command import OBDCommand
 from .protocols import ECU
 
 logger = logging.getLogger(__name__)
@@ -46,7 +44,7 @@ Define command tables
 # NOTE: the NAME field will be used as the dict key for that sensor
 # NOTE: commands MUST be in PID order, one command per PID (for fast lookup using __mode1__[pid])
 
-# see OBDCommand.py for descriptions & purposes for each of these fields
+# see obd_command.py for descriptions & purposes for each of these fields
 
 __mode1__ = [
     #                      name                             description                    cmd  bytes       decoder           ECU       fast

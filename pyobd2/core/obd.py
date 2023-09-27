@@ -33,10 +33,10 @@
 
 import logging
 
-from .OBDResponse import OBDResponse
 from .__version__ import __version__
 from .commands import commands
 from .elm327 import ELM327
+from .obd_response import OBDResponse
 from .protocols import ECU_HEADER
 from .utils import scan_serial, OBDStatus
 
