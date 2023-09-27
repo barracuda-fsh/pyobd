@@ -23,21 +23,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###########################################################################
 
-from pdb import set_trace as bp
-import serial
 import string
 import time
-from math import ceil
-import wx  # due to debugEvent messaging
 
-import re
-
-import obd_sensors
-
-from obd_sensors import hex_to_int
+import wx
 
 from pyobd2 import core
-import decimal
+from pyobd2.debugEvent import DebugEvent
 
 
 def truncate(num, n):
@@ -48,8 +40,6 @@ def truncate(num, n):
 GET_DTC_COMMAND = "03"
 CLEAR_DTC_COMMAND = "04"
 GET_FREEZE_DTC_COMMAND = "07"
-import traceback
-from debugEvent import *
 import logging
 
 logger = logging.getLogger(__name__)

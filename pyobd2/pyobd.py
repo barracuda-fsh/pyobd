@@ -24,10 +24,29 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ############################################################################
 
+import configparser  # safe application configuration
+
+# import decimal
+# import glob
+import datetime
+import os  # os.environ
+import sys
+import threading
+
+# import platform
+import time
+
+# from pympler.tracker import SummaryTracker
+# tracker = SummaryTracker()
+import traceback
+import webbrowser  # open browser from python
+
 # import pint
 # from mem_top import mem_top
 # import logging
 import numpy as np
+import serial
+import wx
 
 # import multiprocessing
 # from multiprocessing import Queue, Process
@@ -35,53 +54,28 @@ import numpy as np
 # wxversion.select("2.6")
 # import matplotlib
 from wx.lib import plot as wxplot
+from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
+
+from pyobd2 import core
+
+# import pdb
+from pyobd2 import obd_io  # OBD2 funcs
+from pyobd2.core.utils import OBDStatus
+from pyobd2.debugEvent import DebugEvent
+from pyobd2.obd2_codes import pcodes
 
 # from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-
 # from matplotlib.figure import Figure
 # import matplotlib.pyplot as plt
 # matplotlib.use('wxAgg')
 # from matplotlib.animation import FuncAnimation
 # from matplotlib import style
 # import numpy.oldnumeric as _Numeric
-
 # from wxplot import PlotCanvas, PlotGraphics, PolyLine, PolyMarker, PolySpline
-import gc
-
-# from pympler.tracker import SummaryTracker
-# tracker = SummaryTracker()
-import traceback
-import wx
-
-# import pdb
-from pyobd2 import obd_io  # OBD2 funcs
-import os  # os.environ
-
-# import decimal
-# import glob
-import datetime
-import threading
-import sys
-import serial
-
-# import platform
-import time
-import configparser  # safe application configuration
-import webbrowser  # open browser from python
-
 # from multiprocessing import Process
 # from multiprocessing import Queue
-
-from pyobd2.obd2_codes import pcodes
-
 # from obd2_codes import ptest
-
-from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
-from pyobd2 import core
-
 # from core import OBDStatus
-
-from pyobd2.core.utils import OBDStatus
 
 
 ID_ABOUT = 101
@@ -101,6 +95,7 @@ ID_HELP_ORDER = 510
 
 # Define notification event for sensor result window
 EVT_RESULT_ID = 1000
+EVT_DEBUG_ID = 1099
 EVT_GRAPH_VALUE_ID = 1036
 EVT_GRAPHS_VALUE_ID = 1048
 EVT_GRAPH_ID = 1035
@@ -127,7 +122,7 @@ def resource_path(relative_path):
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
-        base_path = os.path.abspath("pyobd2")
+        base_path = os.path.abspath("")
 
     return os.path.join(base_path, relative_path)
 
@@ -379,7 +374,6 @@ class TestEvent(wx.PyEvent):
 
 
 # defines notification event for debug tracewindow
-from debugEvent import *
 
 
 class MyApp(wx.App):
@@ -462,7 +456,7 @@ class MyApp(wx.App):
                 )
                 try:
                     r = self.connection.connection.query(core.commands.VIN)
-                    if r.value != None:
+                    if r.value is not None:
                         self.VIN = r.value.decode()
                         wx.PostEvent(
                             self._notify_window, StatusEvent([4, 1, str(self.VIN)])
@@ -543,7 +537,7 @@ class MyApp(wx.App):
                         sleep_time = 0.08333 - diff
                         time.sleep(sleep_time)
                         print("Slept for " + str(sleep_time) + " seconds.")
-                time_start = datetime.datetime.now()
+                datetime.datetime.now()
 
                 if curstate != 5 and self.graph_counter != 0:
                     self.graph_x_vals = np.array([])
@@ -552,7 +546,7 @@ class MyApp(wx.App):
                     self.first_time_graph_plot = True
                     if self.first_time_graph_plot:
                         self.unit = "unit"
-                    if self.current_command == None:
+                    if self.current_command is None:
                         desc = "None"
                     else:
                         desc = self.current_command.desc
@@ -669,7 +663,7 @@ class MyApp(wx.App):
 
                 if curstate == 0:  # show status tab
                     s = self.connection.connection.query(core.commands.RPM)
-                    if s.value == None:
+                    if s.value is None:
                         reconnect()
                         continue
                     r = self.connection.connection.query(core.commands.ELM_VOLTAGE)
@@ -681,7 +675,7 @@ class MyApp(wx.App):
                 elif curstate == 1:  # show tests tab
                     try:
                         r = self.connection.connection.query(core.commands[1][1])
-                        if r.value == None:
+                        if r.value is None:
                             reconnect()
                             continue
 
@@ -982,7 +976,7 @@ class MyApp(wx.App):
                                     b"0102",
                                 ):
                                     s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    if s.value is None:
                                         continue
                                     else:
                                         sensor_list.append([command, command.desc])
@@ -1021,7 +1015,7 @@ class MyApp(wx.App):
                         counter = 0
                         for sens in sensor_list:
                             s = self.connection.connection.query(sens[0])
-                            if s.value == None:
+                            if s.value is None:
                                 reconnect()
                                 continue
                             wx.PostEvent(
@@ -1040,7 +1034,7 @@ class MyApp(wx.App):
 
                 elif curstate == 3:  # show DTC tab
                     s = self.connection.connection.query(core.commands.RPM)
-                    if s.value == None:
+                    if s.value is None:
                         reconnect()
                         continue
 
@@ -1068,12 +1062,12 @@ class MyApp(wx.App):
                         r = self.connection.connection.query(core.commands.GET_DTC)
                         DTCCODES = []
                         print("DTCCODES:", r.value)
-                        if r.value != None:
+                        if r.value is not None:
                             for dtccode in r.value:
                                 DTCCODES.append((dtccode[0], "Active", dtccode[1]))
                         r = self.connection.connection.query(core.commands.FREEZE_DTC)
                         print("FREEZECODES:", r.value)
-                        if r.value != None:
+                        if r.value is not None:
                             dtccode = r.value
                             if "P0000" not in dtccode:
                                 DTCCODES.append((dtccode[0], "Passive", dtccode[1]))
@@ -1097,7 +1091,7 @@ class MyApp(wx.App):
                             if command:
                                 if command.command not in (b"0201", b"0251", b"0230"):
                                     s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    if s.value is None:
                                         continue
                                     else:
                                         freezeframe_list.append(
@@ -1136,7 +1130,7 @@ class MyApp(wx.App):
                             for command in core.commands[2]:
                                 if command.command == sens[0]:
                                     s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    if s.value is None:
                                         reconnect()
                                         continue
                                     freezeframe_list[counter] = [
@@ -1192,7 +1186,7 @@ class MyApp(wx.App):
                                     b"0103",
                                 ):
                                     s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    if s.value is None:
                                         continue
                                     else:
                                         graph_commands.append(command)
@@ -1231,8 +1225,8 @@ class MyApp(wx.App):
                         else:
                             self.current_command = None
 
-                        if self.current_command != None:
-                            if (prev_command == None) or (
+                        if self.current_command is not None:
+                            if (prev_command is None) or (
                                 prev_command != self.current_command
                             ):
                                 self.graph_x_vals = np.array([])
@@ -1252,7 +1246,7 @@ class MyApp(wx.App):
                                 s = self.connection.connection.query(
                                     self.current_command
                                 )
-                                if s.value == None:
+                                if s.value is None:
                                     reconnect()
                                     continue
                                 self.graph_x_vals = np.append(
@@ -1277,7 +1271,7 @@ class MyApp(wx.App):
                                 self.graph_counter = self.graph_counter + 1
                                 prev_command = self.current_command
 
-                                if s.value == None:
+                                if s.value is None:
                                     wx.PostEvent(
                                         self._notify_window,
                                         GraphValueEvent([0, 2, str(0)]),
@@ -1301,7 +1295,7 @@ class MyApp(wx.App):
                         if self.first_time_graph_plot:
                             self.unit = "unit"
 
-                        if self.current_command == None:
+                        if self.current_command is None:
                             desc = "None"
                         else:
                             desc = self.current_command.desc
@@ -1366,7 +1360,7 @@ class MyApp(wx.App):
                                     b"0103",
                                 ):
                                     s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    if s.value is None:
                                         continue
                                     else:
                                         graph_commands.append(command)
@@ -1431,8 +1425,8 @@ class MyApp(wx.App):
                         else:
                             self.current_command4 = None
 
-                        if self.current_command1 != None:
-                            if (prev_command1 == None) or (
+                        if self.current_command1 is not None:
+                            if (prev_command1 is None) or (
                                 prev_command1 != self.current_command1
                             ):
                                 self.graph_x_vals1 = np.array([])
@@ -1456,7 +1450,7 @@ class MyApp(wx.App):
                                 s = self.connection.connection.query(
                                     self.current_command1
                                 )
-                                if s.value == None:
+                                if s.value is None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1489,7 +1483,7 @@ class MyApp(wx.App):
                                 prev_command1 = self.current_command1
                                 self.graph_dirty1 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command1))
-                                if s.value == None:
+                                if s.value is None:
                                     wx.PostEvent(
                                         self._notify_window,
                                         GraphsValueEvent([0, 2, str(0)]),
@@ -1509,8 +1503,8 @@ class MyApp(wx.App):
                             self.graph_y_vals1 = np.array([])
                             self.graph_counter1 = 0
 
-                        if self.current_command2 != None:
-                            if (prev_command2 == None) or (
+                        if self.current_command2 is not None:
+                            if (prev_command2 is None) or (
                                 prev_command2 != self.current_command2
                             ):
                                 self.graph_x_vals2 = np.array([])
@@ -1534,7 +1528,7 @@ class MyApp(wx.App):
                                 s = self.connection.connection.query(
                                     self.current_command2
                                 )
-                                if s.value == None:
+                                if s.value is None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1567,7 +1561,7 @@ class MyApp(wx.App):
                                 prev_command2 = self.current_command2
                                 self.graph_dirty2 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command2))
-                                if s.value == None:
+                                if s.value is None:
                                     wx.PostEvent(
                                         self._notify_window,
                                         GraphsValueEvent([1, 2, str(0)]),
@@ -1587,8 +1581,8 @@ class MyApp(wx.App):
                             self.graph_y_vals2 = np.array([])
                             self.graph_counter2 = 0
 
-                        if self.current_command3 != None:
-                            if (prev_command3 == None) or (
+                        if self.current_command3 is not None:
+                            if (prev_command3 is None) or (
                                 prev_command3 != self.current_command3
                             ):
                                 self.graph_x_vals3 = np.array([])
@@ -1612,7 +1606,7 @@ class MyApp(wx.App):
                                 s = self.connection.connection.query(
                                     self.current_command3
                                 )
-                                if s.value == None:
+                                if s.value is None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1645,7 +1639,7 @@ class MyApp(wx.App):
                                 prev_command3 = self.current_command3
                                 self.graph_dirty3 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command3))
-                                if s.value == None:
+                                if s.value is None:
                                     wx.PostEvent(
                                         self._notify_window,
                                         GraphsValueEvent([2, 2, str(0)]),
@@ -1665,8 +1659,8 @@ class MyApp(wx.App):
                             self.graph_y_vals3 = np.array([])
                             self.graph_counter3 = 0
 
-                        if self.current_command4 != None:
-                            if (prev_command4 == None) or (
+                        if self.current_command4 is not None:
+                            if (prev_command4 is None) or (
                                 prev_command4 != self.current_command4
                             ):
                                 self.graph_x_vals4 = np.array([])
@@ -1690,7 +1684,7 @@ class MyApp(wx.App):
                                 s = self.connection.connection.query(
                                     self.current_command4
                                 )
-                                if s.value == None:
+                                if s.value is None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1725,7 +1719,7 @@ class MyApp(wx.App):
                                 prev_command4 = self.current_command4
                                 self.graph_dirty4 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command4))
-                                if s.value == None:
+                                if s.value is None:
                                     wx.PostEvent(
                                         self._notify_window,
                                         GraphsValueEvent([3, 2, str(0)]),
@@ -1750,19 +1744,19 @@ class MyApp(wx.App):
                             self.unit2 = "unit"
                             self.unit3 = "unit"
                             self.unit4 = "unit"
-                        if self.current_command1 == None:
+                        if self.current_command1 is None:
                             desc1 = "None"
                         else:
                             desc1 = self.current_command1.desc
-                        if self.current_command2 == None:
+                        if self.current_command2 is None:
                             desc2 = "None"
                         else:
                             desc2 = self.current_command2.desc
-                        if self.current_command3 == None:
+                        if self.current_command3 is None:
                             desc3 = "None"
                         else:
                             desc3 = self.current_command3.desc
-                        if self.current_command4 == None:
+                        if self.current_command4 is None:
                             desc4 = "None"
                         else:
                             desc4 = self.current_command4.desc
@@ -1807,10 +1801,10 @@ class MyApp(wx.App):
 
                 elif curstate == 7:
                     s = self.connection.connection.query(core.commands.RPM)
-                    if s.value == None:
+                    if s.value is None:
                         reconnect()
                         continue
-                time_end = datetime.datetime.now()
+                datetime.datetime.now()
                 first_time = False
             self.state = "finished"
             print("state is finished")
@@ -2125,7 +2119,7 @@ class MyApp(wx.App):
                 self.FAST = "FAST"
 
         self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.15")
-        ico = wx.Icon(resource_path("assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(resource_path("../assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
         EVT_RESULT(self, self.OnResult, EVT_RESULT_ID)
@@ -2665,7 +2659,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def CodeLookup(self, e=None):
         id = 0
         diag = wx.Frame(None, id, title="Diagnostic Trouble Codes")
-        ico = wx.Icon(resource_path("assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(resource_path("../assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
         diag.SetIcon(ico)
         tree = wx.TreeCtrl(diag, id, style=wx.TR_HAS_BUTTONS)
 
@@ -2796,15 +2790,13 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         # timeOut input control
         timeoutPanel = wx.Panel(diag, -1)
         timeoutCtrl = wx.TextCtrl(timeoutPanel, -1, "", pos=(140, 0), size=(40, 25))
-        timeoutStatic = wx.StaticText(
-            timeoutPanel, -1, "Timeout:", pos=(3, 5), size=(140, 20)
-        )
+        wx.StaticText(timeoutPanel, -1, "Timeout:", pos=(3, 5), size=(140, 20))
         timeoutCtrl.SetValue(str(self.SERTIMEOUT))
 
         # reconnect attempt input control
         reconnectPanel = wx.Panel(diag, -1)
         reconnectCtrl = wx.TextCtrl(reconnectPanel, -1, "", pos=(140, 0), size=(40, 25))
-        reconnectStatic = wx.StaticText(
+        wx.StaticText(
             reconnectPanel, -1, "Reconnect attempts:", pos=(3, 5), size=(140, 20)
         )
         reconnectCtrl.SetValue(str(self.RECONNATTEMPTS))
@@ -2852,11 +2844,9 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
             # set and save COMPORT
 
             self.COMPORT = ports[rb.GetSelection()]
-            COMPORT = self.COMPORT
             self.config.set("pyOBD", "COMPORT", self.COMPORT)
 
             self.BAUDRATE = baudrates[brb.GetSelection()]
-            BAUDRATE = self.BAUDRATE
             self.config.set("pyOBD", "BAUDRATE", self.BAUDRATE)
 
             self.FAST = ["FAST", "NORMAL"][fb.GetSelection()]
@@ -2879,5 +2869,11 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         os._exit(0)
 
 
-app = MyApp(0)
-app.MainLoop()
+def run():
+    app = MyApp(0)
+    app.MainLoop()
+
+
+if __name__ == "__main__":
+    app = MyApp(0)
+    app.MainLoop()

@@ -18,7 +18,7 @@ pint = "^0.22"
 wxpython = "^4.2.1"
 
 [tool.poetry.scripts]
-pyobd = "pyodb2.pyodb"
+pyobd = "pyobd2.pyobd:run"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
