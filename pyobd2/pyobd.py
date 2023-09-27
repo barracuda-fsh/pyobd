@@ -25,17 +25,14 @@
 ############################################################################
 
 import configparser  # safe application configuration
-
 # import decimal
 # import glob
 import datetime
 import os  # os.environ
 import sys
 import threading
-
 # import platform
 import time
-
 # from pympler.tracker import SummaryTracker
 # tracker = SummaryTracker()
 import traceback
@@ -47,7 +44,6 @@ import webbrowser  # open browser from python
 import numpy as np
 import serial
 import wx
-
 # import multiprocessing
 # from multiprocessing import Queue, Process
 # import wxversion
@@ -57,7 +53,6 @@ from wx.lib import plot as wxplot
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 
 from pyobd2 import core
-
 # import pdb
 from pyobd2 import obd_io  # OBD2 funcs
 from pyobd2.core.utils import OBDStatus
@@ -2119,7 +2114,7 @@ class MyApp(wx.App):
                 self.FAST = "FAST"
 
         self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.15")
-        ico = wx.Icon(resource_path("../assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(resource_path("assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
         EVT_RESULT(self, self.OnResult, EVT_RESULT_ID)
@@ -2659,7 +2654,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def CodeLookup(self, e=None):
         id = 0
         diag = wx.Frame(None, id, title="Diagnostic Trouble Codes")
-        ico = wx.Icon(resource_path("../assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(resource_path("assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
         diag.SetIcon(ico)
         tree = wx.TreeCtrl(diag, id, style=wx.TR_HAS_BUTTONS)
 
