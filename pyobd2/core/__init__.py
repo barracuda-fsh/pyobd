@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+"""
+	A serial module for accessing data from a vehicles OBD-II port
+
+	For more documentation, visit:
+	http://python-obd.readthedocs.org/en/latest/
+"""
+
 ########################################################################
 #                                                                      #
 # python-OBD: A python OBD-II serial module derived from pyobd         #
@@ -11,7 +18,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# protocols/__init__.py                                                #
+# __init__.py                                                          #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -30,18 +37,12 @@
 #                                                                      #
 ########################################################################
 
-from .protocol import ECU, ECU_HEADER
+import logging
 
-from .protocol_unknown import UnknownProtocol
 
-from .protocol_legacy import SAE_J1850_PWM, \
-                             SAE_J1850_VPW, \
-                             ISO_9141_2, \
-                             ISO_14230_4_5baud, \
-                             ISO_14230_4_fast
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
 
-from .protocol_can import ISO_15765_4_11bit_500k, \
-                          ISO_15765_4_29bit_500k, \
-                          ISO_15765_4_11bit_250k, \
-                          ISO_15765_4_29bit_250k, \
-                          SAE_J1939
+console_handler = logging.StreamHandler()  # sends output to stderr
+console_handler.setFormatter(logging.Formatter("[%(name)s] %(message)s"))
+logger.addHandler(console_handler)

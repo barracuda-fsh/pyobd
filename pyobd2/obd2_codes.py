@@ -1,36 +1,28 @@
-# -*- coding: utf-8 -*-
-
-########################################################################
-#                                                                      #
-# python-OBD: A python OBD-II serial module derived from pyobd         #
-#                                                                      #
-# Copyright 2004 Donour Sizemore (donour@uchicago.edu)                 #
-# Copyright 2009 Secons Ltd. (www.obdtester.com)                       #
-# Copyright 2009 Peter J. Creath                                       #
-# Copyright 2016 Brendan Whitfield (brendan-w.com)                     #
-#                                                                      #
-########################################################################
-#                                                                      #
-# __init__.py                                                          #
-#                                                                      #
-# This file is part of python-OBD (a derivative of pyOBD)              #
-#                                                                      #
-# python-OBD is free software: you can redistribute it and/or modify   #
-# it under the terms of the GNU General Public License as published by #
-# the Free Software Foundation, either version 2 of the License, or    #
-# (at your option) any later version.                                  #
-#                                                                      #
-# python-OBD is distributed in the hope that it will be useful,        #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        #
-# GNU General Public License for more details.                         #
-#                                                                      #
-# You should have received a copy of the GNU General Public License    #
-# along with python-OBD.  If not, see <http://www.gnu.org/licenses/>.  #
-#                                                                      #
-########################################################################
-
-DTC = {
+#!/usr/bin/env python
+###########################################################################
+# obd_sensors.py
+#
+# Copyright 2004 Donour Sizemore (donour@uchicago.edu)
+# Copyright 2009 Secons Ltd. (www.obdtester.com)
+# Copyright 2021 Jure Poljsak (https://github.com/barracuda-fsh/pyobd)
+#
+# This file is part of pyOBD.
+#
+# pyOBD is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# pyOBD is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pyOBD; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+###########################################################################
+pcodes = {
     "P0001": "Fuel Volume Regulator Control Circuit/Open",
     "P0002": "Fuel Volume Regulator Control Circuit Range/Performance",
     "P0003": "Fuel Volume Regulator Control Circuit Low",
@@ -163,19 +155,19 @@ DTC = {
     "P0130": "O2 Sensor Circuit",
     "P0131": "O2 Sensor Circuit Low Voltage",
     "P0132": "O2 Sensor Circuit High Voltage",
-    "P0133": "O2 Sensor Circuit Slow OBDResponse",
+    "P0133": "O2 Sensor Circuit Slow Response",
     "P0134": "O2 Sensor Circuit No Activity Detected",
     "P0135": "O2 Sensor Heater Circuit",
     "P0136": "O2 Sensor Circuit",
     "P0137": "O2 Sensor Circuit Low Voltage",
     "P0138": "O2 Sensor Circuit High Voltage",
-    "P0139": "O2 Sensor Circuit Slow OBDResponse",
+    "P0139": "O2 Sensor Circuit Slow Response",
     "P0140": "O2 Sensor Circuit No Activity Detected",
     "P0141": "O2 Sensor Heater Circuit",
     "P0142": "O2 Sensor Circuit",
     "P0143": "O2 Sensor Circuit Low Voltage",
     "P0144": "O2 Sensor Circuit High Voltage",
-    "P0145": "O2 Sensor Circuit Slow OBDResponse",
+    "P0145": "O2 Sensor Circuit Slow Response",
     "P0146": "O2 Sensor Circuit No Activity Detected",
     "P0147": "O2 Sensor Heater Circuit",
     "P0148": "Fuel Delivery Error",
@@ -183,19 +175,19 @@ DTC = {
     "P0150": "O2 Sensor Circuit",
     "P0151": "O2 Sensor Circuit Low Voltage",
     "P0152": "O2 Sensor Circuit High Voltage",
-    "P0153": "O2 Sensor Circuit Slow OBDResponse",
+    "P0153": "O2 Sensor Circuit Slow Response",
     "P0154": "O2 Sensor Circuit No Activity Detected",
     "P0155": "O2 Sensor Heater Circuit",
     "P0156": "O2 Sensor Circuit",
     "P0157": "O2 Sensor Circuit Low Voltage",
     "P0158": "O2 Sensor Circuit High Voltage",
-    "P0159": "O2 Sensor Circuit Slow OBDResponse",
+    "P0159": "O2 Sensor Circuit Slow Response",
     "P0160": "O2 Sensor Circuit No Activity Detected",
     "P0161": "O2 Sensor Heater Circuit",
     "P0162": "O2 Sensor Circuit",
     "P0163": "O2 Sensor Circuit Low Voltage",
     "P0164": "O2 Sensor Circuit High Voltage",
-    "P0165": "O2 Sensor Circuit Slow OBDResponse",
+    "P0165": "O2 Sensor Circuit Slow Response",
     "P0166": "O2 Sensor Circuit No Activity Detected",
     "P0167": "O2 Sensor Heater Circuit",
     "P0168": "Fuel Temperature Too High",
@@ -1798,7 +1790,6 @@ DTC = {
     "P3495": "Cylinder 12 Exhaust Valve Control Circuit Low",
     "P3496": "Cylinder 12 Exhaust Valve Control Circuit High",
     "P3497": "Cylinder Deactivation System",
-
     "U0001": "High Speed CAN Communication Bus",
     "U0002": "High Speed CAN Communication Bus (Performance)",
     "U0003": "High Speed CAN Communication Bus (Open)",
@@ -2100,131 +2091,44 @@ DTC = {
     "U0431": "Invalid Data Received From Body Control Module 'A'",
 }
 
-IGNITION_TYPE = [
-    "spark",
-    "compression",
-]
-
-BASE_TESTS = [
-    "MISFIRE_MONITORING",
-    "FUEL_SYSTEM_MONITORING",
-    "COMPONENT_MONITORING",
-]
-
-SPARK_TESTS = [
-    "CATALYST_MONITORING",
-    "HEATED_CATALYST_MONITORING",
-    "EVAPORATIVE_SYSTEM_MONITORING",
-    "SECONDARY_AIR_SYSTEM_MONITORING",
-    None,
-    "OXYGEN_SENSOR_MONITORING",
-    "OXYGEN_SENSOR_HEATER_MONITORING",
-    "EGR_VVT_SYSTEM_MONITORING"
-]
-
-COMPRESSION_TESTS = [
-    "NMHC_CATALYST_MONITORING",
-    "NOX_SCR_AFTERTREATMENT_MONITORING",
-    None,
-    "BOOST_PRESSURE_MONITORING",
-    None,
-    "EXHAUST_GAS_SENSOR_MONITORING",
-    "PM_FILTER_MONITORING",
-    "EGR_VVT_SYSTEM_MONITORING",
-]
-
-FUEL_STATUS = [
-    "Open loop due to insufficient engine temperature",
-    "Closed loop, using oxygen sensor feedback to determine fuel mix",
-    "Open loop due to engine load OR fuel cut due to deceleration",
-    "Open loop due to system failure",
-    "Closed loop, using at least one oxygen sensor but there is a fault in the feedback system",
-]
-
-AIR_STATUS = [
-    "Upstream",
-    "Downstream of catalytic converter",
-    "From the outside atmosphere or off",
-    "Pump commanded on for diagnostics",
-]
-
-OBD_COMPLIANCE = [
-    "Undefined",
-    "OBD-II as defined by the CARB",
-    "OBD as defined by the EPA",
-    "OBD and OBD-II",
-    "OBD-I",
-    "Not OBD compliant",
-    "EOBD (Europe)",
-    "EOBD and OBD-II",
-    "EOBD and OBD",
-    "EOBD, OBD and OBD II",
-    "JOBD (Japan)",
-    "JOBD and OBD II",
-    "JOBD and EOBD",
-    "JOBD, EOBD, and OBD II",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Engine Manufacturer Diagnostics (EMD)",
-    "Engine Manufacturer Diagnostics Enhanced (EMD+)",
-    "Heavy Duty On-Board Diagnostics (Child/Partial) (HD OBD-C)",
-    "Heavy Duty On-Board Diagnostics (HD OBD)",
-    "World Wide Harmonized OBD (WWH OBD)",
-    "Reserved",
-    "Heavy Duty Euro OBD Stage I without NOx control (HD EOBD-I)",
-    "Heavy Duty Euro OBD Stage I with NOx control (HD EOBD-I N)",
-    "Heavy Duty Euro OBD Stage II without NOx control (HD EOBD-II)",
-    "Heavy Duty Euro OBD Stage II with NOx control (HD EOBD-II N)",
-    "Reserved",
-    "Brazil OBD Phase 1 (OBDBr-1)",
-    "Brazil OBD Phase 2 (OBDBr-2)",
-    "Korean OBD (KOBD)",
-    "India OBD I (IOBD I)",
-    "India OBD II (IOBD II)",
-    "Heavy Duty Euro OBD Stage VI (HD EOBD-IV)",
-]
-
-FUEL_TYPES = [
-    "Not available",
-    "Gasoline",
-    "Methanol",
-    "Ethanol",
-    "Diesel",
-    "LPG",
-    "CNG",
-    "Propane",
-    "Electric",
-    "Bifuel running Gasoline",
-    "Bifuel running Methanol",
-    "Bifuel running Ethanol",
-    "Bifuel running LPG",
-    "Bifuel running CNG",
-    "Bifuel running Propane",
-    "Bifuel running Electricity",
-    "Bifuel running electric and combustion engine",
-    "Hybrid gasoline",
-    "Hybrid Ethanol",
-    "Hybrid Diesel",
-    "Hybrid Electric",
-    "Hybrid running electric and combustion engine",
-    "Hybrid Regenerative",
-    "Bifuel running diesel",
-]
-
-TEST_IDS = {
-    # <TID>: (<name>, <description>)
-    # 0x0 is reserved
-    0x01: ("RTL_THRESHOLD_VOLTAGE", "Rich to lean sensor threshold voltage"),
-    0x02: ("LTR_THRESHOLD_VOLTAGE", "Lean to rich sensor threshold voltage"),
-    0x03: ("LOW_VOLTAGE_SWITCH_TIME", "Low sensor voltage for switch time calculation"),
-    0x04: ("HIGH_VOLTAGE_SWITCH_TIME", "High sensor voltage for switch time calculation"),
-    0x05: ("RTL_SWITCH_TIME", "Rich to lean sensor switch time"),
-    0x06: ("LTR_SWITCH_TIME", "Lean to rich sensor switch time"),
-    0x07: ("MIN_VOLTAGE", "Minimum sensor voltage for test cycle"),
-    0x08: ("MAX_VOLTAGE", "Maximum sensor voltage for test cycle"),
-    0x09: ("TRANSITION_TIME", "Time between sensor transitions"),
-    0x0A: ("SENSOR_PERIOD", "Sensor period"),
-    0x0B: ("MISFIRE_AVERAGE", "Average misfire counts for last ten driving cycles"),
-    0x0C: ("MISFIRE_COUNT", "Misfire counts for last/current driving cycles"),
+pcode_classes = {
+    "P00XX": "Fuel and Air Metering and Auxiliary Emission Controls",
+    "P01XX": "Fuel and Air Merering",
+    "P02XX": "Fuel and Air Merering",
+    "P03XX": "Ignition System or Misfire",
+    "P04XX": "Auxiliary Emission Controls",
+    "P05XX": "Vehicle Speed, Idle Control, and Auxiliary Inputs",
+    "P06XX": "Computer and Auxiliary Outputs",
+    "P07XX": "Transmission",
+    "P08XX": "Transmission",
+    "P09XX": "Transmission",
+    "P0AXX": "Hybrid Propulsion",
+    "P10XX": "Manufacturer Controlled Fuel and Air Metering and Auxiliary Emission Controls",
+    "P11XX": "Manufacturer Controlled Fuel and Air Merering",
+    "P12XX": "Fuel and Air Merering",
+    "P13XX": "Ignition System or Misfire",
+    "P14XX": "Auxiliary Emission Controls",
+    "P15XX": "Vehicle Speed, Idle Control, and Auxiliary Inputs",
+    "P16XX": "Computer and Auxiliary Outputs",
+    "P17XX": "Transmission",
+    "P18XX": "Transmission",
+    "P19XX": "Transmission",
 }
+
+ptest = [
+    "DTCs:",
+    "MIL:",
+    # A
+    "Misfire:",
+    "Fuel system:",
+    "Components:",
+    # B,D
+    "Catalyst:",
+    "Heated Catalyst:",
+    "Evaporative system:",
+    "Secondary Air System:",
+    "A/C Refrigerant:",
+    "Oxygen Sensor:",
+    "Oxygen Sensor Heater:",
+    "EGR SystemC7:",
+]

@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "pyobd2"
+version = "1.15.1"
+description = "A free and open-source package for vehicle ODB-II diagnostics."
+authors = ["Jure Poljsak", "Charles Donour Sizemore"]
+maintainers = ["Jure Poljsak"]
+license = "GPL-2.0-or-later"
+readme = "README.md"
+packages = [{include = "pyobd2"}]
+
+
+[tool.poetry.dependencies]
+python = "<3.13,>=3.9"
+pyserial = "^3.5"
+numpy = "^1.26.0"
+tornado = "^6.3.3"
+pint = "^0.22"
+wxpython = "^4.2.1"
+
+[tool.poetry.scripts]
+pyobd = "pyobd2.pyobd:run"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+ruff = "^0.0.291"
+pyinstaller = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

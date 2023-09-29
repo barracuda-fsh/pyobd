@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# OBDCommand.py                                                        #
+# obd_command.py                                                        #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -30,25 +30,25 @@
 #                                                                      #
 ########################################################################
 
-from .utils import *
+from .obd_response import OBDResponse
 from .protocols import ECU, ECU_HEADER
-from .OBDResponse import OBDResponse
-
-import logging
+from .utils import *
 
 logger = logging.getLogger(__name__)
 
 
 class OBDCommand:
-    def __init__(self,
-                 name,
-                 desc,
-                 command,
-                 _bytes,
-                 decoder,
-                 ecu=ECU.ALL,
-                 fast=False,
-                 header=ECU_HEADER.ENGINE):
+    def __init__(
+        self,
+        name,
+        desc,
+        command,
+        _bytes,
+        decoder,
+        ecu=ECU.ALL,
+        fast=False,
+        header=ECU_HEADER.ENGINE,
+    ):
         self.name = name  # human readable name (also used as key in commands dict)
         self.desc = desc  # human readable description
         self.command = command  # command string
@@ -59,14 +59,16 @@ class OBDCommand:
         self.header = header  # ECU header used for the queries
 
     def clone(self):
-        return OBDCommand(self.name,
-                          self.desc,
-                          self.command,
-                          self.bytes,
-                          self.decode,
-                          self.ecu,
-                          self.fast,
-                          self.header)
+        return OBDCommand(
+            self.name,
+            self.desc,
+            self.command,
+            self.bytes,
+            self.decode,
+            self.ecu,
+            self.fast,
+            self.header,
+        )
 
     @property
     def mode(self):
@@ -83,7 +85,6 @@ class OBDCommand:
             return None
 
     def __call__(self, messages):
-
         # filter for applicable messages (from the right ECU(s))
         messages = [m for m in messages if (self.ecu & m.ecu) > 0]
 
@@ -102,23 +103,29 @@ class OBDCommand:
         return r
 
     def __constrain_message_data(self, message):
-        """ pads or chops the data field to the size specified by this command """
+        """pads or chops the data field to the size specified by this command"""
         len_msg_data = len(message.data)
         if self.bytes > 0:
             if len_msg_data > self.bytes:
                 # chop off the right side
-                message.data = message.data[:self.bytes]
+                message.data = message.data[: self.bytes]
                 logger.debug(
-                    "Message was longer than expected (%s>%s). " +
-                    "Trimmed message: %s", len_msg_data, self.bytes,
-                    repr(message.data))
+                    "Message was longer than expected (%s>%s). "
+                    + "Trimmed message: %s",
+                    len_msg_data,
+                    self.bytes,
+                    repr(message.data),
+                )
             elif len_msg_data < self.bytes:
                 # pad the right with zeros
-                message.data += (b'\x00' * (self.bytes - len_msg_data))
+                message.data += b"\x00" * (self.bytes - len_msg_data)
                 logger.debug(
-                    "Message was shorter than expected (%s<%s). " +
-                    "Padded message: %s", len_msg_data, self.bytes,
-                    repr(message.data))
+                    "Message was shorter than expected (%s<%s). "
+                    + "Padded message: %s",
+                    len_msg_data,
+                    self.bytes,
+                    repr(message.data),
+                )
 
     def __str__(self):
         if self.header != ECU_HEADER.ENGINE:
@@ -134,13 +141,25 @@ class OBDCommand:
         if self.ecu == ECU.TRANSMISSION:
             e = "ECU.TRANSMISSION"
         if self.header == ECU_HEADER.ENGINE:
-            return ("OBDCommand(%s, %s, %s, %s, raw_string, ecu=%s, fast=%s)"
-                    ) % (repr(self.name), repr(self.desc), repr(self.command),
-                         self.bytes, e, self.fast)
-        return ("OBDCommand" +
-                "(%s, %s, %s, %s, raw_string, ecu=%s, fast=%s, header=%s)"
-                ) % (repr(self.name), repr(self.desc), repr(self.command),
-                     self.bytes, e, self.fast, repr(self.header))
+            return ("OBDCommand(%s, %s, %s, %s, raw_string, ecu=%s, fast=%s)") % (
+                repr(self.name),
+                repr(self.desc),
+                repr(self.command),
+                self.bytes,
+                e,
+                self.fast,
+            )
+        return (
+            "OBDCommand" + "(%s, %s, %s, %s, raw_string, ecu=%s, fast=%s, header=%s)"
+        ) % (
+            repr(self.name),
+            repr(self.desc),
+            repr(self.command),
+            self.bytes,
+            e,
+            self.fast,
+            repr(self.header),
+        )
 
     def __hash__(self):
         # needed for using commands as keys in a dict (see async.py)

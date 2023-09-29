@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-	A serial module for accessing data from a vehicles OBD-II port
-
-	For more documentation, visit:
-	http://python-obd.readthedocs.org/en/latest/
-"""
-
 ########################################################################
 #                                                                      #
 # python-OBD: A python OBD-II serial module derived from pyobd         #
@@ -18,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# __init__.py                                                          #
+# protocols/__init__.py                                                #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -37,21 +30,22 @@
 #                                                                      #
 ########################################################################
 
-from .__version__ import __version__
-from .obd import OBD
-from .asynchronous import Async
-from .commands import commands
-from .OBDCommand import OBDCommand
-from .OBDResponse import OBDResponse
-from .protocols import ECU
-from .utils import scan_serial, OBDStatus
-from .UnitsAndScaling import Unit
+from .protocol import ECU, ECU_HEADER
 
-import logging
+from .protocol_unknown import UnknownProtocol
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+from .protocol_legacy import (
+    SAE_J1850_PWM,
+    SAE_J1850_VPW,
+    ISO_9141_2,
+    ISO_14230_4_5baud,
+    ISO_14230_4_fast,
+)
 
-console_handler = logging.StreamHandler()  # sends output to stderr
-console_handler.setFormatter(logging.Formatter("[%(name)s] %(message)s"))
-logger.addHandler(console_handler)
+from .protocol_can import (
+    ISO_15765_4_11bit_500k,
+    ISO_15765_4_29bit_500k,
+    ISO_15765_4_11bit_250k,
+    ISO_15765_4_29bit_250k,
+    SAE_J1939,
+)
