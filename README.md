@@ -14,14 +14,11 @@ and auto-detects what a car's computer supports, so it displays much more data t
       - [Linux](#linux-installation)
       - [MacOS](#macos-installation)
    - [Usage](#usage)
-   - [Running the Script](#running-the-script)
-      - [Windows](#windows-script)
-      - [Linux](#linux-script)
-      - [MacOS](#macos-script)
-   - [Creating the Executable](#creating-the-executable)
-      - [Windows](#windows-executable)
-      - [Linux](#linux-executable)
-      - [MacOS](#macos-executable)
+   - [Development Setup](#development-setup)
+      - [Note](#note)
+      - [Running the GUI](#running-the-gui)
+      - [Building and publishing a new package](#building-and-publishing-a-new-package)
+      - [Creating an executable file](#creating-an-executable-file)
    - [To-Do List](#to-do-list)
 
 ## Prerequisites:
@@ -114,89 +111,60 @@ replay is possible.
 
 **NOTE: The program only displays the engine data, not airbags, ABS and body control systems. Even if your adapter 
 supports that, you will need a more specialized program for that.**
- 
-## Running the script
-Install Python3 if not installed already.
-You may need to install `libsnl` when using linux if it didn't come prepacked with it
 
-### Windows-Script
-```bash
-pip install -r requirements.txt
-```
-The script is executed by running:
-```bash
-python3 pyobd.py
-```
+## Development Setup
+This project requires `python=3.9,<=3.11` and now uses [poetry](https://python-poetry.org/) for packaging and 
+managing its dependencies. You need to have `poetry` installed globally on you development machine. You can
+install it with `pip install poetry`.
 
-### Linux-Script
+### Note
+Before following the steps below, you might need to install some packages for this project to work properly based
+on you operating system. For example, you may need to install `libsnl` when using linux if it didn't come 
+prepacked with it.
+
 On Debian 10 and 11 and on Ubuntu, type these commands to install the requirements(on Ubuntu replace 
 `libgstreamer-plugins-base1.0` with `libgstreamer-plugins-base1.0-0`): 
 ```bash
 sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-dev libgstreamer-plugins-base1.0 \
 libnotify-dev freeglut3 freeglut3-dev libsm-dev libgtk-3-dev libwebkit2gtk-4.0-dev libxtst-dev gettext python3-dev \
 python3-pip
-pip3 install -r requirements.txt
 ```
+
+For Mac and Linux users:
+
 **Note: After running the commands below log out and log back in for it to take effect(or restart)**
 ```bash
 sudo usermod -a -G dialout $USER
 sudo usermod -a -G tty $USER
 ```
 
-The script is executed by running:
-```bash
-python3 pyobd.py 
-```
+Steps:
+- clone this repository.
+    ```bash
+  git clone https://github.com/barracuda-fsh/pyobd.git
+    ```
+- switch to the projects root directory.
+    ```bash
+  cd pyobd
+    ```
+- install the project's dependencies
+    ```bash
+  poetry install && poetry shell
+    ```
 
-### MacOS-Script
+### Running the GUI
 
-run:
-**Note: After running the commands below log out and log back in for it to take effect(or restart)**
-```bash
-pip install -r requirements.txt 
-sudo usermod -a -G dialout $USER 
-sudo usermod -a -G tty $USER
-```
+After all the project dependencies have been installed you can launch the programs GUI with `poetry run pyobd`.
 
-The script is executed by running:
-```bash
-python3 pyobd.py 
-```
+### Building and publishing a new package
 
-## Creating the executable
-Install Python3 if not installed already.
-You may need to install libsnl when using linux if it didn't come prepacked with it
+To generate new python packages for this project. Run `poetry build`. the artifacts generated will be found in the
+`dist/` directory in the project's root. To publish the project to [pypi](https://pypi.org/), run `poetry publish`
 
-### Windows-Executable
-run:
-```bash
-pip3 install -r requirements.txt 
-pip3 install pyinstaller 
-pyinstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico;." pyobd.py 
-```
-
-### Linux-Executable
-On Debian 10 and 11 and on Ubuntu, type these commands to install the requirements(on Ubuntu replace 
-`libgstreamer-plugins-base1.0` with `libgstreamer-plugins-base1.0-0`): 
-```bash
-sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-dev libgstreamer-plugins-base1.0 \
-libnotify-dev freeglut3 freeglut3-dev libsm-dev libgtk-3-dev libwebkit2gtk-4.0-dev libxtst-dev gettext python3-dev \
-python3-pip
-```
-
-run:
-```bash
-pip3 install -r requirements.txt
-pip3 install pyinstaller
-pyinstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico:." pyobd.py
-```
-
-### MacOS-Executable
-run:
-```bash
-pip3 install -r requirements.txt
-pip3 install pyinstaller
-python3 -m PyInstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico:." pyobd.py
+### Creating an executable file
+From the project root, run:
+```bash 
+pyinstaller --onefile -w -i pyobd2/assets/pyobd.ico --add-data "pyobd2/assets/pyobd.ico:." pyobd2/pyobd.py
 ```
 
 ## TO-DO LIST:
