@@ -3,3 +3,7 @@ build/*
 dist/*
 __pycache__
 .idea/
+pyobd.spec
+build/
+.ruff_cache/
+dist/
