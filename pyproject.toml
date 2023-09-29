@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyobd2"
-version = "0.1.0"
+version = "1.15.1"
 description = "A free and open-source package for vehicle ODB-II diagnostics."
 authors = ["Jure Poljsak", "Charles Donour Sizemore"]
 maintainers = ["Jure Poljsak"]
