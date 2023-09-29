@@ -23,6 +23,7 @@ pyobd = "pyobd2.pyobd:run"
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
 ruff = "^0.0.291"
+pyinstaller = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]
