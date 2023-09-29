@@ -56,7 +56,7 @@ from pyobd2 import core
 # import pdb
 from pyobd2 import obd_io  # OBD2 funcs
 from pyobd2.core.utils import OBDStatus
-from pyobd2.debug_event import DebugEvent
+from pyobd2.debug_event import DebugEvent, EVT_DEBUG_ID
 from pyobd2.obd2_codes import pcodes
 
 # from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -2112,8 +2112,8 @@ class MyApp(wx.App):
                 self.BAUDRATE = "AUTO"
                 self.FAST = "FAST"
 
-        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.15")
-        ico = wx.Icon(resource_path("assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
+        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.15.1")
+        ico = wx.Icon(resource_path("pyobd2/assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
         EVT_RESULT(self, self.OnResult, EVT_RESULT_ID)
@@ -2653,7 +2653,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def CodeLookup(self, e=None):
         id = 0
         diag = wx.Frame(None, id, title="Diagnostic Trouble Codes")
-        ico = wx.Icon(resource_path("assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(resource_path("pyobd2/assets/pyobd.ico"), wx.BITMAP_TYPE_ICO)
         diag.SetIcon(ico)
         tree = wx.TreeCtrl(diag, id, style=wx.TR_HAS_BUTTONS)
 
