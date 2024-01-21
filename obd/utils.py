@@ -176,7 +176,7 @@ def scan_serial():
         #possible_ports += glob.glob("/dev/pts/[0-9]*")  # for obdsim
         
     elif sys.platform.startswith('win'):
-        possible_ports += ["\\.\COM%d" % i for i in range(256)]  # on win, the pseudo ports are also COM - harder to distinguish
+        possible_ports += ["COM%d" % i for i in range(256)]  # on win, the pseudo ports are also COM - harder to distinguish
 
     elif sys.platform.startswith('darwin'):
         exclude = [
