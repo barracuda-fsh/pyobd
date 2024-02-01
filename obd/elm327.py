@@ -104,7 +104,7 @@ class ELM327:
     # We check the two default baud rates first, then go fastest to
     # slowest, on the theory that anyone who's using a slow baud rate is
     # going to be less picky about the time required to detect it.
-    _TRY_BAUDS = [38400, 9600, 230400, 115200, 57600, 19200, 128000, 14400, 250000, 500000, 1000000, 2000000, 3000000]
+    _TRY_BAUDS = [38400, 9600,  115200, 57600, 19200, 14400, 3000000, 2000000, 1000000, 250000, 230400, 128000, 500000, 460800, 500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000]
 
     def __init__(self, portname, baudrate, protocol, timeout,
                  check_voltage=True, start_low_power=False):
@@ -359,7 +359,13 @@ class ELM327:
         self.__port.write_timeout = 0.1
         #print(self.__port.write_timeout)
         for baud in self._TRY_BAUDS:
-            self.__port.baudrate = baud
+            print('Baudrate ' + str(baud))
+            try:
+                self.__port.baudrate = baud
+            except serial.serialutil.SerialException:
+                print('This baudrate is not supported on this platform!')
+                continue
+
             print("Trying baudrate "+str(baud))
             print('flushing input')
             self.__port.flushInput()
@@ -404,8 +410,11 @@ class ELM327:
 
         logger.debug("Failed to choose baud")
         print("Failed to choose baud")
-        self.__port.timeout = timeout  # reinstate our original timeout
-        self.__port.write_timeout = timeout
+        try:
+            self.__port.timeout = timeout  # reinstate our original timeout
+            self.__port.write_timeout = timeout
+        except serial.serialutil.SerialException:
+            return False
         return False
 
     def __isok(self, lines, expectEcho=False):
