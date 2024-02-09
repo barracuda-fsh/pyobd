@@ -1926,7 +1926,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.line = wxplot.PolySpline(xy_data, colour = 'blue', width = 1, style=wx.PENSTYLE_SOLID)
                 self.graphics = wxplot.PlotGraphics([self.line], command_desc, 'frame', unit)
                 if sys.platform.startswith("linux"):
-                    if os.environ.get("DESKTOP_SESSION") == "gnome":
+                    if os.environ.get("DESKTOP_SESSION") == "gnome" or os.environ.get("DESKTOP_SESSION") == "ubuntu":
                         self.panel.Destroy()
                         self.panel = wxplot.PlotCanvas(self.graph_panel, pos=(0, 100))
                         self.panel.SetInitialSize(size=wx.Size(900, 400))
@@ -1963,7 +1963,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.line1 = wxplot.PolySpline(xy_data1, colour = 'blue', width = 1, style=wx.PENSTYLE_SOLID)
                 self.graphics1 = wxplot.PlotGraphics([self.line1], command_desc1, 'frame', unit1)
                 if sys.platform.startswith("linux"):
-                    if os.environ.get("DESKTOP_SESSION") == "gnome":
+                    if os.environ.get("DESKTOP_SESSION") == "gnome" or os.environ.get("DESKTOP_SESSION") == "ubuntu":
                         self.panel1.Destroy()
                         self.panel1 = wxplot.PlotCanvas(self.graphs_panel, pos=(0, 250))
                         self.panel1.SetInitialSize(size=wx.Size(400, 220))
@@ -1972,7 +1972,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.line2 = wxplot.PolySpline(xy_data2, colour = 'blue', width = 1, style=wx.PENSTYLE_SOLID)
                 self.graphics2 = wxplot.PlotGraphics([self.line2], command_desc2, 'frame', unit2)
                 if sys.platform.startswith("linux"):
-                    if os.environ.get("DESKTOP_SESSION") == "gnome":
+                    if os.environ.get("DESKTOP_SESSION") == "gnome" or os.environ.get("DESKTOP_SESSION") == "ubuntu":
                         self.panel2.Destroy()
                         self.panel2 = wxplot.PlotCanvas(self.graphs_panel, pos=(0, 480))
                         self.panel2.SetInitialSize(size=wx.Size(400, 220))
@@ -1981,7 +1981,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.line3 = wxplot.PolySpline(xy_data3, colour = 'blue', width = 1, style=wx.PENSTYLE_SOLID)
                 self.graphics3 = wxplot.PlotGraphics([self.line3], command_desc3, 'frame', unit3)
                 if sys.platform.startswith("linux"):
-                    if os.environ.get("DESKTOP_SESSION") == "gnome":
+                    if os.environ.get("DESKTOP_SESSION") == "gnome" or os.environ.get("DESKTOP_SESSION") == "ubuntu":
                         self.panel3.Destroy()
                         self.panel3 = wxplot.PlotCanvas(self.graphs_panel, pos=(410, 250))
                         self.panel3.SetInitialSize(size=wx.Size(400, 220))
@@ -1990,7 +1990,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.line4 = wxplot.PolySpline(xy_data4, colour = 'blue', width = 1, style=wx.PENSTYLE_SOLID)
                 self.graphics4 = wxplot.PlotGraphics([self.line4], command_desc4, 'frame', unit4)
                 if sys.platform.startswith("linux"):
-                    if os.environ.get("DESKTOP_SESSION") == "gnome":
+                    if os.environ.get("DESKTOP_SESSION") == "gnome" or os.environ.get("DESKTOP_SESSION") == "ubuntu":
                         self.panel4.Destroy()
                         self.panel4 = wxplot.PlotCanvas(self.graphs_panel, pos=(410, 480))
                         self.panel4.SetInitialSize(size=wx.Size(400, 220))
