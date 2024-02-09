@@ -345,8 +345,9 @@ class ELM327:
         else:
             try:
                 self.__port.baudrate = baud
+                print("Baud rate set!")
             except:
-                print("Baud rate not supported")
+                print("Baud rate not supported!")
                 return False
             return True
 
