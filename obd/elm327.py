@@ -107,7 +107,7 @@ class ELM327:
     _TRY_BAUDS = [38400, 9600,  115200, 57600, 19200, 14400, 3000000, 2000000, 1000000, 250000, 230400, 128000, 500000, 460800, 500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000]
 
     def __init__(self, portname, baudrate, protocol, timeout,
-                 check_voltage=True, start_low_power=False):
+                 check_voltage=False, start_low_power=False):
         """Initializes port by resetting device and gettings supported PIDs. """
 
         logger.info("Initializing ELM327: PORT=%s BAUD=%s PROTOCOL=%s" %
@@ -343,7 +343,11 @@ class ELM327:
             else:
                 return self.auto_baudrate()
         else:
-            self.__port.baudrate = baud
+            try:
+                self.__port.baudrate = baud
+            except:
+                print("Baud rate not supported")
+                return False
             return True
 
     def auto_baudrate(self):
