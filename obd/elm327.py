@@ -346,7 +346,7 @@ class ELM327:
             try:
                 self.__port.baudrate = baud
                 print("Baud rate set!")
-            except:
+            except serial.serialutil.SerialException:
                 print("Baud rate not supported!")
                 return False
             return True
