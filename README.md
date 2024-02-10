@@ -161,7 +161,8 @@ pip3 install --upgrade pyinstaller
 pip3 install --upgrade pip
 pip3 install pip-review
 sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev libsystemd-dev librsync-dev
-pip-review --interactive```
+pip-review --interactive
+```
 
 run:
 ```bash
