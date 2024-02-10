@@ -106,6 +106,12 @@ python3 pyobd.py
 On Debian 10 and 11 and on Ubuntu, type these commands to install the requirements(on Ubuntu replace libgstreamer-plugins-base1.0 with libgstreamer-plugins-base1.0-0): 
 ```bash
 sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-dev libgstreamer-plugins-base1.0 libnotify-dev freeglut3 freeglut3-dev libsm-dev libgtk-3-dev libwebkit2gtk-4.0-dev libxtst-dev gettext python3-dev python3-pip
+sudo apt-get install python3-pip
+pip3 install --upgrade pyinstaller
+pip3 install --upgrade pip
+pip3 install pip-review
+sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev
+pip-review --interactive
 pip3 install -r requirements.txt
 ```
 **Note: After running the commands below log out and log back in for it to take effect(or restart)**
