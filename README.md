@@ -148,7 +148,11 @@ You may need to install libsnl when using linux if it didn't come prepacked with
 run:
 ```bash
 pip3 install -r requirements.txt 
-pip3 install pyinstaller 
+pip3 install pyinstaller
+pip3 install --upgrade pip
+pip3 install --upgrade pyinstaller
+pip3 install pip-review
+pip-review --interactive
 pyinstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico;." pyobd.py 
 ```
 
