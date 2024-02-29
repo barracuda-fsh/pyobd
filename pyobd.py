@@ -555,10 +555,11 @@ class MyApp(wx.App):
                     if s.value == None:
                         reconnect()
                         continue
+
                     r = self.connection.connection.query(obd.commands.ELM_VOLTAGE)
                     self.ELMvoltage = str(r.value)
                     wx.PostEvent(self._notify_window, StatusEvent([5, 1, str(self.ELMvoltage)]))
-
+                    
 
 
                 elif curstate == 1:  # show tests tab
