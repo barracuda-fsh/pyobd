@@ -559,11 +559,12 @@ class MyApp(wx.App):
                     r = self.connection.connection.query(obd.commands.ELM_VOLTAGE)
                     self.ELMvoltage = str(r.value)
                     wx.PostEvent(self._notify_window, StatusEvent([5, 1, str(self.ELMvoltage)]))
-                    
+
 
 
                 elif curstate == 1:  # show tests tab
                     try:
+
                         r = self.connection.connection.query(obd.commands[1][1])
                         if r.value == None:
                             reconnect()
@@ -671,39 +672,59 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, TestEvent([14, 2, "Complete"]))
                             else:
                                 wx.PostEvent(self._notify_window, TestEvent([14, 2, "Incomplete"]))
+
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_1)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([15, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_2)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([16, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_3)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([17, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_4)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([18, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_5)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([19, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_6)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([20, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_7)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([21, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_8)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([22, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_9)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([23, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_10)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([24, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_11)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([25, 2, str(result)]))
+                        response = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_12)
+                        if response.value != None:
+                            result = response.value.MISFIRE_COUNT
+                            wx.PostEvent(self._notify_window, TestEvent([26, 2, str(result)]))
+
                     except:
                         traceback.print_exc()
 
-                    try:
-                        if misfire_cylinder_supported:
-                            r = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_1)
-                            result = r.value.MISFIRE_COUNT
-                            if not result.is_null():
-                                wx.PostEvent(self._notify_window, TestEvent([15, 2, str(result.value)]))
-                            else:
-                                wx.PostEvent(self._notify_window, TestEvent([15, 2, "Misfire count wasn't reported"]))
-                            r = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_2)
-                            result = r.value.MISFIRE_COUNT
-                            if not result.is_null():
-                                wx.PostEvent(self._notify_window, TestEvent([16, 2, str(result.value)]))
-                            else:
-                                wx.PostEvent(self._notify_window, TestEvent([16, 2, "Misfire count wasn't reported"]))
-                            r = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_3)
-                            result = r.value.MISFIRE_COUNT
-                            if not result.is_null():
-                                wx.PostEvent(self._notify_window, TestEvent([17, 2, str(result.value)]))
-                            else:
-                                wx.PostEvent(self._notify_window, TestEvent([17, 2, "Misfire count wasn't reported"]))
-                            r = self.connection.connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_4)
-                            result = r.value.MISFIRE_COUNT
-                            if not result.is_null():
-                                wx.PostEvent(self._notify_window, TestEvent([18, 2, str(result.value)]))
-                            else:
-                                wx.PostEvent(self._notify_window, TestEvent([18, 2, "Misfire count wasn't reported"]))
-                    except:
-                        misfire_cylinder_supported = False
-                        #traceback.print_exc()
-                        pass
 
                     """
                     "MISFIRE_MONITORING",
@@ -1653,6 +1674,14 @@ class MyApp(wx.App):
         self.OBDTests.Append(["MISFIRE CYLINDER 2", "---", "---"])
         self.OBDTests.Append(["MISFIRE CYLINDER 3", "---", "---"])
         self.OBDTests.Append(["MISFIRE CYLINDER 4", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 5", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 6", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 7", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 8", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 9", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 10", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 11", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 12", "---", "---"])
 
 
 
@@ -1880,6 +1909,14 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         self.OBDTests.Append(["MISFIRE CYLINDER 2", "---", "---"])
         self.OBDTests.Append(["MISFIRE CYLINDER 3", "---", "---"])
         self.OBDTests.Append(["MISFIRE CYLINDER 4", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 5", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 6", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 7", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 8", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 9", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 10", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 11", "---", "---"])
+        self.OBDTests.Append(["MISFIRE CYLINDER 12", "---", "---"])
         self.dtc.DeleteAllItems()
 
         self.graph_list_ctrl.DeleteAllItems()
