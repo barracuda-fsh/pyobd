@@ -564,10 +564,13 @@ class MyApp(wx.App):
 
                 elif curstate == 1:  # show tests tab
                     try:
-
+                        s = self.connection.connection.query(obd.commands.RPM)
+                        if s.value == None:
+                            reconnect()
+                            continue
                         r = self.connection.connection.query(obd.commands[1][1])
                         if r.value == None:
-                            reconnect()
+                            # NOT SUPPORTED, so do nothing
                             continue
 
                         if r.value.MISFIRE_MONITORING.available:
