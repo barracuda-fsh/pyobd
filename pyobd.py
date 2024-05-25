@@ -752,7 +752,7 @@ class MyApp(wx.App):
                         first_time_sensors = False
                         for command in obd.commands[1]:
                             if command:
-                                if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102"):
+                                if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
                                     s = self.connection.connection.query(command)
                                     if s.value == None:
                                         continue
@@ -839,7 +839,7 @@ class MyApp(wx.App):
                         first_time_freezeframe = False
                         for command in obd.commands[2]:
                             if command:
-                                if command.command not in (b"0201", b"0251", b"0230"):
+                                if command.command not in (b"0200" , b"0201", b"0220", b"0240", b"0203", b"0202", b"021C", b"0213", b"0241", b"0251"):
                                     s = self.connection.connection.query(command)
                                     if s.value == None:
                                         continue
@@ -888,7 +888,7 @@ class MyApp(wx.App):
                         first_time_graph = False
                         for command in obd.commands[1]:
                             if command:
-                                if command.command not in (b"0100" , b"0101" , b"0102", b"0113" , b"011C", b"0120" , b"0121", b"0140", b"0103"):
+                                if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
                                     s = self.connection.connection.query(command)
                                     if s.value == None:
                                         continue
@@ -979,7 +979,7 @@ class MyApp(wx.App):
                         self.first_time_graph_plot = False
                         #time.sleep(0.2)
 
-                elif curstate == 6:  # show Graph tab
+                elif curstate == 6:  # show Graphs tab
                     if first_time_graphs:
                         print("First time graph")
                         #wx.PostEvent(self._notify_window, DestroyComboBoxEvent([]))
@@ -1009,7 +1009,7 @@ class MyApp(wx.App):
                         first_time_graphs = False
                         for command in obd.commands[1]:
                             if command:
-                                if command.command not in (b"0100" , b"0101" , b"0102", b"0113" , b"011C", b"0120" , b"0121", b"0140", b"0103"):
+                                if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
                                     s = self.connection.connection.query(command)
                                     if s.value == None:
                                         continue
