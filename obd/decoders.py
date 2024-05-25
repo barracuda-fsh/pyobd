@@ -388,9 +388,10 @@ def fuel_type(messages):
     return v
 
 
-def parse_dtc(_bytes):
-    """ converts 2 bytes into a DTC code """
+#def parse_dtc(_bytes):
 
+    """ converts 2 bytes into a DTC code """
+    """
     # check validity (also ignores padding that the ELM returns)
     if (len(_bytes) != 2) or (_bytes == (0, 0)):
         return None
@@ -407,6 +408,39 @@ def parse_dtc(_bytes):
     dtc += bytes_to_hex(_bytes)[1:4]
 
     # pull a description if we have one
+    return (dtc, DTC.get(dtc, ""))
+    """
+
+def hex_to_int(str):
+    i = eval("0x" + str, {}, {})
+    return i
+
+def parse_dtc(code):
+    dtc = []
+    current = code
+    for i in range(0, 3):
+        if len(current) < 4:
+            raise "Tried to decode bad DTC: %s" % code
+
+        tc = hex_to_int(current[0])  # typecode
+        tc = tc >> 2
+        if tc == 0:
+            type = "P"
+        elif tc == 1:
+            type = "C"
+        elif tc == 2:
+            type = "B"
+        elif tc == 3:
+            type = "U"
+        else:
+            raise tc
+
+        dig1 = str(hex_to_int(current[0]) & 3)
+        dig2 = str(hex_to_int(current[1]))
+        dig3 = str(hex_to_int(current[2]))
+        dig4 = str(hex_to_int(current[3]))
+        dtc.append(type + dig1 + dig2 + dig3 + dig4)
+        current = current[4:]
     return (dtc, DTC.get(dtc, ""))
 
 

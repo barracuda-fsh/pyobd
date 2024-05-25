@@ -294,14 +294,14 @@ class ELM327:
         if self.__has_message(r0100, "UNABLE TO CONNECT"):
             logger.error("Failed to query protocol 0100: unable to connect")
             print("Failed to query protocol 0100: unable to connect")
-            return False
+            # return False  -- Try one by one !!
 
         # ------------------- ATDPN (list protocol number) -------------------
         r = self.__send(b"ATDPN")
         if len(r) != 1:
             logger.error("Failed to retrieve current protocol")
             print("Failed to retrieve current protocol")
-            return False
+            # return False  -- Try one by one !!
 
         p = r[0]  # grab the first (and only) line returned
         # suppress any "automatic" prefix
@@ -321,7 +321,10 @@ class ELM327:
             for p in self._TRY_PROTOCOL_ORDER:
                 r = self.__send(b"ATTP" + p.encode())
                 r0100 = self.__send(b"0100")
-                if not self.__has_message(r0100, "UNABLE TO CONNECT"):
+                if not self.__has_message(r0100, "UNABLE TO CONNECT") and \
+                    not self.__has_message(r0100, "NO DATA") and \
+                    not self.__has_message(r0100, "BUS INIT: ...ERROR") and \
+                    not self.__has_message(r0100, "CAN ERROR"):
                     # success, found the protocol
                     print('success, found the protocol')
                     self.__protocol = self._SUPPORTED_PROTOCOLS[p](r0100)
