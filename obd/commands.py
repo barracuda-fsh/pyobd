@@ -164,7 +164,7 @@ for c in __mode1__:
     __mode2__.append(c)
 
 __mode3__ = [
-    OBDCommand("GET_DTC", "Get DTCs", b"03", 0, dtc, ECU.ALL, False),
+    OBDCommand("GET_DTC", "Get DTCs", b"03", 8, dtc, ECU.ALL, False),
 ]
 
 __mode4__ = [
