@@ -427,20 +427,22 @@ def dtc(messages):
     """ converts a frame of 2-byte DTCs into a list of DTCs """
     codes = []
     d = []
-
+    print("len messages == ",len(messages))
     for message in messages:
-        
+        print("len data == ", len(message.data))
         #d += message.data[2:]  # remove the mode and DTC_count bytes
-        d += message.data[1:3]  # remove the mode and DTC_count bytes
-
+        d += message.data[1:5]  # remove the mode and DTC_count bytes
+    print(d)
+    print(len(d))
     # look at data in pairs of bytes
     # looping through ENDING indices to avoid odd (invalid) code lengths
+
     for n in range(1, len(d), 2):
-
         # parse the code
-        dtc = parse_dtc((d[n - 1], d[n]))
+        dtc = parse_dtc([d[n-1],d[n]])
 
-        if dtc is not None:
+        if (dtc is not None) and (dtc[0] != "P0000"):
+            print(dtc)
             codes.append(dtc)
 
     return codes
