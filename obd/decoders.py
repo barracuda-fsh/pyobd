@@ -428,10 +428,16 @@ def dtc(messages):
     codes = []
     d = []
     print("len messages == ",len(messages))
+
     for message in messages:
+
         print("len data == ", len(message.data))
-        #d += message.data[2:]  # remove the mode and DTC_count bytes
-        d += message.data[1:5]  # remove the mode and DTC_count bytes
+        #  # remove the mode and DTC_count bytes
+
+        if message.num_frames == 1:
+            d += message.data[1:]  # remove the mode and DTC_count bytes
+        else:
+            d += message.data[0:]  # remove the mode and DTC_count bytes
     print(d)
     print(len(d))
     # look at data in pairs of bytes
