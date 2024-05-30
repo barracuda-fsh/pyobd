@@ -46,6 +46,7 @@ class CANProtocol(Protocol):
     FRAME_TYPE_SF = 0x00  # single frame
     FRAME_TYPE_FF = 0x10  # first frame of multi-frame message
     FRAME_TYPE_CF = 0x20  # consecutive frame(s) of multi-frame message
+    FRAME_TYPE_FC = 0x30  # Flow control frame
 
     def __init__(self, lines_0100, id_bits):
         # this needs to be set FIRST, since the base
@@ -127,8 +128,10 @@ class CANProtocol(Protocol):
         frame.type = frame.data[0] & 0xF0
         if frame.type not in [self.FRAME_TYPE_SF,
                               self.FRAME_TYPE_FF,
-                              self.FRAME_TYPE_CF]:
+                              self.FRAME_TYPE_CF,
+                              self.FRAME_TYPE_FC]:
             logger.debug("Dropping frame carrying unknown PCI frame type")
+            print("Dropping frame carrying unknown PCI frame type")
             return False
 
         if frame.type == self.FRAME_TYPE_SF:
@@ -157,38 +160,59 @@ class CANProtocol(Protocol):
             #              v
             # 00 00 07 E8 21 04 05 06 07 08 09 0A
             frame.seq_index = frame.data[0] & 0x0F
+        elif frame.type == self.FRAME_TYPE_FC:
+            # Consecutive frames have 4 bit sequence indices
+            #              v
+            # 00 00 07 E8 21 04 05 06 07 08 09 0A
+            frame.seq_index = frame.data[0] & 0x0F
 
         return True
 
     def parse_message(self, message):
 
         frames = message.frames
+        print("How many frames? ", len(frames))
+        message.num_frames = len(frames)
+        if (len(frames) >= 1) and (frames[0].type == self.FRAME_TYPE_SF):
+            if len(frames) == 1:
+                frame = frames[0]
+                print("Frame type: ", frame.type)
+                if frame.type != self.FRAME_TYPE_SF:
+                    logger.debug("Recieved lone frame not marked as single frame")
+                    print("Recieved lone frame not marked as single frame")
+                    return False
 
-        if len(frames) == 1:
-            frame = frames[0]
+                # extract data, ignore PCI byte and anything after the marked length
+                #             [      Frame       ]
+                #                [     Data      ]
+                # 00 00 07 E8 06 41 00 BE 7F B8 13 xx xx xx xx, anything else is ignored
+                message.data = frame.data[1:1 + frame.data_len]
+                #message.data = message.data.rstrip(b'\x00\x00\x00\x00')
 
-            if frame.type != self.FRAME_TYPE_SF:
-                logger.debug("Recieved lone frame not marked as single frame")
-                return False
+            elif len(frames) > 1:
+                print("I AM HERE! DTC multiple frames!")
+                for frame in frames:
+                    print("Frame: " , frame.data)
+                    message.data += frame.data[2:8]
+                #message.data =message.data.rstrip(b'\x00\x00\x00\x00')
+                print ("Message data: ", message.data)
 
-            # extract data, ignore PCI byte and anything after the marked length
-            #             [      Frame       ]
-            #                [     Data      ]
-            # 00 00 07 E8 06 41 00 BE 7F B8 13 xx xx xx xx, anything else is ignored
-            message.data = frame.data[1:1 + frame.data_len]
 
         else:
             # sort FF and CF into their own lists
 
             ff = []
             cf = []
-
+            counter = 0
             for f in frames:
+
+                print("Frame type: ", f.type)
                 if f.type == self.FRAME_TYPE_FF:
                     ff.append(f)
                 elif f.type == self.FRAME_TYPE_CF:
                     cf.append(f)
                 else:
+                    print("Dropping frame in multi-frame response not marked as FF or CF")
                     logger.debug("Dropping frame in multi-frame response not marked as FF or CF")
 
             # check that we captured only one first-frame

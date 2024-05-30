@@ -82,6 +82,7 @@ class Message(object):
     def __init__(self, frames):
         self.frames = frames
         self.ecu = ECU.UNKNOWN
+        self.num_frames = 0
         self.data = bytearray()
 
     @property
