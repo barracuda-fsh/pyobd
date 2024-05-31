@@ -433,10 +433,11 @@ def dtc(messages):
 
         print("len data == ", len(message.data))
         #  # remove the mode and DTC_count bytes
-
-        if message.num_frames == 1:
+        if message.can == False:
+            d += message.data[2:]
+        elif message.can and message.num_frames == 1:
             d += message.data[1:]  # remove the mode and DTC_count bytes
-        else:
+        elif message.can and message.num_frames > 1:
             d += message.data[0:]  # remove the mode and DTC_count bytes
     print(d)
     print(len(d))
