@@ -1611,7 +1611,7 @@ class MyApp(wx.App):
                 self.BAUDRATE = "AUTO"
                 self.FAST = "FAST"
 
-        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.16")
+        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.17")
         ico = wx.Icon(resource_path('pyobd.ico'), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
