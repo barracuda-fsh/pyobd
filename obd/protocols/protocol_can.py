@@ -173,6 +173,7 @@ class CANProtocol(Protocol):
         frames = message.frames
         print("How many frames? ", len(frames))
         message.num_frames = len(frames)
+        message.can = True
         if (len(frames) >= 1) and (frames[0].type == self.FRAME_TYPE_SF):
             if len(frames) == 1:
                 frame = frames[0]
@@ -186,8 +187,9 @@ class CANProtocol(Protocol):
                 #             [      Frame       ]
                 #                [     Data      ]
                 # 00 00 07 E8 06 41 00 BE 7F B8 13 xx xx xx xx, anything else is ignored
+                #message.data = frame.data[1:1 + frame.data_len]
                 message.data = frame.data[1:1 + frame.data_len]
-                #message.data = message.data.rstrip(b'\x00\x00\x00\x00')
+
 
             elif len(frames) > 1:
                 print("I AM HERE! DTC multiple frames!")

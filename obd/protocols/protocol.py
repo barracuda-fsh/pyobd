@@ -84,6 +84,7 @@ class Message(object):
         self.ecu = ECU.UNKNOWN
         self.num_frames = 0
         self.data = bytearray()
+        self.can = False
 
     @property
     def tx_id(self):
