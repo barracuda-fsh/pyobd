@@ -156,7 +156,7 @@ pip3 install --upgrade pip
 pip3 install --upgrade pyinstaller
 pip3 install pip-review
 pip-review --interactive
-pyinstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico;." pyobd.py 
+pyinstaller -w -i pyobd.ico --add-data "pyobd.ico;." -d bootloader pyobd.py
 ```
 
 ### Linux-Executable
