@@ -72,6 +72,7 @@ class LegacyProtocol(Protocol):
         # exclude header and trailing checksum (handled by ELM adapter)
         frame.data = raw_bytes[3:-1]
 
+
         # read header information
         frame.priority = raw_bytes[0]
         frame.rx_id = raw_bytes[1]
