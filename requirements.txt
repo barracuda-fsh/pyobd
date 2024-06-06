@@ -1,5 +1,0 @@
-wxpython
-pyserial
-numpy
-tornado
-pint
