@@ -1,4 +1,6 @@
-.venv/*
-build/*
-dist/*
-__pycache__
+.venv/
+build/
+dist/
+__pycache__/**/
+.idea/
+.vscode/
