@@ -764,7 +764,7 @@ class MyApp(wx.App):
 
                                         #app.sensors.InsertItem(counter, "")
                                         wx.PostEvent(self._notify_window, InsertSensorRowEvent(counter))
-                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(command.command)]))
+                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 0, command.command.decode('utf-8')]))
                                         wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(command.desc)]))
                                         wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(s.value)]))
                                         counter = counter + 1
@@ -783,7 +783,7 @@ class MyApp(wx.App):
                             if s.value == None:
                                 reconnect()
                                 continue
-                            wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(sens[0].command)]))
+                            wx.PostEvent(self._notify_window, ResultEvent([counter, 0, sens[0].command.decode('utf-8')]))
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(sens[1])]))
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(s.value)]))
                             counter = counter + 1
@@ -849,7 +849,7 @@ class MyApp(wx.App):
                                     else:
                                         freezeframe_list.append([command.command, command.desc, str(s.value)])
                                         wx.PostEvent(self._notify_window, InsertFreezeframeRowEvent(counter))
-                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, str(command.command)]))
+                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, command.command.decode('utf-8')]))
                                         wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 1, str(command.desc)]))
                                         wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, str(s.value)]))
                                         counter = counter + 1
@@ -866,7 +866,7 @@ class MyApp(wx.App):
                                     counter = counter + 1
                         counter = 0
                         for sens in freezeframe_list:
-                            wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, str(sens[0])]))
+                            wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, sens[0].decode('utf-8')]))
                             wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 1, str(sens[1])]))
                             wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, str(sens[2])]))
                             counter = counter + 1
