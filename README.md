@@ -1,5 +1,11 @@
-# ![PYOBD](/pyobd.gif) PYOBD 
-This is the remake of the program pyobd, a free and open-source program for car diagnostics. The program was originally made by Donour Sizemore a long time ago, but it wasn't operational for the last 15 years, so I upgraded it from Python 2 to Python 3 and all the new libraries to make it work again. After that, I deleted the fixed commands and used the Python-OBD library, which supports a lot more commands and auto-detects what a cars computer supports, so it displays much more data than before. It works on all platforms - Windows, Linux and MacOS.
+# ![PYOBD](/pyobd.gif) PYOBD
+
+This is the remake of the program pyobd, a free and open-source program for car diagnostics. 
+The program was originally made by Donour Sizemore a long time ago, but it wasn't operational for 
+the last 15 years, so I upgraded it from Python 2 to Python 3 and all the new libraries to make it 
+work again. After that, I deleted the fixed commands and used the Python-OBD library, which supports 
+a lot more commands and auto-detects what a cars computer supports, so it displays much more data 
+than before. It works on all platforms - Windows, Linux and MacOS.
 
 ## Presentation on YouTube
 [![Pyobd presentation video](https://img.youtube.com/vi/iKAnw_N8HbE/0.jpg)](https://www.youtube.com/watch?v=iKAnw_N8HbE)
@@ -13,6 +19,8 @@ This is the remake of the program pyobd, a free and open-source program for car 
       - [Linux](#linux-installation)
       - [MacOS](#macos-installation)
    - [Usage](#usage)
+   - [Development Setup](#development-setup) 
+     - [Steps](#steps)
    - [Running the Script](#running-the-script)
       - [Windows](#windows-script)
       - [Linux](#linux-script)
@@ -52,7 +60,7 @@ This is the list of the ones I tried and worked:<br/>
     * If you really want to go buy a Chinese clone, I recommend one that has a **PIC18F25K80 chip and FTDI chip (for USB)**, but even then, the firmware is also a factor; 1.5 should be best (for a Chinese clone), but who knows what you will get. I.  If you want an affordable Chinese Elm327 that is branded, then go with the Konnwei KW903. It's about $15 with postage included. But iCar Pro is better.<br/>
 
 ## Installation
-You may need to install libsnl when using linux if it didn't come prepacked with it
+You may need to install libsnl when using linux if it didn't come prepacked with it.
 
 ### Windows-Installation
 Download the standalone executable and install the driver for your ELM327 device. 
@@ -91,18 +99,40 @@ The data will display once you are connected, although most of the sensors displ
 The program was made with ease of use in mind. With it you can view TESTS data, SENSORS data, FREEZE FRAME data, display and clear the TROUBLE CODES and view live GRAPHS. Currently it only displays live data - no recording and replay is possible.
 
 **NOTE: The program only displays the engine data, not airbags, ABS and body control systems. Even if your adapter supports that, you will need a more specialized program for that.**
- 
+
+## Development Setup
+This project uses [rye](https://rye.astral.sh/) to manage its dependencies, and requires
+that you have it installed.
+
+### Steps
+- Clone this repository.
+- From the root of the project, run `rye sync`
+- Activate your virtual environment from the `.venv/` folder generated.
+    i.e. `.venv\Scripts\activate` on windows, `source .venv/bin/activate` on Mac and Linux.
+- Run the project with `python pyobd.py`
+
+Note: you can still set up the project for development without using rye as long as you
+don't plan to modify the dependencies of the project by installing the dependencies in
+the `requirements-dev.lock` file. i.e.
+```commandline
+pip install -r requirements-dev.lock
+```
+or if you're using `uv`
+```commandline
+uv pip install -r requirements-dev.lock
+```
+
 ## Running the script
 Install Python3 if not installed already.
 You may need to install libsnl when using linux if it didn't come prepacked with it
 
 ### Windows-Script
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.lock
 ```
 The script is executed by running:
 ```bash
-python3 pyobd.py
+python pyobd.py
 ```
 
 ### Linux-Script
@@ -115,7 +145,7 @@ pip3 install --upgrade pip
 pip3 install pip-review
 sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev libsystemd-dev librsync-dev
 pip-review --interactive
-pip3 install -r requirements.txt
+pip3 install -r requirements.lock
 ```
 **Note: After running the commands below log out and log back in for it to take effect(or restart)**
 ```bash
@@ -133,7 +163,7 @@ python3 pyobd.py
 run:
 **Note: After running the commands below log out and log back in for it to take effect(or restart)**
 ```bash
-pip install -r requirements.txt 
+pip install -r requirements.lock 
 sudo usermod -a -G dialout $USER 
 sudo usermod -a -G tty $USER
 ```
@@ -150,7 +180,7 @@ You may need to install libsnl when using linux if it didn't come prepacked with
 ### Windows-Executable
 run:
 ```bash
-pip3 install -r requirements.txt 
+pip3 install -r requirements.lock 
 pip3 install pyinstaller
 pip3 install --upgrade pip
 pip3 install --upgrade pyinstaller
@@ -173,7 +203,7 @@ pip-review --interactive
 
 run:
 ```bash
-pip3 install -r requirements.txt
+pip3 install -r requirements.lock
 pip3 install pyinstaller
 pyinstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico:." pyobd.py
 ```
@@ -181,7 +211,7 @@ pyinstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico:." pyobd.py
 ### MacOS-Executable
 run:
 ```bash
-pip3 install -r requirements.txt
+pip3 install -r requirements.lock
 pip3 install pyinstaller
 python3 -m PyInstaller --onefile -w -i pyobd.ico --add-data "pyobd.ico:." pyobd.py
 ```

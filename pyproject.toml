@@ -1,0 +1,28 @@
+[project]
+name = "pyobd"
+version = "0.18.0"
+description = "A free and open-source package for vehicle ODB-II diagnostics."
+authors = [
+    { name = "Jure Poljsak", email = "pyobd.jp@gmail.com" },
+    { name = "Charles Donour Sizemore"}
+]
+maintainers = [{name = "Jure Poljsak", email = "pyobd.jp@gmail.com"}]
+license = "GPL-2.0-or-later"
+dependencies = [
+    "wxpython>=4.2.1",
+    "pyserial>=3.5",
+    "numpy>=1.26.4",
+    "tornado>=6.4.1",
+    "pint>=0.23",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+
+[tool.rye]
+managed = true
+virtual = true
+dev-dependencies = [
+    "ruff>=0.4.8",
+    "pyinstaller>=6.7.0",
+]
