@@ -418,8 +418,8 @@ def hex_to_int(str):
 
 def single_dtc(messages):
     """ parses a single DTC from a message """
-    #d = messages[0].data[2:]
-    d = messages[0].data[1:3]
+    d = messages[0].data[2:]
+    #d = messages[0].data[1:3]
     return parse_dtc(d)
 
 
