@@ -7,8 +7,8 @@ dependencies = [
     "pint",
 ]
 name = "pyobd2"
-version = "1.15"
-description = "Open source OBD-II car diagnostics program - reuploaded"
+version = "1.17"
+description = "An OBD-II compliant car diagnostic tool "
 authors = [{ "name" = "Jure Poljsak" }, { "name" = "Charles Donour Sizemore" }]
 readme = "README.md"
 license = { file = "COPYING" }
