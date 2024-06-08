@@ -1,0 +1,19 @@
+[project]
+dependencies = [
+    "wxpython~=4.1.1",
+    "pyserial~=3.5",
+    "numpy~=1.23",
+    "tornado~=3.2.1",
+    "pint",
+]
+name = "pyobd2"
+version = "1.15"
+description = "Open source OBD-II car diagnostics program - reuploaded"
+authors = [{ "name" = "Jure Poljsak" }, { "name" = "Charles Donour Sizemore" }]
+readme = "README.md"
+license = { file = "COPYING" }
+requires-python = ">=3.8"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
