@@ -1,0 +1,29 @@
+site_name: PyOBD
+site_url: https://barracuda-fsh.github.io/pyobd/
+repo_name: barracuda-fsh/pyobd
+repo_url: https://github.com/barracuda-fsh/pyobd
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: "deep orange"
+      accent: "amber orange"
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: "deep orange"
+      accent: "amber orange"
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  favicon: assets/pyobd.ico
+  logo: assets/pyobd.gif
+  icon:
+    repo: fontawesome/brands/github
+
