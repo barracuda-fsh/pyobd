@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-	A serial module for accessing data from a vehicles OBD-II port
+A serial module for accessing data from a vehicles OBD-II port
 
-	For more documentation, visit:
-	http://python-obd.readthedocs.org/en/latest/
+For more documentation, visit:
+http://python-obd.readthedocs.org/en/latest/
 """
 
 ########################################################################
@@ -36,16 +36,16 @@
 # along with python-OBD.  If not, see <http://www.gnu.org/licenses/>.  #
 #                                                                      #
 ########################################################################
-
-from .__version__ import __version__
-from .obd import OBD
-from .asynchronous import Async
-from .commands import commands
-from .obd_command import OBDCommand
-from .obd_response import OBDResponse
-from .protocols import ECU
-from .utils import scan_serial, OBDStatus
-from .units_and_scaling import Unit
+# ruff: noqa: F401 (prevent ruff from removing unused imports)
+from pyobd.obd.__version__ import __version__
+from pyobd.obd.obd import OBD
+from pyobd.obd.asynchronous import Async
+from pyobd.obd.commands import commands
+from pyobd.obd.obd_command import OBDCommand
+from pyobd.obd.obd_response import OBDResponse
+from pyobd.obd.protocols import ECU
+from pyobd.obd.utils import scan_serial, OBDStatus
+from pyobd.obd.units_and_scaling import Unit
 
 import logging
 

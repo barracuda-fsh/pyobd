@@ -32,23 +32,36 @@
 import time
 import math
 import functools
-from .utils import *
-from .codes import *
-from .obd_response import Status, StatusTest, Monitor, MonitorTest
-from .units_and_scaling import Unit, UAS_IDS
+
+from pyobd.obd.codes import (
+    IGNITION_TYPE,
+    BASE_TESTS,
+    COMPRESSION_TESTS,
+    SPARK_TESTS,
+    FUEL_STATUS,
+    AIR_STATUS,
+    OBD_COMPLIANCE,
+    FUEL_TYPES,
+    DTC,
+    TEST_IDS,
+)
+from pyobd.obd.obd_response import Status, StatusTest, Monitor, MonitorTest
+from pyobd.obd.units_and_scaling import Unit, UAS_IDS
 
 import logging
 
+from pyobd.obd.utils import BitArray, bytes_to_int, twos_comp, bytes_to_hex
+
 logger = logging.getLogger(__name__)
 
-'''
+"""
 All decoders take the form:
 
 def <name>(<list_of_messages>):
     ...
     return <value>
 
-'''
+"""
 
 
 # drop all messages, return None
@@ -80,7 +93,7 @@ Unit/Scaling in that table, simply to avoid redundant code.
 
 
 def uas(id_):
-    """ get the corresponding decoder for this UAS ID """
+    """get the corresponding decoder for this UAS ID"""
     return functools.partial(decode_uas, id_=id_)
 
 
@@ -94,10 +107,12 @@ General sensor decoders
 Return pint Quantities
 """
 
+
 def count(messages):
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     return v * Unit.count
+
 
 # 0 to 100 %
 def percent(messages):
@@ -262,7 +277,7 @@ def elm_voltage(messages):
     v = messages[0].frames[0].raw
     # Some ELMs provide float V (for example messages[0].frames[0].raw => u'12.3V'
     v = v.lower()
-    v = v.replace('v', '')
+    v = v.replace("v", "")
 
     try:
         return float(v) * Unit.volt
@@ -271,10 +286,10 @@ def elm_voltage(messages):
         return None
 
 
-'''
+"""
 Special decoders
 Return objects, lists, etc
-'''
+"""
 
 
 def status(messages):
@@ -304,15 +319,17 @@ def status(messages):
 
     # different tests for different ignition types
     if bits[12]:  # compression
-        for i, name in enumerate(COMPRESSION_TESTS[::-1]):  # reverse to correct for bit vs. indexing order
-            t = StatusTest(name, bits[(2 * 8) + i],
-                           not bits[(3 * 8) + i])
+        for i, name in enumerate(
+            COMPRESSION_TESTS[::-1]
+        ):  # reverse to correct for bit vs. indexing order
+            t = StatusTest(name, bits[(2 * 8) + i], not bits[(3 * 8) + i])
             output.__dict__[name] = t
 
     else:  # spark
-        for i, name in enumerate(SPARK_TESTS[::-1]):  # reverse to correct for bit vs. indexing order
-            t = StatusTest(name, bits[(2 * 8) + i],
-                           not bits[(3 * 8) + i])
+        for i, name in enumerate(
+            SPARK_TESTS[::-1]
+        ):  # reverse to correct for bit vs. indexing order
+            t = StatusTest(name, bits[(2 * 8) + i], not bits[(3 * 8) + i])
             output.__dict__[name] = t
 
     return output
@@ -389,8 +406,7 @@ def fuel_type(messages):
 
 
 def parse_dtc(_bytes):
-
-    """ converts 2 bytes into a DTC code """
+    """converts 2 bytes into a DTC code"""
 
     # check validity (also ignores padding that the ELM returns)
     if (len(_bytes) != 2) or (_bytes == (0, 0)):
@@ -403,8 +419,10 @@ def parse_dtc(_bytes):
     #         | / /
     # DTC:    C0123
 
-    dtc = ['P', 'C', 'B', 'U'][_bytes[0] >> 6]  # the last 2 bits of the first byte
-    dtc += str((_bytes[0] >> 4) & 0b0011)  # the next pair of 2 bits. Mask off the bits we read above
+    dtc = ["P", "C", "B", "U"][_bytes[0] >> 6]  # the last 2 bits of the first byte
+    dtc += str(
+        (_bytes[0] >> 4) & 0b0011
+    )  # the next pair of 2 bits. Mask off the bits we read above
     dtc += bytes_to_hex(_bytes)[1:4]
 
     # pull a description if we have one
@@ -417,20 +435,19 @@ def hex_to_int(str):
 
 
 def single_dtc(messages):
-    """ parses a single DTC from a message """
+    """parses a single DTC from a message"""
     d = messages[0].data[2:]
-    #d = messages[0].data[1:3]
+    # d = messages[0].data[1:3]
     return parse_dtc(d)
 
 
 def dtc(messages):
-    """ converts a frame of 2-byte DTCs into a list of DTCs """
+    """converts a frame of 2-byte DTCs into a list of DTCs"""
     codes = []
     d = []
-    print("len messages == ",len(messages))
+    print("len messages == ", len(messages))
 
     for message in messages:
-
         print("len data == ", len(message.data))
         #  # remove the mode and DTC_count bytes
         if message.can == False:
@@ -446,7 +463,7 @@ def dtc(messages):
 
     for n in range(1, len(d), 2):
         # parse the code
-        dtc = parse_dtc([d[n-1],d[n]])
+        dtc = parse_dtc([d[n - 1], d[n]])
 
         if (dtc is not None) and (dtc[0] != "P0000"):
             print(dtc)
@@ -496,13 +513,15 @@ def monitor(messages):
     extra_bytes = len(d) % 9
 
     if extra_bytes != 0:
-        logger.debug("Encountered monitor message with non-multiple of 9 bytes. Truncating...")
-        d = d[:len(d) - extra_bytes]
+        logger.debug(
+            "Encountered monitor message with non-multiple of 9 bytes. Truncating..."
+        )
+        d = d[: len(d) - extra_bytes]
 
     # look at data in blocks of 9 bytes (one test result)
     for n in range(0, len(d), 9):
         # extract the 9 byte block, and parse a new MonitorTest
-        test = parse_monitor_test(d[n:n + 9], mon)
+        test = parse_monitor_test(d[n : n + 9], mon)
         if test is not None:
             mon.add_test(test)
 
@@ -510,7 +529,7 @@ def monitor(messages):
 
 
 def encoded_string(length):
-    """ Extract an encoded string from multi-part messages """
+    """Extract an encoded string from multi-part messages"""
     return functools.partial(decode_encoded_string, length=length)
 
 
@@ -524,7 +543,7 @@ def decode_encoded_string(messages, length):
     # Encoded strings come in bundles of messages with leading null values to
     # pad out the string to the next full message size. We strip off the
     # leading null characters here and return the resulting string.
-    return d.strip().strip(b'\x00' b'\x01' b'\x02' b'\\x00' b'\\x01' b'\\x02')
+    return d.strip().strip(b"\x00" b"\x01" b"\x02" b"\\x00" b"\\x01" b"\\x02")
 
 
 def cvn(messages):
