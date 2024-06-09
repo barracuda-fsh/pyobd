@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# OBDResponse.py                                                       #
+# obd_response.py                                                       #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #
@@ -57,7 +57,7 @@ class OBDResponse:
     @property
     def unit(self):
         # for backwards compatibility
-        from obd import Unit  # local import to avoid cyclic-dependency
+        from pyobd.obd import Unit  # local import to avoid cyclic-dependency
         if isinstance(self.value, Unit.Quantity):
             return str(self.value.u)
         elif self.value is None:

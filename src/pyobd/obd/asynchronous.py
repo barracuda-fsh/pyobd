@@ -33,7 +33,7 @@
 import time
 import threading
 import logging
-from .OBDResponse import OBDResponse
+from .obd_response import OBDResponse
 from .obd import OBD
 
 logger = logging.getLogger(__name__)

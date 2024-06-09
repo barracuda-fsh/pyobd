@@ -33,7 +33,7 @@
 import logging
 from binascii import hexlify
 
-from obd.utils import isHex, BitArray
+from pyobd.obd.utils import isHex, BitArray
 
 logger = logging.getLogger(__name__)
 

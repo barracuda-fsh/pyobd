@@ -44,13 +44,12 @@ from wx.lib import plot as wxplot
 #import numpy.oldnumeric as _Numeric
 
 #from wxplot import PlotCanvas, PlotGraphics, PolyLine, PolyMarker, PolySpline
-import gc
 #from pympler.tracker import SummaryTracker
 #tracker = SummaryTracker()
 import traceback
 import wx
 #import pdb
-import obd_io  # OBD2 funcs
+from pyobd import obd_io  # OBD2 funcs
 import os  # os.environ
 #import decimal
 #import glob
@@ -65,15 +64,15 @@ import webbrowser  # open browser from python
 #from multiprocessing import Process
 #from multiprocessing import Queue
 
-from obd2_codes import pcodes
+from pyobd.obd2_codes import pcodes
 #from obd2_codes import ptest
 
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
-import obd
+from pyobd import obd
 #from obd import OBDStatus
 
-from obd.utils import OBDStatus
-
+from pyobd.obd import OBDStatus
+from pathlib import Path
 
 
 
@@ -113,15 +112,17 @@ EVT_FREEZEFRAME_RESULT_ID = 1043
 
 lock = threading.Lock()
 
-def resource_path(relative_path):
+
+# icon_path = Path(__file__).resolve().parent / 'assets/pyobd.ico'
+def resource_path(relative_path: str | Path) -> Path:
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
+        base_path = Path(sys._MEIPASS).resolve()
+    except AttributeError:
+        base_path = Path(__file__).resolve().parent
 
-    return os.path.join(base_path, relative_path)
+    return base_path / relative_path
 
 TESTS = ["MISFIRE_MONITORING",
     "FUEL_SYSTEM_MONITORING",
@@ -351,7 +352,7 @@ class TestEvent(wx.PyEvent):
 
 
 # defines notification event for debug tracewindow
-from debugEvent import *
+from pyobd.debug_event import *
 
 
 class MyApp(wx.App):
@@ -382,7 +383,7 @@ class MyApp(wx.App):
             except:
                 pass
             wx.PostEvent(self._notify_window, StatusEvent([0, 1, "Connecting...."]))
-            self.connection = obd_io.OBDConnection(self.portName, self._notify_window, self.baudrate, self.SERTIMEOUT,self.RECONNATTEMPTS, self.FAST)
+            self.connection = obd_io.OBDConnection(self.portName, self._notify_window, self.baudrate, self.SERTIMEOUT, self.RECONNATTEMPTS, self.FAST)
             if self.connection.connection.status() != 'Car Connected':  # Cant open serial port
                 print(self.connection.connection.status())
                 #wx.PostEvent(self._notify_window, StatusEvent([666]))  # signal apl, that communication was disconnected
@@ -1612,7 +1613,7 @@ class MyApp(wx.App):
                 self.FAST = "FAST"
 
         self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.17")
-        ico = wx.Icon(resource_path('pyobd.ico'), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(str(resource_path('assets/pyobd.ico')), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
         EVT_RESULT(self, self.OnResult, EVT_RESULT_ID)
@@ -2103,7 +2104,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def CodeLookup(self, e=None):
         id = 0
         diag = wx.Frame(None, id, title="Diagnostic Trouble Codes")
-        ico = wx.Icon(resource_path('pyobd.ico'), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(str(resource_path('assets/pyobd.ico')), wx.BITMAP_TYPE_ICO)
         diag.SetIcon(ico)
         tree = wx.TreeCtrl(diag, id, style=wx.TR_HAS_BUTTONS)
 
