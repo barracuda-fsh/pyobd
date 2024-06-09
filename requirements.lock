@@ -8,14 +8,20 @@
 #   with-sources: false
 #   generate-hashes: false
 
+-e file:.
 numpy==1.26.4
+    # via pyobd
 pillow==10.3.0
     # via wxpython
 pint==0.23
+    # via pyobd
 pyserial==3.5
+    # via pyobd
 six==1.16.0
     # via wxpython
 tornado==6.4.1
+    # via pyobd
 typing-extensions==4.12.1
     # via pint
 wxpython==4.2.1
+    # via pyobd

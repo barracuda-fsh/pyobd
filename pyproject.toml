@@ -18,12 +18,23 @@ dependencies = [
 readme = "README.md"
 requires-python = ">= 3.8"
 
+[project.scripts]
+pyobd = 'pyobd:pyobd'
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-virtual = true
 dev-dependencies = [
     "ruff>=0.4.8",
     "pyinstaller>=6.7.0",
     "mkdocs-material>=9.5.26",
 ]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pyobd"]
