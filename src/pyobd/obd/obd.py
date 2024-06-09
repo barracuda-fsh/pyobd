@@ -33,7 +33,7 @@
 
 import logging
 
-from .OBDResponse import OBDResponse
+from .obd_response import OBDResponse
 from .__version__ import __version__
 from .commands import commands
 from .elm327 import ELM327

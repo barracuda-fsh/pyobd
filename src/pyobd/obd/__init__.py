@@ -41,11 +41,11 @@ from .__version__ import __version__
 from .obd import OBD
 from .asynchronous import Async
 from .commands import commands
-from .OBDCommand import OBDCommand
-from .OBDResponse import OBDResponse
+from .obd_command import OBDCommand
+from .obd_response import OBDResponse
 from .protocols import ECU
 from .utils import scan_serial, OBDStatus
-from .UnitsAndScaling import Unit
+from .units_and_scaling import Unit
 
 import logging
 

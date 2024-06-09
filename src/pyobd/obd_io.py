@@ -23,21 +23,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###########################################################################
 
-from pdb import set_trace as bp
-import serial
 import string
 import time
-from math import ceil
-import wx #due to debugEvent messaging
 
-import re
-
-import obd_sensors
-
-from obd_sensors import hex_to_int
-
-import obd
-import decimal
+from pyobd import obd
 
 
 def truncate(num, n):
@@ -47,8 +36,7 @@ def truncate(num, n):
 GET_DTC_COMMAND   = "03"
 CLEAR_DTC_COMMAND = "04"
 GET_FREEZE_DTC_COMMAND = "07"
-import traceback
-from debugEvent import *
+from pyobd.debug_event import *
 import logging
 logger = logging.getLogger(__name__)
 
@@ -74,7 +62,7 @@ class OBDConnection:
                 self.connection.close()
             except:
                 pass
-            self.connection = obd.OBD(portstr=portnum, baudrate=baud, protocol=None, fast=FAST, timeout=truncate(float(SERTIMEOUT),1), check_voltage=False, start_low_power=False)
+            self.connection = obd.OBD(portstr=portnum, baudrate=baud, protocol=None, fast=FAST, timeout=truncate(float(SERTIMEOUT), 1), check_voltage=False, start_low_power=False)
             if self.connection.status() == "Car Connected":
                 wx.PostEvent(self._notify_window, DebugEvent([2, "Connected to: "+ str(self.connection.port_name())]))
                 break

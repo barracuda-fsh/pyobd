@@ -11,7 +11,7 @@
 #                                                                      #
 ########################################################################
 #                                                                      #
-# UnitsAndScaling.py                                                   #
+# units_and_scaling.py                                                   #
 #                                                                      #
 # This file is part of python-OBD (a derivative of pyOBD)              #
 #                                                                      #

@@ -34,8 +34,8 @@ import math
 import functools
 from .utils import *
 from .codes import *
-from .OBDResponse import Status, StatusTest, Monitor, MonitorTest
-from .UnitsAndScaling import Unit, UAS_IDS
+from .obd_response import Status, StatusTest, Monitor, MonitorTest
+from .units_and_scaling import Unit, UAS_IDS
 
 import logging
 
