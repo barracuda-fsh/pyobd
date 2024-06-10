@@ -34,19 +34,18 @@
 import logging
 import sys
 import time
-
-from .codes import *
+from pyobd.obd.codes import TEST_IDS, BASE_TESTS, SPARK_TESTS, COMPRESSION_TESTS
 
 logger = logging.getLogger(__name__)
 
-if sys.version[0] < '3':
+if sys.version[0] < "3":
     string_types = (str, unicode)
 else:
     string_types = (str,)
 
 
 class OBDResponse:
-    """ Standard response object for any OBDCommand """
+    """Standard response object for any OBDCommand"""
 
     def __init__(self, command=None, messages=None):
         self.command = command
@@ -58,6 +57,7 @@ class OBDResponse:
     def unit(self):
         # for backwards compatibility
         from pyobd.obd import Unit  # local import to avoid cyclic-dependency
+
         if isinstance(self.value, Unit.Quantity):
             return str(self.value.u)
         elif self.value is None:
@@ -93,7 +93,7 @@ class Status:
                 self.__dict__[name] = null_test
 
 
-class StatusTest():
+class StatusTest:
     def __init__(self, name="", available=False, complete=False):
         self.name = name
         self.available = available
@@ -143,7 +143,9 @@ class Monitor:
         elif isinstance(key, string_types):
             return self.__dict__.get(key, MonitorTest())
         else:
-            logger.warning("Monitor test results can only be retrieved by TID value or property name")
+            logger.warning(
+                "Monitor test results can only be retrieved by TID value or property name"
+            )
 
 
 class MonitorTest:
@@ -163,12 +165,16 @@ class MonitorTest:
             return False
 
     def is_null(self):
-        return (self.tid is None or
-                self.value is None or
-                self.min is None or
-                self.max is None)
+        return (
+            self.tid is None
+            or self.value is None
+            or self.min is None
+            or self.max is None
+        )
 
     def __str__(self):
-        return "%s : %s [%s]" % (self.desc,
-                                 str(self.value),
-                                 "PASSED" if self.passed else "FAILED")
+        return "%s : %s [%s]" % (
+            self.desc,
+            str(self.value),
+            "PASSED" if self.passed else "FAILED",
+        )
