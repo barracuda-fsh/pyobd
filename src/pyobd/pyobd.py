@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ############################################################################
 #
 # wxgui.py
@@ -2182,7 +2183,7 @@ class MyApp(wx.App):
                 self.BAUDRATE = "AUTO"
                 self.FAST = "FAST"
 
-        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.17")
+        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.17-2")
         ico = wx.Icon(str(resource_path("assets/pyobd.ico")), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
@@ -2754,7 +2755,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def CodeLookup(self, e=None):
         id = 0
         diag = wx.Frame(None, id, title="Diagnostic Trouble Codes")
-        ico = wx.Icon(str(resource_path("assets/pyobd.ico")), wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon(resource_path("pyobd.ico"), wx.BITMAP_TYPE_ICO)
         diag.SetIcon(ico)
         tree = wx.TreeCtrl(diag, id, style=wx.TR_HAS_BUTTONS)
 
