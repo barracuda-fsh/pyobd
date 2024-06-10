@@ -30,7 +30,7 @@
 #                                                                      #
 ########################################################################
 # ruff: noqa: F401 (prevent ruff from removing unused imports)
-from pyobd.obd.protocols.protocol import ECU, ECU_HEADER
+from pyobd.obd.protocols.protocol import ECUFlag, EcuHeader
 
 from pyobd.obd.protocols.protocol_unknown import UnknownProtocol
 

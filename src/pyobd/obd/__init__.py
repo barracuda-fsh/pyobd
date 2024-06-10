@@ -39,11 +39,11 @@ http://python-obd.readthedocs.org/en/latest/
 # ruff: noqa: F401 (prevent ruff from removing unused imports)
 from pyobd.obd.__version__ import __version__
 from pyobd.obd.obd import OBD
-from pyobd.obd.asynchronous import Async
+from pyobd.obd.async_obd import AsyncOBD
 from pyobd.obd.commands import commands
 from pyobd.obd.obd_command import OBDCommand
 from pyobd.obd.obd_response import OBDResponse
-from pyobd.obd.protocols import ECU
+from pyobd.obd.protocols import ECUFlag
 from pyobd.obd.utils import scan_serial, OBDStatus
 from pyobd.obd.units_and_scaling import Unit
 

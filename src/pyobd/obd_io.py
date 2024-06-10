@@ -68,7 +68,7 @@ class OBDConnection:
             except:
                 pass
             self.connection = obd.OBD(
-                portstr=portnum,
+                port=portnum,
                 baudrate=baud,
                 protocol=None,
                 fast=FAST,

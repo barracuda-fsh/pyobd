@@ -31,11 +31,11 @@
 ########################################################################
 
 import pint
-
+from pint import UnitRegistry
 from pyobd.obd.utils import bytes_to_int, twos_comp
 
 # export the unit registry
-Unit = pint.UnitRegistry()
+Unit = UnitRegistry()
 # Unit.define("percent = [] = %")
 Unit.define("percent = 1e-2 ratio = %")
 Unit.define("ratio = []")

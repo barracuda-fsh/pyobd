@@ -70,7 +70,7 @@ from pyobd.obd.decoders import (
     raw_string,
     elm_voltage,
 )
-from pyobd.obd.protocols import ECU
+from pyobd.obd.protocols import ECUFlag
 
 logger = logging.getLogger(__name__)
 
@@ -86,9 +86,11 @@ Define command tables
 
 __mode1__ = [
     #                      name                             description                    cmd  bytes       decoder           ECU       fast
-    OBDCommand("PIDS_A", "Supported PIDs [01-20]", b"0100", 6, pid, ECU.ENGINE, True),
     OBDCommand(
-        "STATUS", "Status since DTCs cleared", b"0101", 6, status, ECU.ENGINE, True
+        "PIDS_A", "Supported PIDs [01-20]", b"0100", 6, pid, ECUFlag.ENGINE, True
+    ),
+    OBDCommand(
+        "STATUS", "Status since DTCs cleared", b"0101", 6, status, ECUFlag.ENGINE, True
     ),
     OBDCommand(
         "FREEZE_DTC",
@@ -96,17 +98,35 @@ __mode1__ = [
         b"0102",
         4,
         single_dtc,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
-        "FUEL_STATUS", "Fuel System Status", b"0103", 4, fuel_status, ECU.ENGINE, True
+        "FUEL_STATUS",
+        "Fuel System Status",
+        b"0103",
+        4,
+        fuel_status,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
-        "ENGINE_LOAD", "Calculated Engine Load", b"0104", 3, percent, ECU.ENGINE, True
+        "ENGINE_LOAD",
+        "Calculated Engine Load",
+        b"0104",
+        3,
+        percent,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
-        "COOLANT_TEMP", "Engine Coolant Temperature", b"0105", 3, temp, ECU.ENGINE, True
+        "COOLANT_TEMP",
+        "Engine Coolant Temperature",
+        b"0105",
+        3,
+        temp,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
         "SHORT_FUEL_TRIM_1",
@@ -114,7 +134,7 @@ __mode1__ = [
         b"0106",
         3,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -123,7 +143,7 @@ __mode1__ = [
         b"0107",
         3,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -132,7 +152,7 @@ __mode1__ = [
         b"0108",
         3,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -141,11 +161,17 @@ __mode1__ = [
         b"0109",
         3,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
-        "FUEL_PRESSURE", "Fuel Pressure", b"010A", 3, fuel_pressure, ECU.ENGINE, True
+        "FUEL_PRESSURE",
+        "Fuel Pressure",
+        b"010A",
+        3,
+        fuel_pressure,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
         "INTAKE_PRESSURE",
@@ -153,24 +179,40 @@ __mode1__ = [
         b"010B",
         3,
         pressure,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
-    OBDCommand("RPM", "Engine RPM", b"010C", 4, uas(0x07), ECU.ENGINE, True),
-    OBDCommand("SPEED", "Vehicle Speed", b"010D", 3, uas(0x09), ECU.ENGINE, True),
+    OBDCommand("RPM", "Engine RPM", b"010C", 4, uas(0x07), ECUFlag.ENGINE, True),
+    OBDCommand("SPEED", "Vehicle Speed", b"010D", 3, uas(0x09), ECUFlag.ENGINE, True),
     OBDCommand(
-        "TIMING_ADVANCE", "Timing Advance", b"010E", 3, timing_advance, ECU.ENGINE, True
-    ),
-    OBDCommand("INTAKE_TEMP", "Intake Air Temp", b"010F", 3, temp, ECU.ENGINE, True),
-    OBDCommand("MAF", "Air Flow Rate (MAF)", b"0110", 4, uas(0x27), ECU.ENGINE, True),
-    OBDCommand(
-        "THROTTLE_POS", "Throttle Position", b"0111", 3, percent, ECU.ENGINE, True
-    ),
-    OBDCommand(
-        "AIR_STATUS", "Secondary Air Status", b"0112", 3, air_status, ECU.ENGINE, True
+        "TIMING_ADVANCE",
+        "Timing Advance",
+        b"010E",
+        3,
+        timing_advance,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
-        "O2_SENSORS", "O2 Sensors Present", b"0113", 3, o2_sensors, ECU.ENGINE, True
+        "INTAKE_TEMP", "Intake Air Temp", b"010F", 3, temp, ECUFlag.ENGINE, True
+    ),
+    OBDCommand(
+        "MAF", "Air Flow Rate (MAF)", b"0110", 4, uas(0x27), ECUFlag.ENGINE, True
+    ),
+    OBDCommand(
+        "THROTTLE_POS", "Throttle Position", b"0111", 3, percent, ECUFlag.ENGINE, True
+    ),
+    OBDCommand(
+        "AIR_STATUS",
+        "Secondary Air Status",
+        b"0112",
+        3,
+        air_status,
+        ECUFlag.ENGINE,
+        True,
+    ),
+    OBDCommand(
+        "O2_SENSORS", "O2 Sensors Present", b"0113", 3, o2_sensors, ECUFlag.ENGINE, True
     ),
     OBDCommand(
         "O2_B1S1",
@@ -178,7 +220,7 @@ __mode1__ = [
         b"0114",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -187,7 +229,7 @@ __mode1__ = [
         b"0115",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -196,7 +238,7 @@ __mode1__ = [
         b"0116",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -205,7 +247,7 @@ __mode1__ = [
         b"0117",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -214,7 +256,7 @@ __mode1__ = [
         b"0118",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -223,7 +265,7 @@ __mode1__ = [
         b"0119",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -232,7 +274,7 @@ __mode1__ = [
         b"011A",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -241,7 +283,7 @@ __mode1__ = [
         b"011B",
         4,
         sensor_voltage,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -250,7 +292,7 @@ __mode1__ = [
         b"011C",
         3,
         obd_compliance,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -259,7 +301,7 @@ __mode1__ = [
         b"011D",
         3,
         o2_sensors_alt,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -268,19 +310,23 @@ __mode1__ = [
         b"011E",
         3,
         aux_input_status,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
-    OBDCommand("RUN_TIME", "Engine Run Time", b"011F", 4, uas(0x12), ECU.ENGINE, True),
+    OBDCommand(
+        "RUN_TIME", "Engine Run Time", b"011F", 4, uas(0x12), ECUFlag.ENGINE, True
+    ),
     #                      name                             description                    cmd  bytes       decoder           ECU       fast
-    OBDCommand("PIDS_B", "Supported PIDs [21-40]", b"0120", 6, pid, ECU.ENGINE, True),
+    OBDCommand(
+        "PIDS_B", "Supported PIDs [21-40]", b"0120", 6, pid, ECUFlag.ENGINE, True
+    ),
     OBDCommand(
         "DISTANCE_W_MIL",
         "Distance Traveled with MIL on",
         b"0121",
         4,
         uas(0x25),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -289,7 +335,7 @@ __mode1__ = [
         b"0122",
         4,
         uas(0x19),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -298,7 +344,7 @@ __mode1__ = [
         b"0123",
         4,
         uas(0x1B),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -307,7 +353,7 @@ __mode1__ = [
         b"0124",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -316,7 +362,7 @@ __mode1__ = [
         b"0125",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -325,7 +371,7 @@ __mode1__ = [
         b"0126",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -334,7 +380,7 @@ __mode1__ = [
         b"0127",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -343,7 +389,7 @@ __mode1__ = [
         b"0128",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -352,7 +398,7 @@ __mode1__ = [
         b"0129",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -361,7 +407,7 @@ __mode1__ = [
         b"012A",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -370,12 +416,14 @@ __mode1__ = [
         b"012B",
         6,
         sensor_voltage_big,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
-    OBDCommand("COMMANDED_EGR", "Commanded EGR", b"012C", 3, percent, ECU.ENGINE, True),
     OBDCommand(
-        "EGR_ERROR", "EGR Error", b"012D", 3, percent_centered, ECU.ENGINE, True
+        "COMMANDED_EGR", "Commanded EGR", b"012C", 3, percent, ECUFlag.ENGINE, True
+    ),
+    OBDCommand(
+        "EGR_ERROR", "EGR Error", b"012D", 3, percent_centered, ECUFlag.ENGINE, True
     ),
     OBDCommand(
         "EVAPORATIVE_PURGE",
@@ -383,17 +431,19 @@ __mode1__ = [
         b"012E",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
-    OBDCommand("FUEL_LEVEL", "Fuel Level Input", b"012F", 3, percent, ECU.ENGINE, True),
+    OBDCommand(
+        "FUEL_LEVEL", "Fuel Level Input", b"012F", 3, percent, ECUFlag.ENGINE, True
+    ),
     OBDCommand(
         "WARMUPS_SINCE_DTC_CLEAR",
         "Number of warm-ups since codes cleared",
         b"0130",
         3,
         uas(0x01),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -402,7 +452,7 @@ __mode1__ = [
         b"0131",
         4,
         uas(0x25),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -411,7 +461,7 @@ __mode1__ = [
         b"0132",
         4,
         evap_pressure,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -420,7 +470,7 @@ __mode1__ = [
         b"0133",
         3,
         pressure,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -429,7 +479,7 @@ __mode1__ = [
         b"0134",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -438,7 +488,7 @@ __mode1__ = [
         b"0135",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -447,7 +497,7 @@ __mode1__ = [
         b"0136",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -456,7 +506,7 @@ __mode1__ = [
         b"0137",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -465,7 +515,7 @@ __mode1__ = [
         b"0138",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -474,7 +524,7 @@ __mode1__ = [
         b"0139",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -483,7 +533,7 @@ __mode1__ = [
         b"013A",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -492,7 +542,7 @@ __mode1__ = [
         b"013B",
         6,
         current_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -501,7 +551,7 @@ __mode1__ = [
         b"013C",
         4,
         uas(0x16),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -510,7 +560,7 @@ __mode1__ = [
         b"013D",
         4,
         uas(0x16),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -519,7 +569,7 @@ __mode1__ = [
         b"013E",
         4,
         uas(0x16),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -528,18 +578,20 @@ __mode1__ = [
         b"013F",
         4,
         uas(0x16),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     #                      name                             description                    cmd  bytes       decoder           ECU       fast
-    OBDCommand("PIDS_C", "Supported PIDs [41-60]", b"0140", 6, pid, ECU.ENGINE, True),
+    OBDCommand(
+        "PIDS_C", "Supported PIDs [41-60]", b"0140", 6, pid, ECUFlag.ENGINE, True
+    ),
     OBDCommand(
         "STATUS_DRIVE_CYCLE",
         "Monitor status this drive cycle",
         b"0141",
         6,
         status,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -548,7 +600,7 @@ __mode1__ = [
         b"0142",
         4,
         uas(0x0B),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -557,7 +609,7 @@ __mode1__ = [
         b"0143",
         4,
         absolute_load,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -566,7 +618,7 @@ __mode1__ = [
         b"0144",
         4,
         uas(0x1E),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -575,7 +627,7 @@ __mode1__ = [
         b"0145",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -584,7 +636,7 @@ __mode1__ = [
         b"0146",
         3,
         temp,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -593,7 +645,7 @@ __mode1__ = [
         b"0147",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -602,7 +654,7 @@ __mode1__ = [
         b"0148",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -611,7 +663,7 @@ __mode1__ = [
         b"0149",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -620,7 +672,7 @@ __mode1__ = [
         b"014A",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -629,7 +681,7 @@ __mode1__ = [
         b"014B",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -638,11 +690,17 @@ __mode1__ = [
         b"014C",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
-        "RUN_TIME_MIL", "Time run with MIL on", b"014D", 4, uas(0x34), ECU.ENGINE, True
+        "RUN_TIME_MIL",
+        "Time run with MIL on",
+        b"014D",
+        4,
+        uas(0x34),
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
         "TIME_SINCE_DTC_CLEARED",
@@ -650,11 +708,11 @@ __mode1__ = [
         b"014E",
         4,
         uas(0x34),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
-        "MAX_VALUES", "Various Max values", b"014F", 6, drop, ECU.ENGINE, True
+        "MAX_VALUES", "Various Max values", b"014F", 6, drop, ECUFlag.ENGINE, True
     ),  # todo: decode this
     OBDCommand(
         "MAX_MAF",
@@ -662,12 +720,18 @@ __mode1__ = [
         b"0150",
         6,
         max_maf,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
-    OBDCommand("FUEL_TYPE", "Fuel Type", b"0151", 3, fuel_type, ECU.ENGINE, True),
+    OBDCommand("FUEL_TYPE", "Fuel Type", b"0151", 3, fuel_type, ECUFlag.ENGINE, True),
     OBDCommand(
-        "ETHANOL_PERCENT", "Ethanol Fuel Percent", b"0152", 3, percent, ECU.ENGINE, True
+        "ETHANOL_PERCENT",
+        "Ethanol Fuel Percent",
+        b"0152",
+        3,
+        percent,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
         "EVAP_VAPOR_PRESSURE_ABS",
@@ -675,7 +739,7 @@ __mode1__ = [
         b"0153",
         4,
         abs_evap_pressure,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -684,7 +748,7 @@ __mode1__ = [
         b"0154",
         4,
         evap_pressure_alt,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -693,7 +757,7 @@ __mode1__ = [
         b"0155",
         4,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),  # todo: decode seconds value for banks 3 and 4
     OBDCommand(
@@ -702,7 +766,7 @@ __mode1__ = [
         b"0156",
         4,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -711,7 +775,7 @@ __mode1__ = [
         b"0157",
         4,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -720,7 +784,7 @@ __mode1__ = [
         b"0158",
         4,
         percent_centered,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -729,7 +793,7 @@ __mode1__ = [
         b"0159",
         4,
         uas(0x1B),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -738,7 +802,7 @@ __mode1__ = [
         b"015A",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -747,11 +811,11 @@ __mode1__ = [
         b"015B",
         3,
         percent,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
-        "OIL_TEMP", "Engine oil temperature", b"015C", 3, temp, ECU.ENGINE, True
+        "OIL_TEMP", "Engine oil temperature", b"015C", 3, temp, ECUFlag.ENGINE, True
     ),
     OBDCommand(
         "FUEL_INJECT_TIMING",
@@ -759,11 +823,11 @@ __mode1__ = [
         b"015D",
         4,
         inject_timing,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
-        "FUEL_RATE", "Engine fuel rate", b"015E", 4, fuel_rate, ECU.ENGINE, True
+        "FUEL_RATE", "Engine fuel rate", b"015E", 4, fuel_rate, ECUFlag.ENGINE, True
     ),
     OBDCommand(
         "EMISSION_REQ",
@@ -771,7 +835,7 @@ __mode1__ = [
         b"015F",
         3,
         drop,
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
 ]
@@ -788,12 +852,12 @@ for c in __mode1__:
     __mode2__.append(c)
 
 __mode3__ = [
-    OBDCommand("GET_DTC", "Get DTCs", b"03", 100, dtc, ECU.ALL, False),
+    OBDCommand("GET_DTC", "Get DTCs", b"03", 100, dtc, ECUFlag.ALL, False),
 ]
 
 __mode4__ = [
     OBDCommand(
-        "CLEAR_DTC", "Clear DTCs and Freeze data", b"04", 0, drop, ECU.ALL, False
+        "CLEAR_DTC", "Clear DTCs and Freeze data", b"04", 0, drop, ECUFlag.ALL, False
     ),
 ]
 
@@ -802,14 +866,16 @@ __mode6__ = (
         # Mode 06 calls PID's MID's (Monitor ID)
         # This is for CAN only
         #                      name                             description                            cmd     bytes       decoder           ECU        fast
-        OBDCommand("MIDS_A", "Supported MIDs [01-20]", b"0600", 0, pid, ECU.ALL, False),
+        OBDCommand(
+            "MIDS_A", "Supported MIDs [01-20]", b"0600", 0, pid, ECUFlag.ALL, False
+        ),
         OBDCommand(
             "MONITOR_O2_B1S1",
             "O2 Sensor Monitor Bank 1 - Sensor 1",
             b"0601",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -818,7 +884,7 @@ __mode6__ = (
             b"0602",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -827,7 +893,7 @@ __mode6__ = (
             b"0603",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -836,7 +902,7 @@ __mode6__ = (
             b"0604",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -845,7 +911,7 @@ __mode6__ = (
             b"0605",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -854,7 +920,7 @@ __mode6__ = (
             b"0606",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -863,7 +929,7 @@ __mode6__ = (
             b"0607",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -872,7 +938,7 @@ __mode6__ = (
             b"0608",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -881,7 +947,7 @@ __mode6__ = (
             b"0609",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -890,7 +956,7 @@ __mode6__ = (
             b"060A",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -899,7 +965,7 @@ __mode6__ = (
             b"060B",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -908,7 +974,7 @@ __mode6__ = (
             b"060C",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -917,7 +983,7 @@ __mode6__ = (
             b"060D",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -926,7 +992,7 @@ __mode6__ = (
             b"060E",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -935,7 +1001,7 @@ __mode6__ = (
             b"060F",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -944,20 +1010,22 @@ __mode6__ = (
             b"0610",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
     + ([None] * 15)
     + [  # 11 - 1F Reserved
-        OBDCommand("MIDS_B", "Supported MIDs [21-40]", b"0620", 0, pid, ECU.ALL, False),
+        OBDCommand(
+            "MIDS_B", "Supported MIDs [21-40]", b"0620", 0, pid, ECUFlag.ALL, False
+        ),
         OBDCommand(
             "MONITOR_CATALYST_B1",
             "Catalyst Monitor Bank 1",
             b"0621",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -966,7 +1034,7 @@ __mode6__ = (
             b"0622",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -975,7 +1043,7 @@ __mode6__ = (
             b"0623",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -984,35 +1052,83 @@ __mode6__ = (
             b"0624",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
     + ([None] * 12)
     + [  # 25 - 30 Reserved
         OBDCommand(
-            "MONITOR_EGR_B1", "EGR Monitor Bank 1", b"0631", 0, monitor, ECU.ALL, False
+            "MONITOR_EGR_B1",
+            "EGR Monitor Bank 1",
+            b"0631",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_EGR_B2", "EGR Monitor Bank 2", b"0632", 0, monitor, ECU.ALL, False
+            "MONITOR_EGR_B2",
+            "EGR Monitor Bank 2",
+            b"0632",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_EGR_B3", "EGR Monitor Bank 3", b"0633", 0, monitor, ECU.ALL, False
+            "MONITOR_EGR_B3",
+            "EGR Monitor Bank 3",
+            b"0633",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_EGR_B4", "EGR Monitor Bank 4", b"0634", 0, monitor, ECU.ALL, False
+            "MONITOR_EGR_B4",
+            "EGR Monitor Bank 4",
+            b"0634",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_VVT_B1", "VVT Monitor Bank 1", b"0635", 0, monitor, ECU.ALL, False
+            "MONITOR_VVT_B1",
+            "VVT Monitor Bank 1",
+            b"0635",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_VVT_B2", "VVT Monitor Bank 2", b"0636", 0, monitor, ECU.ALL, False
+            "MONITOR_VVT_B2",
+            "VVT Monitor Bank 2",
+            b"0636",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_VVT_B3", "VVT Monitor Bank 3", b"0637", 0, monitor, ECU.ALL, False
+            "MONITOR_VVT_B3",
+            "VVT Monitor Bank 3",
+            b"0637",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
-            "MONITOR_VVT_B4", "VVT Monitor Bank 4", b"0638", 0, monitor, ECU.ALL, False
+            "MONITOR_VVT_B4",
+            "VVT Monitor Bank 4",
+            b"0638",
+            0,
+            monitor,
+            ECUFlag.ALL,
+            False,
         ),
         OBDCommand(
             "MONITOR_EVAP_150",
@@ -1020,7 +1136,7 @@ __mode6__ = (
             b"0639",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1029,7 +1145,7 @@ __mode6__ = (
             b"063A",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1038,7 +1154,7 @@ __mode6__ = (
             b"063B",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1047,7 +1163,7 @@ __mode6__ = (
             b"063C",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1056,20 +1172,22 @@ __mode6__ = (
             b"063D",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
     + ([None] * 2)
     + [  # 3E - 3F Reserved
-        OBDCommand("MIDS_C", "Supported MIDs [41-60]", b"0640", 0, pid, ECU.ALL, False),
+        OBDCommand(
+            "MIDS_C", "Supported MIDs [41-60]", b"0640", 0, pid, ECUFlag.ALL, False
+        ),
         OBDCommand(
             "MONITOR_O2_HEATER_B1S1",
             "O2 Sensor Heater Monitor Bank 1 - Sensor 1",
             b"0641",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1078,7 +1196,7 @@ __mode6__ = (
             b"0642",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1087,7 +1205,7 @@ __mode6__ = (
             b"0643",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1096,7 +1214,7 @@ __mode6__ = (
             b"0644",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1105,7 +1223,7 @@ __mode6__ = (
             b"0645",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1114,7 +1232,7 @@ __mode6__ = (
             b"0646",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1123,7 +1241,7 @@ __mode6__ = (
             b"0647",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1132,7 +1250,7 @@ __mode6__ = (
             b"0648",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1141,7 +1259,7 @@ __mode6__ = (
             b"0649",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1150,7 +1268,7 @@ __mode6__ = (
             b"064A",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1159,7 +1277,7 @@ __mode6__ = (
             b"064B",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1168,7 +1286,7 @@ __mode6__ = (
             b"064C",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1177,7 +1295,7 @@ __mode6__ = (
             b"064D",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1186,7 +1304,7 @@ __mode6__ = (
             b"064E",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1195,7 +1313,7 @@ __mode6__ = (
             b"064F",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1204,20 +1322,22 @@ __mode6__ = (
             b"0650",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
     + ([None] * 15)
     + [  # 51 - 5F Reserved
-        OBDCommand("MIDS_D", "Supported MIDs [61-80]", b"0660", 0, pid, ECU.ALL, False),
+        OBDCommand(
+            "MIDS_D", "Supported MIDs [61-80]", b"0660", 0, pid, ECUFlag.ALL, False
+        ),
         OBDCommand(
             "MONITOR_HEATED_CATALYST_B1",
             "Heated Catalyst Monitor Bank 1",
             b"0661",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1226,7 +1346,7 @@ __mode6__ = (
             b"0662",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1235,7 +1355,7 @@ __mode6__ = (
             b"0663",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1244,7 +1364,7 @@ __mode6__ = (
             b"0664",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
@@ -1256,7 +1376,7 @@ __mode6__ = (
             b"0671",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1265,7 +1385,7 @@ __mode6__ = (
             b"0672",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1274,7 +1394,7 @@ __mode6__ = (
             b"0673",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1283,20 +1403,22 @@ __mode6__ = (
             b"0674",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
     + ([None] * 11)
     + [  # 75 - 7F Reserved
-        OBDCommand("MIDS_E", "Supported MIDs [81-A0]", b"0680", 0, pid, ECU.ALL, False),
+        OBDCommand(
+            "MIDS_E", "Supported MIDs [81-A0]", b"0680", 0, pid, ECUFlag.ALL, False
+        ),
         OBDCommand(
             "MONITOR_FUEL_SYSTEM_B1",
             "Fuel System Monitor Bank 1",
             b"0681",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1305,7 +1427,7 @@ __mode6__ = (
             b"0682",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1314,7 +1436,7 @@ __mode6__ = (
             b"0683",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1323,7 +1445,7 @@ __mode6__ = (
             b"0684",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1332,7 +1454,7 @@ __mode6__ = (
             b"0685",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1341,7 +1463,7 @@ __mode6__ = (
             b"0686",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
@@ -1353,7 +1475,7 @@ __mode6__ = (
             b"0690",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1362,7 +1484,7 @@ __mode6__ = (
             b"0691",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
@@ -1374,7 +1496,7 @@ __mode6__ = (
             b"0698",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1383,20 +1505,22 @@ __mode6__ = (
             b"0699",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
     + ([None] * 6)
     + [  # 9A - 9F Reserved
-        OBDCommand("MIDS_F", "Supported MIDs [A1-C0]", b"06A0", 0, pid, ECU.ALL, False),
+        OBDCommand(
+            "MIDS_F", "Supported MIDs [A1-C0]", b"06A0", 0, pid, ECUFlag.ALL, False
+        ),
         OBDCommand(
             "MONITOR_MISFIRE_GENERAL",
             "Misfire Monitor General Data",
             b"06A1",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1405,7 +1529,7 @@ __mode6__ = (
             b"06A2",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1414,7 +1538,7 @@ __mode6__ = (
             b"06A3",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1423,7 +1547,7 @@ __mode6__ = (
             b"06A4",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1432,7 +1556,7 @@ __mode6__ = (
             b"06A5",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1441,7 +1565,7 @@ __mode6__ = (
             b"06A6",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1450,7 +1574,7 @@ __mode6__ = (
             b"06A7",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1459,7 +1583,7 @@ __mode6__ = (
             b"06A8",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1468,7 +1592,7 @@ __mode6__ = (
             b"06A9",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1477,7 +1601,7 @@ __mode6__ = (
             b"06AA",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1486,7 +1610,7 @@ __mode6__ = (
             b"06AB",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1495,7 +1619,7 @@ __mode6__ = (
             b"06AC",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1504,7 +1628,7 @@ __mode6__ = (
             b"06AD",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
@@ -1516,7 +1640,7 @@ __mode6__ = (
             b"06B0",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
         OBDCommand(
@@ -1525,7 +1649,7 @@ __mode6__ = (
             b"06B1",
             0,
             monitor,
-            ECU.ALL,
+            ECUFlag.ALL,
             False,
         ),
     ]
@@ -1538,16 +1662,22 @@ __mode7__ = [
         b"07",
         0,
         dtc,
-        ECU.ALL,
+        ECUFlag.ALL,
         False,
     ),
 ]
 
 __mode9__ = [
     #                      name                             description                            cmd     bytes       decoder       ECU        fast
-    OBDCommand("PIDS_9A", "Supported PIDs [01-20]", b"0900", 7, pid, ECU.ALL, True),
+    OBDCommand("PIDS_9A", "Supported PIDs [01-20]", b"0900", 7, pid, ECUFlag.ALL, True),
     OBDCommand(
-        "VIN_MESSAGE_COUNT", "VIN Message Count", b"0901", 3, count, ECU.ENGINE, True
+        "VIN_MESSAGE_COUNT",
+        "VIN Message Count",
+        b"0901",
+        3,
+        count,
+        ECUFlag.ENGINE,
+        True,
     ),
     OBDCommand(
         "VIN",
@@ -1555,7 +1685,7 @@ __mode9__ = [
         b"0902",
         22,
         encoded_string(17),
-        ECU.ENGINE,
+        ECUFlag.ENGINE,
         True,
     ),
     OBDCommand(
@@ -1564,7 +1694,7 @@ __mode9__ = [
         b"0903",
         3,
         count,
-        ECU.ALL,
+        ECUFlag.ALL,
         True,
     ),
     OBDCommand(
@@ -1573,7 +1703,7 @@ __mode9__ = [
         b"0904",
         18,
         encoded_string(16),
-        ECU.ALL,
+        ECUFlag.ALL,
         True,
     ),
     OBDCommand(
@@ -1582,11 +1712,11 @@ __mode9__ = [
         b"0905",
         3,
         count,
-        ECU.ALL,
+        ECUFlag.ALL,
         True,
     ),
     OBDCommand(
-        "CVN", "Calibration Verification Numbers", b"0906", 10, cvn, ECU.ALL, True
+        "CVN", "Calibration Verification Numbers", b"0906", 10, cvn, ECUFlag.ALL, True
     ),
     #
     # NOTE: The following are untested
@@ -1605,7 +1735,7 @@ __misc__ = [
         b"ATI",
         0,
         raw_string,
-        ECU.UNKNOWN,
+        ECUFlag.UNKNOWN,
         False,
     ),
     OBDCommand(
@@ -1614,7 +1744,7 @@ __misc__ = [
         b"ATRV",
         0,
         elm_voltage,
-        ECU.UNKNOWN,
+        ECUFlag.UNKNOWN,
         False,
     ),
 ]

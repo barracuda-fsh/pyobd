@@ -33,8 +33,8 @@
 import logging
 from binascii import unhexlify
 
-from pyobd.obd.protocols.protocol import Protocol
-from pyobd.obd.utils import contiguous
+from pyobd.obd.protocols.protocol import Protocol, Frame, Message
+from pyobd.obd.utils import is_contiguous
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class LegacyProtocol(Protocol):
     TX_ID_ENGINE = 0x10
 
-    def parse_frame(self, frame):
+    def parse_frame(self, frame: Frame) -> bool:
         raw = frame.raw
 
         # Handle odd size frames and drop
@@ -75,7 +75,7 @@ class LegacyProtocol(Protocol):
 
         return True
 
-    def parse_message(self, message):
+    def parse_message(self, message: Message) -> bool:
         frames = message.frames
 
         # len(frames) will always be >= 1 (see the caller, protocol.py)
@@ -144,7 +144,7 @@ class LegacyProtocol(Protocol):
 
                 # check contiguity
                 indices = [f.data[2] for f in frames]
-                if not contiguous(indices, 1, len(frames)):
+                if not is_contiguous(indices, 1, len(frames)):
                     logger.debug("Recieved multiline response with missing frames")
                     return False
 

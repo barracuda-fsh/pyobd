@@ -46,7 +46,8 @@ from pyobd.obd.codes import (
     TEST_IDS,
 )
 from pyobd.obd.obd_response import Status, StatusTest, Monitor, MonitorTest
-from pyobd.obd.units_and_scaling import Unit, UAS_IDS
+from pyobd.obd.protocols.protocol import Message
+from pyobd.obd.units_and_scaling import Unit, UAS_IDS, UAS
 
 import logging
 
@@ -70,19 +71,19 @@ def drop(_):
 
 
 # data in, data out
-def noop(messages):
+def noop(messages: list[Message]) -> bytearray:
     return messages[0].data
 
 
 # hex in, bitstring out
-def pid(messages):
+def pid(messages: list[Message]) -> BitArray:
     d = messages[0].data[2:]
     return BitArray(d)
 
 
 # returns the raw strings from the ELM
-def raw_string(messages):
-    return "\n".join([m.raw() for m in messages])
+def raw_string(messages: list[Message]) -> str:
+    return "\n".join([m.raw for m in messages])
 
 
 """
@@ -92,12 +93,12 @@ Unit/Scaling in that table, simply to avoid redundant code.
 """
 
 
-def uas(id_):
+def uas(id_: int):
     """get the corresponding decoder for this UAS ID"""
     return functools.partial(decode_uas, id_=id_)
 
 
-def decode_uas(messages, id_):
+def decode_uas(messages: list[Message], id_: int) -> dict[int, UAS]:
     d = messages[0].data[2:]  # chop off mode and PID bytes
     return UAS_IDS[id_](d)
 
@@ -108,14 +109,14 @@ Return pint Quantities
 """
 
 
-def count(messages):
+def count(messages: list[Message]) -> int:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     return v * Unit.count
 
 
 # 0 to 100 %
-def percent(messages):
+def percent(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = d[0]
     v = v * 100.0 / 255.0
@@ -123,7 +124,7 @@ def percent(messages):
 
 
 # -100 to 100 %
-def percent_centered(messages):
+def percent_centered(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = d[0]
     v = (v - 128) * 100.0 / 128.0
@@ -131,7 +132,7 @@ def percent_centered(messages):
 
 
 # -40 to 215 C
-def temp(messages):
+def temp(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     v = v - 40
@@ -139,7 +140,7 @@ def temp(messages):
 
 
 # -128 to 128 mA
-def current_centered(messages):
+def current_centered(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = bytes_to_int(d[2:4])
     v = (v / 256.0) - 128
@@ -147,14 +148,14 @@ def current_centered(messages):
 
 
 # 0 to 1.275 volts
-def sensor_voltage(messages):
+def sensor_voltage(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = d[0] / 200.0
     return v * Unit.volt
 
 
 # 0 to 8 volts
-def sensor_voltage_big(messages):
+def sensor_voltage_big(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = bytes_to_int(d[2:4])
     v = (v * 8.0) / 65535
@@ -162,7 +163,7 @@ def sensor_voltage_big(messages):
 
 
 # 0 to 765 kPa
-def fuel_pressure(messages):
+def fuel_pressure(messages: list[Message]) -> int:
     d = messages[0].data[2:]
     v = d[0]
     v = v * 3
@@ -170,14 +171,14 @@ def fuel_pressure(messages):
 
 
 # 0 to 255 kPa
-def pressure(messages):
+def pressure(messages: list[Message]) -> int:
     d = messages[0].data[2:]
     v = d[0]
     return v * Unit.kilopascal
 
 
 # -8192 to 8192 Pa
-def evap_pressure(messages):
+def evap_pressure(messages: list[Message]) -> float:
     # decode the twos complement
     d = messages[0].data[2:]
     a = twos_comp(d[0], 8)
@@ -187,7 +188,7 @@ def evap_pressure(messages):
 
 
 # 0 to 327.675 kPa
-def abs_evap_pressure(messages):
+def abs_evap_pressure(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     v = v / 200.0
@@ -195,7 +196,7 @@ def abs_evap_pressure(messages):
 
 
 # -32767 to 32768 Pa
-def evap_pressure_alt(messages):
+def evap_pressure_alt(messages: list[Message]) -> int:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     v = v - 32767
@@ -203,7 +204,7 @@ def evap_pressure_alt(messages):
 
 
 # -64 to 63.5 degrees
-def timing_advance(messages):
+def timing_advance(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = d[0]
     v = (v - 128) / 2.0
@@ -211,7 +212,7 @@ def timing_advance(messages):
 
 
 # -210 to 301 degrees
-def inject_timing(messages):
+def inject_timing(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     v = (v - 26880) / 128.0
@@ -219,7 +220,7 @@ def inject_timing(messages):
 
 
 # 0 to 2550 grams/sec
-def max_maf(messages):
+def max_maf(messages: list[Message]) -> int:
     d = messages[0].data[2:]
     v = d[0]
     v = v * 10
@@ -227,7 +228,7 @@ def max_maf(messages):
 
 
 # 0 to 3212 Liters/hour
-def fuel_rate(messages):
+def fuel_rate(messages: list[Message]) -> float:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     v = v * 0.05
@@ -235,7 +236,9 @@ def fuel_rate(messages):
 
 
 # special bit encoding for PID 13
-def o2_sensors(messages):
+def o2_sensors(
+    messages: list[Message],
+) -> tuple[tuple, tuple[BitArray], tuple[BitArray]]:
     d = messages[0].data[2:]
     bits = BitArray(d)
     return (
@@ -245,13 +248,15 @@ def o2_sensors(messages):
     )
 
 
-def aux_input_status(messages):
+def aux_input_status(messages: list[Message]) -> bool:
     d = messages[0].data[2:]
     return ((d[0] >> 7) & 1) == 1  # first bit indicate PTO status
 
 
 # special bit encoding for PID 1D
-def o2_sensors_alt(messages):
+def o2_sensors_alt(
+    messages: list[Message],
+) -> tuple[tuple, tuple[BitArray], tuple[BitArray], tuple[BitArray], tuple[BitArray]]:
     d = messages[0].data[2:]
     bits = BitArray(d)
     return (
@@ -264,14 +269,14 @@ def o2_sensors_alt(messages):
 
 
 # 0 to 25700 %
-def absolute_load(messages):
+def absolute_load(messages: list[Message]) -> int:
     d = messages[0].data[2:]
     v = bytes_to_int(d)
     v *= 100.0 / 255.0
     return v * Unit.percent
 
 
-def elm_voltage(messages):
+def elm_voltage(messages: list[Message]) -> float | None:
     # doesn't register as a normal OBD response,
     # so access the raw frame data
     v = messages[0].frames[0].raw
@@ -292,7 +297,7 @@ Return objects, lists, etc
 """
 
 
-def status(messages):
+def status(messages: list[Message]) -> Status:
     d = messages[0].data[2:]
     bits = BitArray(d)
 
@@ -335,7 +340,7 @@ def status(messages):
     return output
 
 
-def fuel_status(messages):
+def fuel_status(messages: list[Message]) -> tuple[str, str] | None:
     d = messages[0].data[2:]
     bits = BitArray(d)
 
@@ -364,7 +369,7 @@ def fuel_status(messages):
         return (status_1, status_2)
 
 
-def air_status(messages):
+def air_status(messages: list[Message]) -> str | None:
     d = messages[0].data[2:]
     bits = BitArray(d)
 
@@ -377,7 +382,7 @@ def air_status(messages):
     return status
 
 
-def obd_compliance(messages):
+def obd_compliance(messages: list[Message]) -> str | None:
     d = messages[0].data[2:]
     i = d[0]
 
@@ -391,7 +396,7 @@ def obd_compliance(messages):
     return v
 
 
-def fuel_type(messages):
+def fuel_type(messages: list[Message]) -> str | list[str] | None:
     d = messages[0].data[2:]
     i = d[0]  # todo, support second fuel system
 
@@ -405,11 +410,11 @@ def fuel_type(messages):
     return v
 
 
-def parse_dtc(_bytes):
+def parse_dtc(bytes_: bytes) -> tuple[str, str] | None:
     """converts 2 bytes into a DTC code"""
 
     # check validity (also ignores padding that the ELM returns)
-    if (len(_bytes) != 2) or (_bytes == (0, 0)):
+    if (len(bytes_) != 2) or (bytes_ == (0, 0)):
         return None
 
     # BYTES: (16,      35      )
@@ -419,29 +424,30 @@ def parse_dtc(_bytes):
     #         | / /
     # DTC:    C0123
 
-    dtc = ["P", "C", "B", "U"][_bytes[0] >> 6]  # the last 2 bits of the first byte
+    dtc = ["P", "C", "B", "U"][bytes_[0] >> 6]  # the last 2 bits of the first byte
     dtc += str(
-        (_bytes[0] >> 4) & 0b0011
+        (bytes_[0] >> 4) & 0b0011
     )  # the next pair of 2 bits. Mask off the bits we read above
-    dtc += bytes_to_hex(_bytes)[1:4]
+    dtc += bytes_to_hex(bytes_)[1:4]
 
     # pull a description if we have one
-    return (dtc, DTC.get(dtc, ""))
+    return dtc, DTC.get(dtc, "")
 
 
-def hex_to_int(str):
-    i = eval("0x" + str, {}, {})
+def hex_to_int(value: str) -> int:
+    # TODO: Find a safer implementation (evals are bad)
+    i = eval("0x" + value, {}, {})
     return i
 
 
-def single_dtc(messages):
+def single_dtc(messages: list[Message]) -> tuple[str, str] | None:
     """parses a single DTC from a message"""
     d = messages[0].data[2:]
     # d = messages[0].data[1:3]
     return parse_dtc(d)
 
 
-def dtc(messages):
+def dtc(messages: list[Message]) -> list[tuple[str, str]]:
     """converts a frame of 2-byte DTCs into a list of DTCs"""
     codes = []
     d = []
@@ -450,11 +456,11 @@ def dtc(messages):
     for message in messages:
         print("len data == ", len(message.data))
         #  # remove the mode and DTC_count bytes
-        if message.can == False:
+        if not message.is_can:
             d += message.data[2:]
-        elif message.can and message.num_frames == 1:
+        elif message.is_can and message.num_frames == 1:
             d += message.data[1:]  # remove the mode and DTC_count bytes
-        elif message.can and message.num_frames > 1:
+        elif message.is_can and message.num_frames > 1:
             d += message.data[0:]  # remove the mode and DTC_count bytes
     print(d)
     print(len(d))
@@ -501,7 +507,7 @@ def parse_monitor_test(d, mon):
     return test
 
 
-def monitor(messages):
+def monitor(messages: list[Message]) -> Monitor:
     d = messages[0].data[1:]
     # only dispose of the mode byte. Leave the MID
     # even though we never use the MID byte, it may
@@ -528,12 +534,12 @@ def monitor(messages):
     return mon
 
 
-def encoded_string(length):
+def encoded_string(length: int):
     """Extract an encoded string from multi-part messages"""
     return functools.partial(decode_encoded_string, length=length)
 
 
-def decode_encoded_string(messages, length):
+def decode_encoded_string(messages: list[Message], length: int) -> bytearray | None:
     d = messages[0].data[2:]
 
     if len(d) < length:
@@ -546,7 +552,7 @@ def decode_encoded_string(messages, length):
     return d.strip().strip(b"\x00" b"\x01" b"\x02" b"\\x00" b"\\x01" b"\\x02")
 
 
-def cvn(messages):
+def cvn(messages: list[Message]) -> str | None:
     d = decode_encoded_string(messages, 4)
     if d is None:
         return None

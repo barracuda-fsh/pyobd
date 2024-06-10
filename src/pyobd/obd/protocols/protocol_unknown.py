@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyobd.obd.protocols.protocol import Protocol
+from pyobd.obd.protocols.protocol import Protocol, Frame, Message
 
 
 ########################################################################
@@ -41,8 +41,8 @@ class UnknownProtocol(Protocol):
     been made, but the car hasn't responded.
     """
 
-    def parse_frame(self, frame):
+    def parse_frame(self, frame: Frame) -> bool:
         return True  # pass everything
 
-    def parse_message(self, message):
+    def parse_message(self, message: Message) -> bool:
         return True  # pass everything

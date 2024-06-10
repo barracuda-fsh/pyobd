@@ -65,8 +65,8 @@ class OBDResponse:
         else:
             return str(type(self.value))
 
-    def is_null(self):
-        return (not self.messages) or (self.value == None)
+    def is_null(self) -> bool:
+        return (not self.messages) or (self.value is None)
 
     def __str__(self):
         return str(self.value)
@@ -102,7 +102,7 @@ class StatusTest:
     def __str__(self):
         a = "Available" if self.available else "Unavailable"
         c = "Complete" if self.complete else "Incomplete"
-        return "Test %s: %s, %s" % (self.name, a, c)
+        return f"Test {self.name}: {a}, {c}"
 
 
 class Monitor:
@@ -164,7 +164,7 @@ class MonitorTest:
         else:
             return False
 
-    def is_null(self):
+    def is_null(self) -> bool:
         return (
             self.tid is None
             or self.value is None
