@@ -39,7 +39,7 @@ from pyobd.obd.obd import OBD
 logger = logging.getLogger(__name__)
 
 
-class Async(OBD):
+class AsyncOBD(OBD):
     """
     Class representing an OBD-II connection with it's assorted commands/sensors
     Specialized for asynchronous value reporting.
@@ -47,7 +47,7 @@ class Async(OBD):
 
     def __init__(
         self,
-        portstr=None,
+        port=None,
         baudrate=None,
         protocol=None,
         fast=True,
@@ -57,8 +57,8 @@ class Async(OBD):
         delay_cmds=0.25,
     ):
         self.__thread = None
-        super(Async, self).__init__(
-            portstr, baudrate, protocol, fast, timeout, check_voltage, start_low_power
+        super().__init__(
+            port, baudrate, protocol, fast, timeout, check_voltage, start_low_power
         )
         self.__commands = {}  # key = OBDCommand, value = Response
         self.__callbacks = {}  # key = OBDCommand, value = list of Functions
@@ -128,7 +128,7 @@ class Async(OBD):
     def close(self):
         """Closes the connection"""
         self.stop()
-        super(Async, self).close()
+        super(AsyncOBD, self).close()
 
     def watch(self, c, callback=None, force=False):
         """
@@ -221,7 +221,7 @@ class Async(OBD):
                         return
 
                     # force, since commands are checked for support in watch()
-                    r = super(Async, self).query(c, force=True)
+                    r = super(AsyncOBD, self).query(c, force=True)
 
                     # store the response
                     self.__commands[c] = r

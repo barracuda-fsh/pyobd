@@ -35,13 +35,14 @@ import glob
 import logging
 import string
 import sys
+from enum import StrEnum
 
 import serial
 
 logger = logging.getLogger(__name__)
 
 
-class OBDStatus:
+class OBDStatus(StrEnum):
     """Values for the connection status flags"""
 
     NOT_CONNECTED = "Not Connected"
@@ -59,15 +60,15 @@ class BitArray:
     But, if this class starts getting used too much, we should switch to that lib.
     """
 
-    def __init__(self, _bytearray):
+    def __init__(self, bytearray_):
         self.bits = ""
-        for b in _bytearray:
+        for b in bytearray_:
             v = bin(b)[2:]
             self.bits += ("0" * (8 - len(v))) + v  # pad it with zeros
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int | slice):
         if isinstance(key, int):
-            if key >= 0 and key < len(self.bits):
+            if 0 <= key < len(self.bits):
                 return self.bits[key] == "1"
             else:
                 return False
@@ -84,7 +85,7 @@ class BitArray:
     def num_cleared(self):
         return self.bits.count("0")
 
-    def value(self, start, stop):
+    def value(self, start: int, stop: int):
         bits = self.bits[start:stop]
         if bits:
             return int(bits, 2)
@@ -101,36 +102,36 @@ class BitArray:
         return [b == "1" for b in self.bits].__iter__()
 
 
-def bytes_to_int(bs):
+def bytes_to_int(value: bytes) -> int:
     """converts a big-endian byte array into a single integer"""
     v = 0
     p = 0
-    for b in reversed(bs):
+    for b in reversed(value):
         v += b * (2**p)
         p += 8
     return v
 
 
-def bytes_to_hex(bs):
+def bytes_to_hex(value: bytes) -> str:
     h = ""
-    for b in bs:
+    for b in value:
         bh = hex(b)[2:]
         h += ("0" * (2 - len(bh))) + bh
     return h
 
 
-def twos_comp(val, num_bits):
+def twos_comp(val: int, num_bits: int):
     """compute the 2's compliment of int value val"""
     if (val & (1 << (num_bits - 1))) != 0:
         val = val - (1 << num_bits)
     return val
 
 
-def isHex(_hex):
-    return all([c in string.hexdigits for c in _hex])
+def is_hex(value: string) -> bool:
+    return all([c in string.hexdigits for c in value])
 
 
-def contiguous(l, start, end):
+def is_contiguous(l: list[int], start: int, end: int) -> bool:
     """checks that a list of integers are consequtive"""
     if not l:
         return False
@@ -147,10 +148,10 @@ def contiguous(l, start, end):
     return True
 
 
-def try_port(portStr):
+def try_port(port: str) -> bool:
     """returns boolean for port availability"""
     try:
-        s = serial.Serial(portStr)
+        s = serial.Serial(port)
         s.close()  # explicit close 'cause of delayed GC in java
         return True
 

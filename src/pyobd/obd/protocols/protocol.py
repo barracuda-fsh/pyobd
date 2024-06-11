@@ -31,9 +31,13 @@
 ########################################################################
 
 import logging
+from abc import abstractmethod, ABC
 from binascii import hexlify
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Self
 
-from pyobd.obd.utils import isHex, BitArray
+from pyobd.obd.utils import is_hex, BitArray
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +48,13 @@ Basic data models for all protocols to use
 """
 
 
-class ECU_HEADER:
+class EcuHeader(Enum):
     """Values for the ECU headers"""
 
     ENGINE = b"7E0"
 
 
-class ECU:
+class ECUFlag(Enum):
     """constant flags used for marking and filtering messages"""
 
     ALL = 0b11111111  # used by OBDCommands to accept messages from any ECU
@@ -62,30 +66,30 @@ class ECU:
     TRANSMISSION = 0b00000100
 
 
+@dataclass
 class Frame:
     """represents a single parsed line of OBD output"""
 
-    def __init__(self, raw):
-        self.raw = raw
-        self.data = bytearray()
-        self.priority = None
-        self.addr_mode = None
-        self.rx_id = None
-        self.tx_id = None
-        self.type = None
-        self.seq_index = 0  # only used when type = CF
-        self.data_len = None
+    raw: str
+    data: bytearray = field(default_factory=bytearray)
+    priority: int | None = None
+    addr_mode: int | None = None
+    rx_id: int | None = None
+    tx_id: int | None = None
+    type: int | None = None
+    seq_index = 0  # only used when type = CF
+    data_len: int | None = None
 
 
+@dataclass
 class Message:
     """represents a fully parsed OBD message of one or more Frames (lines)"""
 
-    def __init__(self, frames):
-        self.frames = frames
-        self.ecu = ECU.UNKNOWN
-        self.num_frames = 0
-        self.data = bytearray()
-        self.can = False
+    frames: list[Frame]
+    ecu_filter: ECUFlag = ECUFlag.UNKNOWN
+    num_frames: int = 0
+    data: bytearray = field(default_factory=bytearray)
+    is_can: bool = False
 
     @property
     def tx_id(self):
@@ -94,25 +98,27 @@ class Message:
         else:
             return self.frames[0].tx_id
 
+    @property
     def hex(self):
         return hexlify(self.data)
 
-    def raw(self):
+    @property
+    def raw(self) -> str:
         """returns the original raw input string from the adapter"""
         return "\n".join([f.raw for f in self.frames])
 
-    def parsed(self):
+    @property
+    def is_parsed(self) -> bool:
         """boolean for whether this message was successfully parsed"""
         return bool(self.data)
 
-    def __eq__(self, other):
-        if isinstance(other, Message):
-            for attr in ["frames", "ecu", "data"]:
-                if getattr(self, attr) != getattr(other, attr):
-                    return False
-            return True
-        else:
+    def __eq__(self, other: Self) -> bool:
+        if not isinstance(other, Message):
             return False
+        for attr in ["frames", "ecu", "data"]:
+            if getattr(self, attr) != getattr(other, attr):
+                return False
+        return True
 
 
 """
@@ -127,17 +133,17 @@ list of Messages.
 """
 
 
-class Protocol(object):
+class Protocol(ABC):
     # override in subclass for each protocol
 
     ELM_NAME = ""  # the ELM's name for this protocol (ie, "SAE J1939 (CAN 29/250)")
     ELM_ID = ""  # the ELM's ID for this protocol (ie, "A")
 
     # the TX_IDs of known ECUs
-    TX_ID_ENGINE = None
-    TX_ID_TRANSMISSION = None
+    TX_ID_ENGINE: int | None = None
+    TX_ID_TRANSMISSION: int | None = None
 
-    def __init__(self, lines_0100):
+    def __init__(self, lines_0100: list[str]):
         """
         constructs a protocol object
 
@@ -147,13 +153,13 @@ class Protocol(object):
 
         # create the default, empty map
         # for example: self.TX_ID_ENGINE : ECU.ENGINE
-        self.ecu_map = {}
+        self.ecu_map: dict[int, ECUFlag] = {}
 
         if self.TX_ID_ENGINE is not None:
-            self.ecu_map[self.TX_ID_ENGINE] = ECU.ENGINE
+            self.ecu_map[self.TX_ID_ENGINE] = ECUFlag.ENGINE
 
         if self.TX_ID_TRANSMISSION is not None:
-            self.ecu_map[self.TX_ID_TRANSMISSION] = ECU.TRANSMISSION
+            self.ecu_map[self.TX_ID_TRANSMISSION] = ECUFlag.TRANSMISSION
 
         # parse the 0100 data into messages
         # NOTE: at this point, their "ecu" property will be UNKNOWN
@@ -165,11 +171,11 @@ class Protocol(object):
 
         # log out the ecu map
         for tx_id, ecu in self.ecu_map.items():
-            names = [k for k, v in ECU.__dict__.items() if v == ecu]
+            names = [k for k, v in ECUFlag.__dict__.items() if v == ecu]
             names = ", ".join(names)
             logger.debug("map ECU %d --> %s" % (tx_id, names))
 
-    def __call__(self, lines):
+    def __call__(self, lines: list[str]) -> list[Message]:
         """
         Main function
 
@@ -187,7 +193,7 @@ class Protocol(object):
         for line in lines:
             line_no_spaces = line.replace(" ", "")
 
-            if isHex(line_no_spaces):
+            if is_hex(line_no_spaces):
                 obd_lines.append(line_no_spaces)
             else:
                 non_obd_lines.append(line)  # pass the original, un-scrubbed line
@@ -223,7 +229,7 @@ class Protocol(object):
             # subclass function to assemble frames into Messages
             if self.parse_message(message):
                 # mark with the appropriate ECU ID
-                message.ecu = self.ecu_map.get(ecu, ECU.UNKNOWN)
+                message.ecu_filter = self.ecu_map.get(ecu, ECUFlag.UNKNOWN)
                 messages.append(message)
 
         # ----------- handle invalid lines (probably from the ELM) -----------
@@ -235,7 +241,7 @@ class Protocol(object):
 
         return messages
 
-    def populate_ecu_map(self, messages):
+    def populate_ecu_map(self, messages: list[Message]):
         """
         Given a list of messages from different ECUS,
         (in response to the 0100 PID listing command)
@@ -246,14 +252,14 @@ class Protocol(object):
 
         # filter out messages that don't contain any data
         # this will prevent ELM responses from being mapped to ECUs
-        messages = [m for m in messages if m.parsed()]
+        messages = [m for m in messages if m.is_parsed]
 
         # populate the map
         if len(messages) == 0:
             pass
         elif len(messages) == 1:
             # if there's only one response, mark it as the engine regardless
-            self.ecu_map[messages[0].tx_id] = ECU.ENGINE
+            self.ecu_map[messages[0].tx_id] = ECUFlag.ENGINE
         else:
             # the engine is important
             # if we can't find it, we'll use a fallback
@@ -266,10 +272,10 @@ class Protocol(object):
                     continue
 
                 if m.tx_id == self.TX_ID_ENGINE:
-                    self.ecu_map[m.tx_id] = ECU.ENGINE
+                    self.ecu_map[m.tx_id] = ECUFlag.ENGINE
                     found_engine = True
                 elif m.tx_id == self.TX_ID_TRANSMISSION:
-                    self.ecu_map[m.tx_id] = ECU.TRANSMISSION
+                    self.ecu_map[m.tx_id] = ECUFlag.TRANSMISSION
                 # TODO: program more of these when we figure out their constants
 
             if not found_engine:
@@ -285,14 +291,15 @@ class Protocol(object):
                         best = bits
                         tx_id = message.tx_id
 
-                self.ecu_map[tx_id] = ECU.ENGINE
+                self.ecu_map[tx_id] = ECUFlag.ENGINE
 
             # any remaining tx_ids are unknown
             for m in messages:
                 if m.tx_id not in self.ecu_map:
-                    self.ecu_map[m.tx_id] = ECU.UNKNOWN
+                    self.ecu_map[m.tx_id] = ECUFlag.UNKNOWN
 
-    def parse_frame(self, frame):
+    @abstractmethod
+    def parse_frame(self, frame: Frame) -> bool:
         """
         override in subclass for each protocol
 
@@ -302,9 +309,10 @@ class Protocol(object):
         Function should return a boolean. If fatal errors were
         found, this function should return False, and the Frame will be dropped.
         """
-        raise NotImplementedError()
+        ...
 
-    def parse_message(self, message):
+    @abstractmethod
+    def parse_message(self, message: Message) -> bool:
         """
         override in subclass for each protocol
 
@@ -314,4 +322,4 @@ class Protocol(object):
         Function should return a boolean. If fatal errors were
         found, this function should return False, and the Message will be dropped.
         """
-        raise NotImplementedError()
+        ...

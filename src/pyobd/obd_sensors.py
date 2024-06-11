@@ -23,8 +23,9 @@
 ###########################################################################
 
 
-def hex_to_int(str):
-    i = eval("0x" + str, {}, {})
+# TODO: remove duplicate
+def hex_to_int(value: str):
+    i = eval("0x" + value, {}, {})
     return i
 
 

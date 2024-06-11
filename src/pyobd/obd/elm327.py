@@ -48,6 +48,7 @@ from pyobd.obd.protocols import (
     SAE_J1939,
     UnknownProtocol,
 )
+from pyobd.obd.protocols.protocol import Protocol
 from pyobd.obd.utils import OBDStatus
 
 logger = logging.getLogger(__name__)
@@ -146,10 +147,10 @@ class ELM327:
 
     def __init__(
         self,
-        portname,
-        baudrate,
-        protocol,
-        timeout,
+        port: str | None,
+        baudrate: int,
+        protocol: Protocol,
+        timeout: int,
         check_voltage=False,
         start_low_power=False,
     ):
@@ -158,7 +159,7 @@ class ELM327:
         logger.info(
             "Initializing ELM327: PORT=%s BAUD=%s PROTOCOL=%s"
             % (
-                portname,
+                port,
                 "auto" if baudrate is None else baudrate,
                 "auto" if protocol is None else protocol,
             )
@@ -166,7 +167,7 @@ class ELM327:
         print(
             "Initializing ELM327: PORT=%s BAUD=%s PROTOCOL=%s"
             % (
-                portname,
+                port,
                 "auto" if baudrate is None else baudrate,
                 "auto" if protocol is None else protocol,
             )
@@ -180,9 +181,9 @@ class ELM327:
         # ------------- open port -------------
         try:
             self.__port = serial.serial_for_url(
-                portname, parity=serial.PARITY_NONE, stopbits=1, bytesize=8, timeout=10
+                port, parity=serial.PARITY_NONE, stopbits=1, bytesize=8, timeout=10
             )  # seconds
-            print("Port " + portname + " created")
+            print("Port " + port + " created")
             self.__port.write_timeout = timeout
         except serial.SerialException as e:
             self.__error(e)
@@ -224,7 +225,7 @@ class ELM327:
 
         # -------------------------- ATE0 (echo OFF) --------------------------
         r = self.__send(b"ATE0", delay=1)
-        if not self.__isok(r, expectEcho=True):
+        if not self.__isok(r, expect_echo=True):
             self.__error("ATE0 did not return 'OK'")
             return
         else:
@@ -274,7 +275,7 @@ class ELM327:
             logger.info(
                 "Connected Successfully: PORT=%s BAUD=%s PROTOCOL=%s"
                 % (
-                    portname,
+                    port,
                     self.__port.baudrate,
                     self.__protocol.ELM_ID,
                 )
@@ -282,7 +283,7 @@ class ELM327:
             print(
                 "Connected Successfully: PORT=%s BAUD=%s PROTOCOL=%s"
                 % (
-                    portname,
+                    port,
                     self.__port.baudrate,
                     self.__protocol.ELM_ID,
                 )
@@ -485,10 +486,10 @@ class ELM327:
             return False
         return False
 
-    def __isok(self, lines, expectEcho=False):
+    def __isok(self, lines, expect_echo=False):
         if not lines:
             return False
-        if expectEcho:
+        if expect_echo:
             # don't test for the echo itself
             # allow the adapter to already have echo disabled
             return self.__has_message(lines, "OK")

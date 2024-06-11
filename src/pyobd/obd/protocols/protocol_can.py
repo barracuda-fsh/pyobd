@@ -33,8 +33,8 @@
 import logging
 from binascii import unhexlify
 
-from pyobd.obd.protocols.protocol import Protocol
-from pyobd.obd.utils import contiguous
+from pyobd.obd.protocols.protocol import Protocol, Frame, Message
+from pyobd.obd.utils import is_contiguous
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +48,13 @@ class CANProtocol(Protocol):
     FRAME_TYPE_CF = 0x20  # consecutive frame(s) of multi-frame message
     FRAME_TYPE_FC = 0x30  # Flow control frame
 
-    def __init__(self, lines_0100, id_bits):
+    def __init__(self, lines_0100: list[str], id_bits: int):
         # this needs to be set FIRST, since the base
         # Protocol __init__ uses the parsing system.
         self.id_bits = id_bits
         super().__init__(lines_0100)
 
-    def parse_frame(self, frame):
+    def parse_frame(self, frame: Frame) -> bool:
         raw = frame.raw
 
         # pad 11-bit CAN headers out to 32 bits for consistency,
@@ -171,11 +171,11 @@ class CANProtocol(Protocol):
 
         return True
 
-    def parse_message(self, message):
+    def parse_message(self, message: Message) -> bool:
         frames = message.frames
         print("How many frames? ", len(frames))
         message.num_frames = len(frames)
-        message.can = True
+        message.is_can = True
         if (len(frames) >= 1) and (frames[0].type == self.FRAME_TYPE_SF):
             if len(frames) == 1:
                 frame = frames[0]
@@ -252,7 +252,7 @@ class CANProtocol(Protocol):
 
             # check contiguity, and that we aren't missing any frames
             indices = [f.seq_index for f in cf]
-            if not contiguous(indices, 1, len(cf)):
+            if not is_contiguous(indices, 1, len(cf)):
                 logger.debug("Recieved multiline response with missing frames")
                 return False
 

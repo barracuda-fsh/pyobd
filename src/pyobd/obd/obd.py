@@ -37,7 +37,8 @@ from pyobd.obd.obd_response import OBDResponse
 from pyobd.obd.__version__ import __version__
 from pyobd.obd.commands import commands
 from pyobd.obd.elm327 import ELM327
-from pyobd.obd.protocols import ECU_HEADER
+from pyobd.obd.protocols import EcuHeader
+from pyobd.obd.protocols.protocol import Protocol
 from pyobd.obd.utils import scan_serial, OBDStatus
 
 logger = logging.getLogger(__name__)
@@ -51,11 +52,11 @@ class OBD:
 
     def __init__(
         self,
-        portstr=None,
-        baudrate=None,
-        protocol=None,
-        fast=True,
-        timeout=0.1,
+        port: str | None = None,
+        baudrate: int | None = None,
+        protocol: Protocol | None = None,
+        fast: bool = True,
+        timeout: int = 0.1,
         check_voltage=True,
         start_low_power=False,
     ):
@@ -65,7 +66,7 @@ class OBD:
         self.timeout = timeout
         self.__last_command = b""  # used for running the previous command with a CR
         self.__last_header = (
-            ECU_HEADER.ENGINE
+            EcuHeader.ENGINE
         )  # for comparing with the previously used header
         self.__frame_counts = {}  # keeps track of the number of return frames for each command
 
@@ -74,33 +75,40 @@ class OBD:
             % __version__
         )
         self.__connect(
-            portstr, baudrate, protocol, check_voltage, start_low_power
+            port, baudrate, protocol, check_voltage, start_low_power
         )  # initialize by connecting and loading sensors
         self.__load_commands()  # try to load the car's supported commands
         logger.info(
             "==================================================================="
         )
 
-    def __connect(self, portstr, baudrate, protocol, check_voltage, start_low_power):
+    def __connect(
+        self,
+        port: str | None,
+        baud_rate: int,
+        protocol: Protocol,
+        check_voltage: bool,
+        start_low_power: bool,
+    ):
         """
         Attempts to instantiate an ELM327 connection object.
         """
 
-        if portstr is None:
+        if port is None:
             logger.info("Using scan_serial to select port")
-            port_names = scan_serial()
-            logger.info("Available ports: " + str(port_names))
+            ports = scan_serial()
+            logger.info("Available ports: " + str(ports))
 
-            if not port_names:
+            if not ports:
                 logger.warning("No OBD-II adapters found")
                 return
 
-            for port in port_names:
-                logger.info("Attempting to use port: " + str(port))
-                print("Attempting to use port: " + str(port))
+            for p in ports:
+                logger.info("Attempting to use port: " + str(p))
+                print("Attempting to use port: " + str(p))
                 self.interface = ELM327(
-                    port,
-                    baudrate,
+                    p,
+                    baud_rate,
                     protocol,
                     self.timeout,
                     check_voltage,
@@ -114,8 +122,8 @@ class OBD:
         else:
             logger.info("Explicit port defined")
             self.interface = ELM327(
-                portstr,
-                baudrate,
+                port,
+                baud_rate,
                 protocol,
                 self.timeout,
                 check_voltage,
@@ -192,7 +200,7 @@ class OBD:
 
         if self.interface is not None:
             logger.info("Closing connection")
-            self.__set_header(ECU_HEADER.ENGINE)
+            self.__set_header(EcuHeader.ENGINE)
             self.interface.close()
             self.interface = None
 
