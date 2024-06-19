@@ -7,10 +7,10 @@ tasks:
 #  Tasks for building platform specific binaries.
   build-windows:
     platforms: [windows]
-    cmd: pyinstaller -n PyOBD -w --onefile -i src/pyobd/assets/pyobd.ico --add-data "src/pyobd/assets/:assets/" -d bootloader src/pyobd/pyobd.py
+    cmd: pyinstaller -n PyOBD -w --onefile -i src/pyobd/assets/pyobd.ico --add-data "src/pyobd/assets/:assets/" -d bootloader src/pyobd/gui/pyobd.py
   build-mac:
     platforms: [darwin]
-    cmd: python -m pyinstaller --onefile -w -i src/pyobd/assets/pyobd.ico --add-data "src/pyobd/assets:assets/" src/pyobd/pyobd.py
+    cmd: python -m pyinstaller --onefile -w -i src/pyobd/assets/pyobd.ico --add-data "src/pyobd/assets:assets/" src/pyobd/gui/pyobd.py
   build-linux:
     platforms: [linux]
-    cmd: pyinstaller --onefile -w -i src/pyobd/assets/pyobd.ico --add-data "src/pyobd/assets:assets" src/pyobd/pyobd.py
+    cmd: pyinstaller --onefile -w -i src/pyobd/assets/pyobd.ico --add-data "src/pyobd/assets:assets" src/pyobd/gui/pyobd.py
