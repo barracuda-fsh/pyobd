@@ -28,14 +28,16 @@ import time
 import wx
 
 from pyobd import obd
-from pyobd.debug_event import DebugEvent
+from pyobd.gui.gui_events import DebugEvent
 import logging
+
+from pyobd.obd import OBDStatus
 
 logger = logging.getLogger(__name__)
 
 
 def truncate(num, n):
-    integer = int(num * (10**n)) / (10**n)
+    integer = int(num * (10 ** n)) / (10 ** n)
     return float(integer)
 
 
@@ -45,19 +47,20 @@ GET_FREEZE_DTC_COMMAND = "07"
 
 
 class OBDConnection:
-    def __init__(self, portnum, _notify_window, baud, SERTIMEOUT, RECONNATTEMPTS, FAST):
+    def __init__(self, port_name: str, _notify_window: wx.App, baudrate: int, timeout: int, reconnection_attempts: int,
+                 fast: bool):
         self._notify_window = _notify_window
-        if baud == "AUTO":
-            baud = None
-        if portnum == "AUTO":
-            portnum = None
-        if FAST == "FAST":
-            FAST = True
+        if baudrate == "AUTO":
+            baudrate = None
+        if port_name == "AUTO":
+            port_name = None
+        if fast == "FAST":
+            fast = True
         else:
-            FAST = False
+            fast = False
 
         counter = 0
-        while counter < RECONNATTEMPTS:
+        while counter < reconnection_attempts:
             counter = counter + 1
             wx.PostEvent(
                 self._notify_window,
@@ -68,15 +71,15 @@ class OBDConnection:
             except:
                 pass
             self.connection = obd.OBD(
-                port=portnum,
-                baudrate=baud,
+                port=port_name,
+                baudrate=baudrate,
                 protocol=None,
-                fast=FAST,
-                timeout=truncate(float(SERTIMEOUT), 1),
+                fast=fast,
+                timeout=truncate(float(timeout), 1),
                 check_voltage=False,
                 start_low_power=False,
             )
-            if self.connection.status() == "Car Connected":
+            if self.connection.status == OBDStatus.CAR_CONNECTED:
                 wx.PostEvent(
                     self._notify_window,
                     DebugEvent(

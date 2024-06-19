@@ -35,6 +35,7 @@ import serial
 import time
 import logging
 
+from pyobd.obd.utils import OBDStatus
 from pyobd.obd.protocols import (
     SAE_J1850_PWM,
     SAE_J1850_VPW,
@@ -49,7 +50,6 @@ from pyobd.obd.protocols import (
     UnknownProtocol,
 )
 from pyobd.obd.protocols.protocol import Protocol
-from pyobd.obd.utils import OBDStatus
 
 logger = logging.getLogger(__name__)
 
@@ -146,13 +146,13 @@ class ELM327:
     ]
 
     def __init__(
-        self,
-        port: str | None,
-        baudrate: int,
-        protocol: Protocol,
-        timeout: int,
-        check_voltage=False,
-        start_low_power=False,
+            self,
+            port: str | None,
+            baudrate: int,
+            protocol: Protocol,
+            timeout: int,
+            check_voltage=False,
+            start_low_power=False,
     ):
         """Initializes port by resetting device and gettings supported PIDs."""
 
@@ -377,10 +377,10 @@ class ELM327:
                 r = self.__send(b"ATTP" + p.encode())
                 r0100 = self.__send(b"0100")
                 if (
-                    not self.__has_message(r0100, "UNABLE TO CONNECT")
-                    and not self.__has_message(r0100, "NO DATA")
-                    and not self.__has_message(r0100, "BUS INIT: ...ERROR")
-                    and not self.__has_message(r0100, "CAN ERROR")
+                        not self.__has_message(r0100, "UNABLE TO CONNECT")
+                        and not self.__has_message(r0100, "NO DATA")
+                        and not self.__has_message(r0100, "BUS INIT: ...ERROR")
+                        and not self.__has_message(r0100, "CAN ERROR")
                 ):
                     # success, found the protocol
                     print("success, found the protocol")
@@ -469,7 +469,7 @@ class ELM327:
             # watch for the prompt character
             # if (response.endswith(b">")) or ("elm" in str(response).lower()) or (b'\x7f\x7f\r' in response):
             if "elm" in str(response).lower() or (
-                (b"\x7f\x7f\r" in response) and (response.endswith(b">"))
+                    (b"\x7f\x7f\r" in response) and (response.endswith(b">"))
             ):
                 logger.debug("Choosing baud %d" % baud)
                 print("Choosing baud %d" % baud)
@@ -514,18 +514,23 @@ class ELM327:
         else:
             return ""
 
+    @property
     def status(self):
         return self.__status
 
+    @property
     def baudrate(self):
         return self.__port.baudrate
 
+    @property
     def ecus(self):
         return self.__protocol.ecu_map.values()
 
+    @property
     def protocol_name(self):
         return self.__protocol.ELM_NAME
 
+    @property
     def protocol_id(self):
         return self.__protocol.ELM_ID
 

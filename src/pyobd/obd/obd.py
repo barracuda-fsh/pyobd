@@ -131,7 +131,7 @@ class OBD:
             )
 
         # if the connection failed, close it
-        if self.interface.status() != OBDStatus.CAR_CONNECTED:
+        if self.interface.status != OBDStatus.CAR_CONNECTED:
             # the ELM327 class will report its own errors
             self.close()
 
@@ -141,7 +141,7 @@ class OBD:
         and compiles a list of command objects.
         """
 
-        if self.status() != OBDStatus.CAR_CONNECTED:
+        if self.status != OBDStatus.CAR_CONNECTED:
             logger.warning("Cannot load commands: No connection to car")
             return
 
@@ -204,12 +204,13 @@ class OBD:
             self.interface.close()
             self.interface = None
 
+    @property
     def status(self):
         """returns the OBD connection status"""
         if self.interface is None:
             return OBDStatus.NOT_CONNECTED
         else:
-            return self.interface.status()
+            return self.interface.status
 
     def low_power(self):
         """Enter low power mode"""
@@ -239,7 +240,7 @@ class OBD:
         if self.interface is None:
             return ""
         else:
-            return self.interface.protocol_name()
+            return self.interface.protocol_name
 
     def protocol_id(self):
         """returns the ID of the protocol being used by the ELM327"""
@@ -291,7 +292,7 @@ class OBD:
             return False
 
         # mode 06 is only implemented for the CAN protocols
-        if cmd.mode == 6 and self.interface.protocol_id() not in ["6", "7", "8", "9"]:
+        if cmd.mode == 6 and self.interface.protocol_id not in ["6", "7", "8", "9"]:
             if warn:
                 logger.warning("Mode 06 commands are only supported over CAN protocols")
             return False
@@ -304,7 +305,7 @@ class OBD:
         protects against sending unsupported commands.
         """
 
-        if self.status() == OBDStatus.NOT_CONNECTED:
+        if self.status == OBDStatus.NOT_CONNECTED:
             logger.warning("Query failed, no connection available")
             return OBDResponse()
 
@@ -351,3 +352,5 @@ class OBD:
             cmd_string = b""
 
         return cmd_string
+
+

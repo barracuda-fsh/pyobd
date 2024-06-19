@@ -42,15 +42,6 @@ import serial
 logger = logging.getLogger(__name__)
 
 
-class OBDStatus(StrEnum):
-    """Values for the connection status flags"""
-
-    NOT_CONNECTED = "Not Connected"
-    ELM_CONNECTED = "ELM Connected"
-    OBD_CONNECTED = "OBD Connected"
-    CAR_CONNECTED = "Car Connected"
-
-
 class BitArray:
     """
     Class for representing bitarrays (inefficiently)
@@ -197,3 +188,12 @@ def scan_serial():
             available.append(port)
     print("Available ports: " + str(available))
     return available
+
+
+class OBDStatus(StrEnum):
+    """Values for the connection status flags"""
+
+    NOT_CONNECTED = "Not Connected"
+    ELM_CONNECTED = "ELM Connected"
+    OBD_CONNECTED = "OBD Connected"
+    CAR_CONNECTED = "Car Connected"
