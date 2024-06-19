@@ -19,7 +19,7 @@ readme = "README.md"
 requires-python = ">= 3.8"
 
 [project.scripts]
-pyobd = 'pyobd:pyobd'
+pyobd = 'pyobd.gui.pyobd:run'
 
 [build-system]
 requires = ["hatchling"]
