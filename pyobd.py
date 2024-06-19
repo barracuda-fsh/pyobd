@@ -1393,11 +1393,25 @@ class MyApp(wx.App):
 
     def build_sensor_page(self):
         HOFFSET_LIST = 0
+        tID = wx.NewIdRef(count=1)
+        self.sensors = self.MyListCtrl(self.nb, tID, pos=wx.Point(0, HOFFSET_LIST), style=
+                        wx.LC_REPORT |
+                        wx.SUNKEN_BORDER |
+                        wx.LC_HRULES |
+                        wx.LC_SINGLE_SEL)
+        self.sensors.InsertColumn(0, "PID", width=70)
+        self.sensors.InsertColumn(1, "Sensor", format=wx.LIST_FORMAT_LEFT, width=320)
+        self.sensors.InsertColumn(2, "Value", width=60)
+        self.nb.AddPage(self.sensors, "Sensors")
+
+        """
+        HOFFSET_LIST = 0
         # tID = wx.NewId()
         tID = wx.NewIdRef(count=1)
         self.sensor_id = tID
 
         self.sensors_panel = wx.Panel(self.nb, -1)
+
         self.sensors = self.MyListCtrl(self.sensors_panel, tID, pos=wx.Point(0, HOFFSET_LIST),
                                      style=
                                      wx.LC_REPORT |
@@ -1408,8 +1422,8 @@ class MyApp(wx.App):
         self.sensors.InsertColumn(0, "PID", width=70)
         self.sensors.InsertColumn(1, "Sensor", format=wx.LIST_FORMAT_LEFT, width=320)
         self.sensors.InsertColumn(2, "Value")
-        self.sensors.SetSize(0, 0, 800, 1500)
-
+        #self.sensors.SetSize(0, 0, 800, 1500)
+        """
         """
         ####################################################################
         # This little bit of magic keeps the list the same size as the frame
@@ -1424,7 +1438,23 @@ class MyApp(wx.App):
         self.sensors_panel.Bind(wx.EVT_SIZE, OnPSize)
         ####################################################################
         """
+        """
+        ####################################################################
+        # This little bit of magic keeps the list the same size as the frame
+        def OnPSize(e, win=self.sensors_panel):
+            self.sensors_panel.SetSize(e.GetSize())
+            self.sensors.SetSize(e.GetSize())
+            w, h = self.frame.GetSize()
+            # I have no idea where 70 comes from
+            # self.dtc.SetDimensions(0,HOFFSET_LIST, w-16 , h - 70 )
+            self.sensors.SetSize(0, HOFFSET_LIST, w - 16, h - 70)
+
+        self.sensors_panel.Bind(wx.EVT_SIZE, OnPSize)
+        ####################################################################
+
+
         self.nb.AddPage(self.sensors_panel, "Sensors")
+        """
     def build_graph_page(self):
         HOFFSET_LIST = 0
         # tID = wx.NewId()
@@ -1500,6 +1530,21 @@ class MyApp(wx.App):
 
 
     def build_freezeframe_page(self):
+        tID = wx.NewIdRef(count=1)
+        self.freezeframe = self.MyListCtrl(self.nb, tID, style=
+                                     wx.LC_REPORT |
+                                     wx.SUNKEN_BORDER |
+                                     wx.LC_HRULES |
+                                     wx.LC_SINGLE_SEL)
+        self.freezeframe.InsertColumn(0, "PID", width=70)
+        self.freezeframe.InsertColumn(1, "Sensor", format=wx.LIST_FORMAT_LEFT, width=320)
+        self.freezeframe.InsertColumn(2, "Value", width=60)
+        self.nb.AddPage(self.freezeframe, "Freeze frame")
+
+
+        """
+        """
+        """
         HOFFSET_LIST = 0
         # tID = wx.NewId()
         tID = wx.NewIdRef(count=1)
@@ -1515,26 +1560,48 @@ class MyApp(wx.App):
 
         self.freezeframe.InsertColumn(0, "PID", width=70)
         self.freezeframe.InsertColumn(1, "Sensor", format=wx.LIST_FORMAT_LEFT, width=320)
-        self.freezeframe.InsertColumn(2, "Value")
-        self.freezeframe.SetSize(0, 0, 800, 1500)
-        """
+        self.freezeframe.InsertColumn(2, "Value", width=60)
+        #self.freezeframe.SetSize(0, 0, 800, 1500)
+
         ####################################################################
         # This little bit of magic keeps the list the same size as the frame
-        def OnPSize(e, win=panel):
+        def OnPSize(e, win=self.freezeframe_panel):
             self.freezeframe_panel.SetSize(e.GetSize())
             self.freezeframe.SetSize(e.GetSize())
 
             w, h = self.frame.GetSize()
 
-            self.freezeframe.SetSize(0, HOFFSET_LIST, w - 10, h - 35)
+            self.freezeframe.SetSize(0, HOFFSET_LIST, w - 16, h - 70)
 
         self.freezeframe_panel.Bind(wx.EVT_SIZE, OnPSize)
         ####################################################################
-        """
-        self.nb.AddPage(self.freezeframe_panel, "Freeze frame")
 
+        self.nb.AddPage(self.freezeframe_panel, "Freeze frame")
+        """
 
     def build_DTC_page(self):
+        """
+        HOFFSET_LIST = 70
+        tID = wx.NewIdRef(count=1)
+        self.dtc = self.MyListCtrl(self.nb, tID, pos=wx.Point(0, HOFFSET_LIST), style=
+        wx.LC_REPORT |
+        wx.SUNKEN_BORDER |
+        wx.LC_HRULES |
+        wx.LC_SINGLE_SEL)
+        self.dtc.InsertColumn(0, "Code", width=100)
+        self.dtc.InsertColumn(1, "Status", width=100)
+        self.dtc.InsertColumn(2, "Trouble code")
+        self.GetDTCButton = wx.Button(self.dtc, -1, "Get DTC", wx.Point(15, 0))
+        self.ClearDTCButton = wx.Button(self.dtc, -1, "Clear DTC", wx.Point(100, 0))
+
+        # bind functions to button click action
+        self.dtc.Bind(wx.EVT_BUTTON, self.GetDTC, self.GetDTCButton)
+        self.dtc.Bind(wx.EVT_BUTTON, self.QueryClear, self.ClearDTCButton)
+        self.nb.AddPage(self.dtc, "DTC")
+
+
+        """
+        
         HOFFSET_LIST = 30  # offset from the top of panel (space for buttons)
         # tID = wx.NewId()
         tID = wx.NewIdRef(count=1)
@@ -1552,6 +1619,7 @@ class MyApp(wx.App):
         self.dtc.InsertColumn(0, "Code", width=100)
         self.dtc.InsertColumn(1, "Status", width=100)
         self.dtc.InsertColumn(2, "Trouble code")
+
 
         ####################################################################
         # This little bit of magic keeps the list the same size as the frame
