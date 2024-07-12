@@ -1394,6 +1394,7 @@ class MyApp(wx.App):
     def build_sensor_page(self):
         HOFFSET_LIST = 0
         tID = wx.NewIdRef(count=1)
+        self.sensor_id = tID
         self.sensors = self.MyListCtrl(self.nb, tID, pos=wx.Point(0, HOFFSET_LIST), style=
                         wx.LC_REPORT |
                         wx.SUNKEN_BORDER |
@@ -1531,6 +1532,7 @@ class MyApp(wx.App):
 
     def build_freezeframe_page(self):
         tID = wx.NewIdRef(count=1)
+        self.freezeframe_id = tID
         self.freezeframe = self.MyListCtrl(self.nb, tID, style=
                                      wx.LC_REPORT |
                                      wx.SUNKEN_BORDER |
