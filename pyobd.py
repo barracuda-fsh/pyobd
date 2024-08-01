@@ -748,6 +748,10 @@ class MyApp(wx.App):
                     """
 
                 elif curstate == 2:  # show sensor tab
+                    s = self.connection.connection.query(obd.commands.RPM)
+                    if s.value == None:
+                        reconnect()
+                        continue
 
                     if first_time_sensors:
                         sensor_list = []
@@ -781,7 +785,7 @@ class MyApp(wx.App):
                         for sens in sensor_list:
                             s = self.connection.connection.query(sens[0])
                             if s.value == None:
-                                reconnect()
+                                #reconnect()
                                 continue
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(sens[0].command)]))
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(sens[1])]))
@@ -836,6 +840,10 @@ class MyApp(wx.App):
                             wx.PostEvent(self._notify_window, DTCEvent(["", "", "No DTC codes (codes cleared)"]))
 
                 elif curstate == 4:  # show freezeframe tab
+                    s = self.connection.connection.query(obd.commands.RPM)
+                    if s.value == None:
+                        reconnect()
+                        continue
                     if first_time_freezeframe:
                         freezeframe_list = []
                         counter = 0
@@ -860,7 +868,7 @@ class MyApp(wx.App):
                                 if command.command == sens[0]:
                                     s = self.connection.connection.query(command)
                                     if s.value == None:
-                                        reconnect()
+                                        #reconnect()
                                         continue
                                     freezeframe_list[counter] = [command.command, command.desc, str(s.value)]
                                     counter = counter + 1
