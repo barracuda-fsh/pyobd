@@ -112,9 +112,7 @@ sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-
 sudo apt-get install python3-pip
 pip3 install --upgrade pyinstaller
 pip3 install --upgrade pip
-pip3 install pip-review
 sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev libsystemd-dev librsync-dev
-pip-review --interactive
 pip3 install -r requirements.txt
 ```
 **Note: After running the commands below log out and log back in for it to take effect(or restart)**
@@ -154,8 +152,6 @@ pip3 install -r requirements.txt
 pip3 install pyinstaller
 pip3 install --upgrade pip
 pip3 install --upgrade pyinstaller
-pip3 install pip-review
-pip-review --interactive
 pyinstaller --onefile -c -i pyobd.ico --add-data "pyobd.ico;." pyobd.py
 ```
 
@@ -166,9 +162,7 @@ sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-
 sudo apt-get install python3-pip
 pip3 install --upgrade pyinstaller
 pip3 install --upgrade pip
-pip3 install pip-review
 sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev libsystemd-dev librsync-dev
-pip-review --interactive
 ```
 
 run:
