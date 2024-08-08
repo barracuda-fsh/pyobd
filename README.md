@@ -52,7 +52,7 @@ This is the list of the ones I tried and worked:<br/>
     * If you really want to go buy a Chinese clone, I recommend one that has a **PIC18F25K80 chip and FTDI chip (for USB)**, but even then, the firmware is also a factor; 1.5 should be best (for a Chinese clone), but who knows what you will get. I.  If you want an affordable Chinese Elm327 that is branded, then go with the Konnwei KW903. It's about $15 with postage included. But iCar Pro is better.<br/>
 
 ## Installation
-You may need to install libsnl when using linux if it didn't come prepacked with it
+You may need to install libnsl when using linux if it didn't come prepacked with it
 
 ### Windows-Installation
 Download the standalone executable and install the driver for your ELM327 device. 
