@@ -115,6 +115,11 @@ pip3 install --upgrade pip
 sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev libsystemd-dev librsync-dev
 pip3 install -r requirements.txt
 ```
+For Ubuntu Nobel, the following should be enough to get pyobd.py to run, instead of the above
+```bash
+sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-dev libgstreamer-plugins-base1.0-0 libnotify-dev libglut-dev libglut3.12 libsm-dev libgtk-3-dev libwebkit2gtk-4.1-dev libxtst-dev gettext python3-dev python3-pip
+sudo apt install wxpython-tools numpy python3-tornado python3-pint python3-six
+```
 **Note: After running the commands below log out and log back in for it to take effect(or restart)**
 ```bash
 sudo usermod -a -G dialout $USER
