@@ -1,0 +1,7 @@
+wxpython
+pyserial
+numpy
+tornado
+pint
+pillow
+six
