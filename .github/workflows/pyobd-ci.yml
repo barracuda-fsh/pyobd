@@ -63,7 +63,6 @@ jobs:
         run: |
           ./venv/bin/pip install setuptools
           ./venv/bin/pip install -r ./requirements/requirements-arch.txt --verbose
-          pip freeze
       #- name: Run tests 
       #  run: |
       #    . venv/bin/activate
@@ -86,7 +85,6 @@ jobs:
         run: |
           .\venv\Scripts\activate
           pip install -r .\requirements\requirements-win32.txt --verbose
-          pip freeze
       #- name: Run tests 
       #  run: |
       #    .\venv\Scripts\activate
@@ -107,7 +105,6 @@ jobs:
       - name: Install requirements
         run: |
           ./venv/bin/pip install -r ./requirements/requirements-macos.txt --verbose
-          ./venv/bin/pip freeze
       #- name: Run tests 
       #  run: |
       #    source ./venv/bin/activate
