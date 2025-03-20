@@ -5,9 +5,9 @@ name: pyodb ci
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feature/add-ci" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "feature/add-ci" ]
 
 permissions:
   contents: read
