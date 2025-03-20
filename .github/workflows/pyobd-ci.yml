@@ -107,7 +107,7 @@ jobs:
       - name: Install requirements
         run: |
           ./venv/bin/pip install -r requirements-unlocked.txt --verbose
-          pip freeze
+          ./venv/bin/pip freeze
       #- name: Run tests 
       #  run: |
       #    source ./venv/bin/activate
