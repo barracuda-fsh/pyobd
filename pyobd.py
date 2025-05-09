@@ -918,16 +918,16 @@ class MyApp(wx.App):
 
                                         #app.sensors.InsertItem(counter, "")
                                         wx.PostEvent(self._notify_window, InsertSensorRowEvent(counter))
-                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(command.command)]))
+                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 0, command.command]))
                                         wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(command.desc)]))
-                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(s.value)]))
+                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
                                         counter = counter + 1
-                        #s = self.connection.connection.query(obd.commands.ELM_VOLTAGE)
-                        #sensor_list.append([obd.commands.ELM_VOLTAGE, obd.commands.ELM_VOLTAGE.desc, str(s.value)])
+                        #r = self.connection.connection.query(obd.commands.ELM_VOLTAGE)
+                        #sensor_list.append([obd.commands.ELM_VOLTAGE, obd.commands.ELM_VOLTAGE.desc, str(r.value)])
                         #wx.PostEvent(self._notify_window, InsertSensorRowEvent(counter))
                         #wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(obd.commands.ELM_VOLTAGE.command)]))
                         #wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(obd.commands.ELM_VOLTAGE.desc)]))
-                        #wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(s.value)]))
+                        #wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
                     else:
                         #for i in range(0, app.sensors.GetItemCount()):
                         #    app.sensors.DeleteItem(0)
@@ -937,9 +937,9 @@ class MyApp(wx.App):
                             if r.value == None:
                                 #reconnect()
                                 continue
-                            wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(sens[0].command)]))
+                            wx.PostEvent(self._notify_window, ResultEvent([counter, 0, sens[0].command]))
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(sens[1])]))
-                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(s.value)]))
+                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
                             counter = counter + 1
 
                 elif curstate == 3:  # show DTC tab
@@ -1005,11 +1005,11 @@ class MyApp(wx.App):
                                     if r.value == None:
                                         continue
                                     else:
-                                        freezeframe_list.append([command.command, command.desc, str(s.value)])
+                                        freezeframe_list.append([command.command, command.desc, str(r.value)])
                                         wx.PostEvent(self._notify_window, InsertFreezeframeRowEvent(counter))
-                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, str(command.command)]))
+                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, command.command]))
                                         wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 1, str(command.desc)]))
-                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, str(s.value)]))
+                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, str(r.value)]))
                                         counter = counter + 1
                     else:
                         counter = 0
@@ -1020,11 +1020,11 @@ class MyApp(wx.App):
                                     if r.value == None:
                                         #reconnect()
                                         continue
-                                    freezeframe_list[counter] = [command.command, command.desc, str(s.value)]
+                                    freezeframe_list[counter] = [command.command, command.desc, str(r.value)]
                                     counter = counter + 1
                         counter = 0
                         for sens in freezeframe_list:
-                            wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, str(sens[0])]))
+                            wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, sens[0]]))
                             wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 1, str(sens[1])]))
                             wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, str(sens[2])]))
                             counter = counter + 1
@@ -1098,7 +1098,7 @@ class MyApp(wx.App):
                                     continue
                                 self.graph_x_vals = np.append(self.graph_x_vals, self.graph_counter)
                                 try:
-                                    self.graph_y_vals = np.append(self.graph_y_vals, float(s.value.magnitude))
+                                    self.graph_y_vals = np.append(self.graph_y_vals, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals = np.append(self.graph_y_vals, float(0))
                                 if len(self.graph_x_vals) > 450:
@@ -1113,9 +1113,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, GraphValueEvent([0, 2, str(0)]))
                                     self.unit = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 2, str(r.value)]))
                                     try:
-                                        self.unit = str(s.value).split(' ')[1]
+                                        self.unit = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit = "unit"
 
@@ -1245,16 +1245,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                #if s.value == None:
-                                #    print("s.value is None!")
+                                #if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals1 = np.append(self.graph_x_vals1, self.graph_counter1)
                                 try:
-                                    self.graph_y_vals1 = np.append(self.graph_y_vals1, float(s.value.magnitude))
+                                    self.graph_y_vals1 = np.append(self.graph_y_vals1, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals1 = np.append(self.graph_y_vals1, float(0))
                                 #self.graph_x_vals1.append(self.graph_counter1)
-                                #self.graph_y_vals1.append(float(s.value.magnitude))
+                                #self.graph_y_vals1.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals1) > 200:
                                     self.graph_x_vals1 = np.delete(self.graph_x_vals1, (0))
                                     self.graph_y_vals1 = np.delete(self.graph_y_vals1, (0))
@@ -1269,9 +1269,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([0, 2, str(0)]))
                                     self.unit1 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, GraphsValueEvent([0, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, GraphsValueEvent([0, 2, str(r.value)]))
                                     try:
-                                        self.unit1 = str(s.value).split(' ')[1]
+                                        self.unit1 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit1 = "unit"
                         else:
@@ -1293,16 +1293,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                #if s.value == None:
-                                #    print("s.value is None!")
+                                #if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals2 = np.append(self.graph_x_vals2, self.graph_counter2)
                                 try:
-                                    self.graph_y_vals2 = np.append(self.graph_y_vals2, float(s.value.magnitude))
+                                    self.graph_y_vals2 = np.append(self.graph_y_vals2, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals2 = np.append(self.graph_y_vals2, float(0))
                                 #self.graph_x_vals2.append(self.graph_counter2)
-                                #self.graph_y_vals2.append(float(s.value.magnitude))
+                                #self.graph_y_vals2.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals2) > 200:
                                     self.graph_x_vals2 = np.delete(self.graph_x_vals2, (0))
                                     self.graph_y_vals2 = np.delete(self.graph_y_vals2, (0))
@@ -1317,9 +1317,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([1, 2, str(0)]))
                                     self.unit2 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, GraphsValueEvent([1, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, GraphsValueEvent([1, 2, str(r.value)]))
                                     try:
-                                        self.unit2 = str(s.value).split(' ')[1]
+                                        self.unit2 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit2 = "unit"
                         else:
@@ -1341,16 +1341,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                #if s.value == None:
-                                #    print("s.value is None!")
+                                #if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals3 = np.append(self.graph_x_vals3, self.graph_counter3)
                                 try:
-                                    self.graph_y_vals3 = np.append(self.graph_y_vals3, float(s.value.magnitude))
+                                    self.graph_y_vals3 = np.append(self.graph_y_vals3, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals3 = np.append(self.graph_y_vals3, float(0))
                                 #self.graph_x_vals3.append(self.graph_counter3)
-                                #self.graph_y_vals3.append(float(s.value.magnitude))
+                                #self.graph_y_vals3.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals3) > 200:
                                     self.graph_x_vals3 = np.delete(self.graph_x_vals3, (0))
                                     self.graph_y_vals3 = np.delete(self.graph_y_vals3, (0))
@@ -1365,9 +1365,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([2, 2, str(0)]))
                                     self.unit3 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, GraphsValueEvent([2, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, GraphsValueEvent([2, 2, str(r.value)]))
                                     try:
-                                        self.unit3 = str(s.value).split(' ')[1]
+                                        self.unit3 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit3 = "unit"
                         else:
@@ -1389,18 +1389,18 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                #if s.value == None:
-                                #    print("s.value is None!")
+                                #if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals4 = np.append(self.graph_x_vals4, self.graph_counter4)
 
                                 try:
-                                    self.graph_y_vals4 = np.append(self.graph_y_vals4, float(s.value.magnitude))
+                                    self.graph_y_vals4 = np.append(self.graph_y_vals4, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals4 = np.append(self.graph_y_vals4, float(0))
 
                                 #self.graph_x_vals4.append(self.graph_counter4)
-                                #self.graph_y_vals4.append(float(s.value.magnitude))
+                                #self.graph_y_vals4.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals4) > 200:
                                     self.graph_x_vals4 = np.delete(self.graph_x_vals4, (0))
                                     self.graph_y_vals4 = np.delete(self.graph_y_vals4, (0))
@@ -1415,9 +1415,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([3, 2, str(0)]))
                                     self.unit4 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, GraphsValueEvent([3, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, GraphsValueEvent([3, 2, str(r.value)]))
                                     try:
-                                        self.unit4 = str(s.value).split(' ')[1]
+                                        self.unit4 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit4 = "unit"
                         else:
@@ -1618,16 +1618,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_1 = np.append(self.graph_x_vals8_1, self.graph_counter8_1)
                                 try:
-                                    self.graph_y_vals8_1 = np.append(self.graph_y_vals8_1, float(s.value.magnitude))
+                                    self.graph_y_vals8_1 = np.append(self.graph_y_vals8_1, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_1 = np.append(self.graph_y_vals8_1, float(0))
                                 # self.graph_x_vals1.append(self.graph_counter1)
-                                # self.graph_y_vals1.append(float(s.value.magnitude))
+                                # self.graph_y_vals1.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_1) > 200:
                                     self.graph_x_vals8_1 = np.delete(self.graph_x_vals8_1, (0))
                                     self.graph_y_vals8_1 = np.delete(self.graph_y_vals8_1, (0))
@@ -1642,9 +1642,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([0, 2, str(0)]))
                                     self.unit8_1 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([0, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([0, 2, str(r.value)]))
                                     try:
-                                        self.unit8_1 = str(s.value).split(' ')[1]
+                                        self.unit8_1 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_1 = "unit"
                         else:
@@ -1667,16 +1667,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_2 = np.append(self.graph_x_vals8_2, self.graph_counter8_2)
                                 try:
-                                    self.graph_y_vals8_2 = np.append(self.graph_y_vals8_2, float(s.value.magnitude))
+                                    self.graph_y_vals8_2 = np.append(self.graph_y_vals8_2, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_2 = np.append(self.graph_y_vals8_2, float(0))
                                 # self.graph_x_vals2.append(self.graph_counter2)
-                                # self.graph_y_vals2.append(float(s.value.magnitude))
+                                # self.graph_y_vals2.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_2) > 200:
                                     self.graph_x_vals8_2 = np.delete(self.graph_x_vals8_2, (0))
                                     self.graph_y_vals8_2 = np.delete(self.graph_y_vals8_2, (0))
@@ -1691,9 +1691,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([1, 2, str(0)]))
                                     self.unit8_2 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([1, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([1, 2, str(r.value)]))
                                     try:
-                                        self.unit8_2 = str(s.value).split(' ')[1]
+                                        self.unit8_2 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_2 = "unit"
                         else:
@@ -1716,16 +1716,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_3 = np.append(self.graph_x_vals8_3, self.graph_counter8_3)
                                 try:
-                                    self.graph_y_vals8_3 = np.append(self.graph_y_vals8_3, float(s.value.magnitude))
+                                    self.graph_y_vals8_3 = np.append(self.graph_y_vals8_3, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_3 = np.append(self.graph_y_vals8_3, float(0))
                                 # self.graph_x_vals3.append(self.graph_counter3)
-                                # self.graph_y_vals3.append(float(s.value.magnitude))
+                                # self.graph_y_vals3.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_3) > 200:
                                     self.graph_x_vals8_3 = np.delete(self.graph_x_vals8_3, (0))
                                     self.graph_y_vals8_3 = np.delete(self.graph_y_vals8_3, (0))
@@ -1740,9 +1740,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([2, 2, str(0)]))
                                     self.unit8_3 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([2, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([2, 2, str(r.value)]))
                                     try:
-                                        self.unit8_3 = str(s.value).split(' ')[1]
+                                        self.unit8_3 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_3 = "unit"
                         else:
@@ -1765,18 +1765,18 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_4 = np.append(self.graph_x_vals8_4, self.graph_counter8_4)
 
                                 try:
-                                    self.graph_y_vals8_4 = np.append(self.graph_y_vals8_4, float(s.value.magnitude))
+                                    self.graph_y_vals8_4 = np.append(self.graph_y_vals8_4, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_4 = np.append(self.graph_y_vals8_4, float(0))
 
                                 # self.graph_x_vals4.append(self.graph_counter4)
-                                # self.graph_y_vals4.append(float(s.value.magnitude))
+                                # self.graph_y_vals4.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_4) > 200:
                                     self.graph_x_vals8_4 = np.delete(self.graph_x_vals8_4, (0))
                                     self.graph_y_vals8_4 = np.delete(self.graph_y_vals8_4, (0))
@@ -1791,9 +1791,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([3, 2, str(0)]))
                                     self.unit8_4 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([3, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([3, 2, str(r.value)]))
                                     try:
-                                        self.unit8_4 = str(s.value).split(' ')[1]
+                                        self.unit8_4 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_4 = "unit"
                         else:
@@ -1821,16 +1821,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_5 = np.append(self.graph_x_vals8_5, self.graph_counter8_5)
                                 try:
-                                    self.graph_y_vals8_5 = np.append(self.graph_y_vals8_5, float(s.value.magnitude))
+                                    self.graph_y_vals8_5 = np.append(self.graph_y_vals8_5, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_5 = np.append(self.graph_y_vals8_5, float(0))
                                 # self.graph_x_vals1.append(self.graph_counter1)
-                                # self.graph_y_vals1.append(float(s.value.magnitude))
+                                # self.graph_y_vals1.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_5) > 200:
                                     self.graph_x_vals8_5 = np.delete(self.graph_x_vals8_5, (0))
                                     self.graph_y_vals8_5 = np.delete(self.graph_y_vals8_5, (0))
@@ -1845,9 +1845,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([4, 2, str(0)]))
                                     self.unit8_5 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([4, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([4, 2, str(r.value)]))
                                     try:
-                                        self.unit8_5 = str(s.value).split(' ')[1]
+                                        self.unit8_5 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_5 = "unit"
                         else:
@@ -1872,16 +1872,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_6 = np.append(self.graph_x_vals8_6, self.graph_counter8_6)
                                 try:
-                                    self.graph_y_vals8_6 = np.append(self.graph_y_vals8_6, float(s.value.magnitude))
+                                    self.graph_y_vals8_6 = np.append(self.graph_y_vals8_6, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_6 = np.append(self.graph_y_vals8_6, float(0))
                                 # self.graph_x_vals2.append(self.graph_counter2)
-                                # self.graph_y_vals2.append(float(s.value.magnitude))
+                                # self.graph_y_vals2.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_6) > 200:
                                     self.graph_x_vals8_6 = np.delete(self.graph_x_vals8_6, (0))
                                     self.graph_y_vals8_6 = np.delete(self.graph_y_vals8_6, (0))
@@ -1896,9 +1896,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([5, 2, str(0)]))
                                     self.unit8_6 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([5, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([5, 2, str(r.value)]))
                                     try:
-                                        self.unit8_6 = str(s.value).split(' ')[1]
+                                        self.unit8_6 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_6 = "unit"
                         else:
@@ -1923,16 +1923,16 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_7 = np.append(self.graph_x_vals8_7, self.graph_counter8_7)
                                 try:
-                                    self.graph_y_vals8_7 = np.append(self.graph_y_vals8_7, float(s.value.magnitude))
+                                    self.graph_y_vals8_7 = np.append(self.graph_y_vals8_7, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_7 = np.append(self.graph_y_vals8_7, float(0))
                                 # self.graph_x_vals3.append(self.graph_counter3)
-                                # self.graph_y_vals3.append(float(s.value.magnitude))
+                                # self.graph_y_vals3.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_7) > 200:
                                     self.graph_x_vals8_7 = np.delete(self.graph_x_vals8_7, (0))
                                     self.graph_y_vals8_7 = np.delete(self.graph_y_vals8_7, (0))
@@ -1947,9 +1947,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([6, 2, str(0)]))
                                     self.unit8_7 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([6, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([6, 2, str(r.value)]))
                                     try:
-                                        self.unit8_7 = str(s.value).split(' ')[1]
+                                        self.unit8_7 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_7 = "unit"
                         else:
@@ -1972,18 +1972,18 @@ class MyApp(wx.App):
                                 if r.value == None:
                                     reconnect()
                                     continue
-                                # if s.value == None:
-                                #    print("s.value is None!")
+                                # if r.value == None:
+                                #    print("r.value is None!")
                                 #    raise AttributeError
                                 self.graph_x_vals8_8 = np.append(self.graph_x_vals8_8, self.graph_counter8_8)
 
                                 try:
-                                    self.graph_y_vals8_8 = np.append(self.graph_y_vals8_8, float(s.value.magnitude))
+                                    self.graph_y_vals8_8 = np.append(self.graph_y_vals8_8, float(r.value.magnitude))
                                 except AttributeError:
                                     self.graph_y_vals8_8 = np.append(self.graph_y_vals8_8, float(0))
 
                                 # self.graph_x_vals4.append(self.graph_counter4)
-                                # self.graph_y_vals4.append(float(s.value.magnitude))
+                                # self.graph_y_vals4.append(float(r.value.magnitude))
                                 if len(self.graph_x_vals8_8) > 200:
                                     self.graph_x_vals8_8 = np.delete(self.graph_x_vals8_8, (0))
                                     self.graph_y_vals8_8 = np.delete(self.graph_y_vals8_8, (0))
@@ -1998,9 +1998,9 @@ class MyApp(wx.App):
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([7, 2, str(0)]))
                                     self.unit8_8 = "unit"
                                 else:
-                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([7, 2, str(s.value)]))
+                                    wx.PostEvent(self._notify_window, Graphs8ValueEvent([7, 2, str(r.value)]))
                                     try:
-                                        self.unit8_8 = str(s.value).split(' ')[1]
+                                        self.unit8_8 = str(r.value).split(' ')[1]
                                     except IndexError:
                                         self.unit8_8 = "unit"
                         else:
