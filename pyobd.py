@@ -701,8 +701,8 @@ class MyApp(wx.App):
                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([7, 1, self.current_command8_8.desc]))
 
                 if curstate == 0:  # show status tab
-                    s = self.connection.connection.query(obd.commands.RPM)
-                    if s.value == None:
+                    r = self.connection.connection.query(obd.commands.RPM)
+                    if r.value == None:
                         reconnect()
                         continue
 
@@ -714,8 +714,8 @@ class MyApp(wx.App):
 
                 elif curstate == 1:  # show tests tab
                     try:
-                        s = self.connection.connection.query(obd.commands.RPM)
-                        if s.value == None:
+                        r = self.connection.connection.query(obd.commands.RPM)
+                        if r.value == None:
                             reconnect()
                             continue
                         r = self.connection.connection.query(obd.commands[1][1])
@@ -898,8 +898,8 @@ class MyApp(wx.App):
                     """
 
                 elif curstate == 2:  # show sensor tab
-                    s = self.connection.connection.query(obd.commands.RPM)
-                    if s.value == None:
+                    r = self.connection.connection.query(obd.commands.RPM)
+                    if r.value == None:
                         reconnect()
                         continue
 
@@ -910,8 +910,8 @@ class MyApp(wx.App):
                         for command in obd.commands[1]:
                             if command:
                                 if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
-                                    s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    r = self.connection.connection.query(command)
+                                    if r.value == None:
                                         continue
                                     else:
                                         sensor_list.append([command, command.desc])
@@ -933,8 +933,8 @@ class MyApp(wx.App):
                         #    app.sensors.DeleteItem(0)
                         counter = 0
                         for sens in sensor_list:
-                            s = self.connection.connection.query(sens[0])
-                            if s.value == None:
+                            r = self.connection.connection.query(sens[0])
+                            if r.value == None:
                                 #reconnect()
                                 continue
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 0, str(sens[0].command)]))
@@ -943,8 +943,8 @@ class MyApp(wx.App):
                             counter = counter + 1
 
                 elif curstate == 3:  # show DTC tab
-                    s = self.connection.connection.query(obd.commands.RPM)
-                    if s.value == None:
+                    r = self.connection.connection.query(obd.commands.RPM)
+                    if r.value == None:
                         reconnect()
                         continue
 
@@ -990,8 +990,8 @@ class MyApp(wx.App):
                             wx.PostEvent(self._notify_window, DTCEvent(["", "", "No DTC codes (codes cleared)"]))
 
                 elif curstate == 4:  # show freezeframe tab
-                    s = self.connection.connection.query(obd.commands.RPM)
-                    if s.value == None:
+                    r = self.connection.connection.query(obd.commands.RPM)
+                    if r.value == None:
                         reconnect()
                         continue
                     if first_time_freezeframe:
@@ -1001,8 +1001,8 @@ class MyApp(wx.App):
                         for command in obd.commands[2]:
                             if command:
                                 if command.command not in (b"0200" , b"0201", b"0220", b"0240", b"0203", b"0202", b"021C", b"0213", b"0241", b"0251"):
-                                    s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    r = self.connection.connection.query(command)
+                                    if r.value == None:
                                         continue
                                     else:
                                         freezeframe_list.append([command.command, command.desc, str(s.value)])
@@ -1016,8 +1016,8 @@ class MyApp(wx.App):
                         for sens in freezeframe_list:
                             for command in obd.commands[2]:
                                 if command.command == sens[0]:
-                                    s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    r = self.connection.connection.query(command)
+                                    if r.value == None:
                                         #reconnect()
                                         continue
                                     freezeframe_list[counter] = [command.command, command.desc, str(s.value)]
@@ -1050,8 +1050,8 @@ class MyApp(wx.App):
                         for command in obd.commands[1]:
                             if command:
                                 if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
-                                    s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    r = self.connection.connection.query(command)
+                                    if r.value == None:
                                         continue
                                     else:
                                         graph_commands.append(command)
@@ -1092,8 +1092,8 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, GraphValueEvent([0, 0, self.current_command.command]))
                                 wx.PostEvent(self._notify_window, GraphValueEvent([0, 1, self.current_command.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 self.graph_x_vals = np.append(self.graph_x_vals, self.graph_counter)
@@ -1109,7 +1109,7 @@ class MyApp(wx.App):
                                 prev_command = self.current_command
 
 
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, GraphValueEvent([0, 2, str(0)]))
                                     self.unit = "unit"
                                 else:
@@ -1171,8 +1171,8 @@ class MyApp(wx.App):
                         for command in obd.commands[1]:
                             if command:
                                 if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
-                                    s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    r = self.connection.connection.query(command)
+                                    if r.value == None:
                                         continue
                                     else:
                                         graph_commands.append(command)
@@ -1241,8 +1241,8 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([0, 0, self.current_command1.command]))
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([0, 1, self.current_command1.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command1)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command1)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 #if s.value == None:
@@ -1265,7 +1265,7 @@ class MyApp(wx.App):
                                 prev_command1 = self.current_command1
                                 self.graph_dirty1 = True
                                 #wx.PostEvent(self._notify_window, GraphEvent(self.current_command1))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([0, 2, str(0)]))
                                     self.unit1 = "unit"
                                 else:
@@ -1289,8 +1289,8 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([1, 0, self.current_command2.command]))
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([1, 1, self.current_command2.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command2)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command2)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 #if s.value == None:
@@ -1313,7 +1313,7 @@ class MyApp(wx.App):
                                 prev_command2 = self.current_command2
                                 self.graph_dirty2 = True
                                 #wx.PostEvent(self._notify_window, GraphEvent(self.current_command2))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([1, 2, str(0)]))
                                     self.unit2 = "unit"
                                 else:
@@ -1337,8 +1337,8 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([2, 0, self.current_command3.command]))
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([2, 1, self.current_command3.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command3)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command3)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 #if s.value == None:
@@ -1361,7 +1361,7 @@ class MyApp(wx.App):
                                 prev_command3 = self.current_command3
                                 self.graph_dirty3 = True
                                 #wx.PostEvent(self._notify_window, GraphEvent(self.current_command3))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([2, 2, str(0)]))
                                     self.unit3 = "unit"
                                 else:
@@ -1385,8 +1385,8 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([3, 0, self.current_command4.command]))
                                 wx.PostEvent(self._notify_window, GraphsValueEvent([3, 1, self.current_command4.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command4)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command4)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 #if s.value == None:
@@ -1411,7 +1411,7 @@ class MyApp(wx.App):
                                 prev_command4 = self.current_command4
                                 self.graph_dirty4 = True
                                 #wx.PostEvent(self._notify_window, GraphEvent(self.current_command4))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, GraphsValueEvent([3, 2, str(0)]))
                                     self.unit4 = "unit"
                                 else:
@@ -1507,8 +1507,8 @@ class MyApp(wx.App):
                                 if command.command not in (
                                 b"0100", b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141",
                                 b"0151"):
-                                    s = self.connection.connection.query(command)
-                                    if s.value == None:
+                                    r = self.connection.connection.query(command)
+                                    if r.value == None:
                                         continue
                                     else:
                                         graph_commands.append(command)
@@ -1614,8 +1614,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([0, 0, self.current_command8_1.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([0, 1, self.current_command8_1.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_1)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_1)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1638,7 +1638,7 @@ class MyApp(wx.App):
                                 prev_command8_1 = self.current_command8_1
                                 self.graph_dirty8_1 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command1))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([0, 2, str(0)]))
                                     self.unit8_1 = "unit"
                                 else:
@@ -1663,8 +1663,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([1, 0, self.current_command8_2.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([1, 1, self.current_command8_2.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_2)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_2)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1687,7 +1687,7 @@ class MyApp(wx.App):
                                 prev_command8_2 = self.current_command8_2
                                 self.graph_dirty8_2 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command2))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([1, 2, str(0)]))
                                     self.unit8_2 = "unit"
                                 else:
@@ -1712,8 +1712,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([2, 0, self.current_command8_3.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([2, 1, self.current_command8_3.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_3)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_3)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1736,7 +1736,7 @@ class MyApp(wx.App):
                                 prev_command8_3 = self.current_command8_3
                                 self.graph_dirty8_3 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command3))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([2, 2, str(0)]))
                                     self.unit8_3 = "unit"
                                 else:
@@ -1761,8 +1761,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([3, 0, self.current_command8_4.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([3, 1, self.current_command8_4.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_4)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_4)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1787,7 +1787,7 @@ class MyApp(wx.App):
                                 prev_command8_4 = self.current_command8_4
                                 self.graph_dirty8_4 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command4))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([3, 2, str(0)]))
                                     self.unit8_4 = "unit"
                                 else:
@@ -1817,8 +1817,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([4, 0, self.current_command8_5.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([4, 1, self.current_command8_5.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_5)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_5)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1841,7 +1841,7 @@ class MyApp(wx.App):
                                 prev_command8_5 = self.current_command8_5
                                 self.graph_dirty8_5 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command1))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([4, 2, str(0)]))
                                     self.unit8_5 = "unit"
                                 else:
@@ -1868,8 +1868,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([5, 0, self.current_command8_6.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([5, 1, self.current_command8_6.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_6)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_6)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1892,7 +1892,7 @@ class MyApp(wx.App):
                                 prev_command6 = self.current_command8_6
                                 self.graph_dirty8_6 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command2))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([5, 2, str(0)]))
                                     self.unit8_6 = "unit"
                                 else:
@@ -1919,8 +1919,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([6, 0, self.current_command8_7.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([6, 1, self.current_command8_7.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_7)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_7)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1943,7 +1943,7 @@ class MyApp(wx.App):
                                 prev_command8_7 = self.current_command8_7
                                 self.graph_dirty8_7 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command3))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([6, 2, str(0)]))
                                     self.unit8_7 = "unit"
                                 else:
@@ -1968,8 +1968,8 @@ class MyApp(wx.App):
                                              Graphs8ValueEvent([7, 0, self.current_command8_8.command]))
                                 wx.PostEvent(self._notify_window, Graphs8ValueEvent([7, 1, self.current_command8_8.desc]))
                             else:
-                                s = self.connection.connection.query(self.current_command8_8)
-                                if s.value == None:
+                                r = self.connection.connection.query(self.current_command8_8)
+                                if r.value == None:
                                     reconnect()
                                     continue
                                 # if s.value == None:
@@ -1994,7 +1994,7 @@ class MyApp(wx.App):
                                 prev_command8_8 = self.current_command8_8
                                 self.graph_dirty8_8 = True
                                 # wx.PostEvent(self._notify_window, GraphEvent(self.current_command4))
-                                if s.value == None:
+                                if r.value == None:
                                     wx.PostEvent(self._notify_window, Graphs8ValueEvent([7, 2, str(0)]))
                                     self.unit8_8 = "unit"
                                 else:
@@ -2079,8 +2079,8 @@ class MyApp(wx.App):
                         self.first_time_8graphs_plot = False
                         # time.sleep(0.2)
                 elif curstate == 8:
-                    s = self.connection.connection.query(obd.commands.RPM)
-                    if s.value == None:
+                    r = self.connection.connection.query(obd.commands.RPM)
+                    if r.value == None:
                         reconnect()
                         continue
                 time_end = datetime.datetime.now()
