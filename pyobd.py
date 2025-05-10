@@ -943,6 +943,7 @@ class MyApp(wx.App):
                             counter = counter + 1
 
                 elif curstate == 3:  # show DTC tab
+
                     r = self.connection.connection.query(obd.commands.RPM)
                     if r.value == None:
                         reconnect()
@@ -1092,10 +1093,12 @@ class MyApp(wx.App):
                                 wx.PostEvent(self._notify_window, GraphValueEvent([0, 0, self.current_command.command]))
                                 wx.PostEvent(self._notify_window, GraphValueEvent([0, 1, self.current_command.desc]))
                             else:
+
                                 r = self.connection.connection.query(self.current_command)
                                 if r.value == None:
                                     reconnect()
                                     continue
+
                                 self.graph_x_vals = np.append(self.graph_x_vals, self.graph_counter)
                                 try:
                                     self.graph_y_vals = np.append(self.graph_y_vals, float(r.value.magnitude))
@@ -2475,7 +2478,7 @@ class MyApp(wx.App):
             self.RECONNATTEMPTS = 5
             self.SERTIMEOUT = 1
             self.BAUDRATE = "AUTO"
-            self.FAST = "FAST"
+            self.FAST = "NORMAL"
         else:
             try:
                 self.COMPORT = self.config.get("pyOBD", "COMPORT")
