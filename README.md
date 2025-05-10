@@ -28,6 +28,7 @@ You need an ELM327 adapter, a laptop, and a car that supports OBD2 to use this p
 
 **Which ELM327 adapters have been reported to work? Most if not all adapters for $10 or more should work.**<br/>
 This is the list of the ones I tried and worked:<br/>
+* VGate Vlinker FS USB
 * [OBDPro USB Scantool](http://www.obdpros.com/product_info.php?products_id=133)<br/>
 * [OBDLink SX USB](https://www.obdlink.com/products/obdlink-sx/)<br/>
 * Chinese OBD2 1.5 USB<br/>
