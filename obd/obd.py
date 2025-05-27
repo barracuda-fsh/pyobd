@@ -86,6 +86,7 @@ class OBD(object):
                 self.interface = ELM327(port, baudrate, protocol,
                                         self.timeout, check_voltage,
                                         start_low_power)
+
                 print(self.interface.status())
                 if self.interface.status() == OBDStatus.CAR_CONNECTED:
                     break # success! stop searching for serial
