@@ -909,9 +909,9 @@ class MyApp(wx.App):
                         first_time_sensors = False
                         for command in obd.commands[1]:
                             if command:
-                                if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
+                                if command.command not in (b"0100", b"0120", b"0140"): #, b"0103", b"0141" #b"0101", b"0103", b"0102", b"011C", b"0151", b"0113"
                                     r = self.connection.connection.query(command)
-                                    if r.value == None:
+                                    if r.value == None and command.command != b"0103":
                                         continue
                                     else:
                                         sensor_list.append([command, command.desc])
@@ -920,7 +920,14 @@ class MyApp(wx.App):
                                         wx.PostEvent(self._notify_window, InsertSensorRowEvent(counter))
                                         wx.PostEvent(self._notify_window, ResultEvent([counter, 0, command.command]))
                                         wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(command.desc)]))
-                                        wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
+                                        if command.command == b"0101" or command.command == b"0141":
+                                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, "MIL ON: "+str(r.value.MIL)+", DTC Count: "+str(r.value.DTC_count)+", Ignition type: "+str(r.value.ignition_type)+", Misfire monitoring complete: "+str(r.value.MISFIRE_MONITORING.complete)]))
+                                        elif command.command == b"0113":
+                                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, "Bank1S1: "+str(r.value[1][0])+", Bank1S2: "+str(r.value[1][1])+", Bank1S3: "+str(r.value[1][2])+", Bank1S4: "+str(r.value[1][3])+" Bank2S1: "+str(r.value[2][0])+", Bank2S2: "+str(r.value[2][1])+", Bank2S3: "+str(r.value[2][2])+", Bank2S4: "+str(r.value[2][3])]))
+                                        elif command.command == b"0103" and r.value != None:
+                                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value[0])]))
+                                        else:
+                                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
                                         counter = counter + 1
                         #r = self.connection.connection.query(obd.commands.ELM_VOLTAGE)
                         #sensor_list.append([obd.commands.ELM_VOLTAGE, obd.commands.ELM_VOLTAGE.desc, str(r.value)])
@@ -929,17 +936,30 @@ class MyApp(wx.App):
                         #wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(obd.commands.ELM_VOLTAGE.desc)]))
                         #wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
                     else:
+
                         #for i in range(0, app.sensors.GetItemCount()):
                         #    app.sensors.DeleteItem(0)
                         counter = 0
                         for sens in sensor_list:
                             r = self.connection.connection.query(sens[0])
-                            if r.value == None:
+                            if r.value == None and sens[0].command != b"0103":
                                 #reconnect()
                                 continue
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 0, sens[0].command]))
                             wx.PostEvent(self._notify_window, ResultEvent([counter, 1, str(sens[1])]))
-                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
+
+                            if sens[0].command == b"0101" or sens[0].command == b"0141":
+                                wx.PostEvent(self._notify_window, ResultEvent([counter, 2, "MIL ON: " + str(
+                                    r.value.MIL) + ", DTC Count: " + str(r.value.DTC_count) + ", Ignition type: " + str(
+                                    r.value.ignition_type) + ", Misfire monitoring complete: " + str(
+                                    r.value.MISFIRE_MONITORING.complete)]))
+                            elif sens[0].command == b"0113":
+                                wx.PostEvent(self._notify_window, ResultEvent([counter, 2, "Bank1S1: "+str(r.value[1][0])+", Bank1S2: "+str(r.value[1][1])+", Bank1S3: "+str(r.value[1][2])+", Bank1S4: "+str(r.value[1][3])+" Bank2S1: "+str(r.value[2][0])+", Bank2S2: "+str(r.value[2][1])+", Bank2S3: "+str(r.value[2][2])+", Bank2S4: "+str(r.value[2][3])]))
+                            elif sens[0].command == b"0103" and r.value != None:
+                                wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value[0])]))
+                            else:
+                                wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
+
                             counter = counter + 1
 
                 elif curstate == 3:  # show DTC tab
