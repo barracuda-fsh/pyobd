@@ -432,7 +432,7 @@ def dtc(messages):
         if message.can == False:
             d += message.data[2:]
         elif message.can and message.num_frames == 1:
-            d += message.data[1:]  # remove the mode and DTC_count bytes
+            d += message.data[2:]  # remove the mode and DTC_count bytes
         elif message.can and message.num_frames > 1:
             d += message.data[0:]  # remove the mode and DTC_count bytes
     print(d)
