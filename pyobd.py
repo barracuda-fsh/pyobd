@@ -559,7 +559,11 @@ class MyApp(wx.App):
             init_all_graphs()
             def reconnect():
                 init_all_graphs()
-                if self.initCommunication() != "OK":
+                try:
+                    if self.initCommunication() != "OK":
+                        self._notify_window.ThreadControl = 666
+                except Exception as e:
+                    print(f"Reconnect failed with exception: {e}")
                     self._notify_window.ThreadControl = 666
 
             while self._notify_window.ThreadControl != 666:
