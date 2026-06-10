@@ -470,9 +470,15 @@ class MyApp(wx.App):
 
         def run(self):
 
-            if self.initCommunication() != "OK":
+            try:
+                init_ok = self.initCommunication() == "OK"
+            except Exception as e:
+                print(f"Initial connection failed with exception: {e}")
+                init_ok = False
+            if not init_ok:
                 self._notify_window.ThreadControl = 666
                 self.state = "finished"
+                self.stop()
                 return None
 
             self.baudrate = self.connection.connection.interface.baudrate()
@@ -559,7 +565,11 @@ class MyApp(wx.App):
             init_all_graphs()
             def reconnect():
                 init_all_graphs()
-                if self.initCommunication() != "OK":
+                try:
+                    if self.initCommunication() != "OK":
+                        self._notify_window.ThreadControl = 666
+                except Exception as e:
+                    print(f"Reconnect failed with exception: {e}")
                     self._notify_window.ThreadControl = 666
 
             while self._notify_window.ThreadControl != 666:

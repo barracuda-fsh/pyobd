@@ -1,6 +1,6 @@
-wxpython==4.2.1
+wxpython>=4.2.2,<4.3
 pyserial==3.5
-numpy==1.23
+numpy==1.26.4
 tornado==3.2.1
 pint==0.20.1
 pillow==10.4.0

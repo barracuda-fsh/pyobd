@@ -70,8 +70,12 @@ sudo usermod -a -G tty $USER
 
 For bluetooth adapters, you will probably need to install this:
 ```bash
-sudo apt-get install bluetooth bluez-utils blueman
+sudo apt-get install bluetooth bluez blueman
 ```
+
+`bluez-utils` was used by older Ubuntu releases. On current Ubuntu systems the
+Bluetooth command-line tools, including `bluetoothctl` and `rfcomm`, are provided
+by the `bluez` package.
 
 ### MacOS-Installation
 Download the standalone executable and add your user account the privileges of accesing USB and serial ports: </br>
@@ -116,7 +120,7 @@ pip3 install --upgrade pip
 sudo apt install libglib2.0-dev libsmbclient-dev libcups2-dev libgirepository1.0-dev libcurl4-openssl-dev libssl-dev libsystemd-dev librsync-dev
 pip3 install -r requirements.txt
 ```
-For Ubuntu Nobel, the following should be enough to get pyobd.py to run, instead of the above
+For Ubuntu Noble, the following should be enough to get pyobd.py to run, instead of the above
 ```bash
 sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-dev libgstreamer-plugins-base1.0-0 libnotify-dev libglut-dev libglut3.12 libsm-dev libgtk-3-dev libwebkit2gtk-4.1-dev libxtst-dev gettext python3-dev python3-pip
 sudo apt install wxpython-tools numpy python3-tornado python3-pint python3-six
@@ -127,9 +131,81 @@ sudo usermod -a -G dialout $USER
 sudo usermod -a -G tty $USER
 ```
 
+When running from a Python virtual environment:
+```bash
+source ~/.venv/bin/activate
+python3 -m pip install -r requirements.txt
+```
+
 The script is executed by running:
 ```bash
 python3 pyobd.py 
+```
+
+#### Bluetooth ELM327 on Ubuntu
+
+Pair the ELM327 adapter once, then expose it as a serial device with `rfcomm`.
+This procedure was verified on Ubuntu 24.04 Noble with pyobd running from a
+Python virtual environment and an ELM327 Bluetooth adapter. The tested adapter
+connected reliably on RFCOMM channel 2; channel 1 connected but disconnected
+shortly afterwards.
+
+Install Bluetooth tools:
+```bash
+sudo apt-get install bluetooth bluez blueman
+```
+
+Pair and trust the adapter. Replace `XX:XX:XX:XX:XX:XX` with the adapter MAC
+address:
+```bash
+bluetoothctl
+scan on
+pair XX:XX:XX:XX:XX:XX
+trust XX:XX:XX:XX:XX:XX
+quit
+```
+
+You can list paired devices later with:
+```bash
+bluetoothctl devices
+bluetoothctl info XX:XX:XX:XX:XX:XX
+```
+
+Create `/dev/rfcomm0` on RFCOMM channel 2 and leave this command running:
+```bash
+sudo rfcomm release rfcomm0
+sudo rfcomm connect rfcomm0 XX:XX:XX:XX:XX:XX 2
+```
+
+Start pyobd in a second terminal:
+```bash
+source ~/.venv/bin/activate
+python3 pyobd.py
+```
+
+In pyobd, open `Configure`, select `/dev/rfcomm0`, choose baud rate `38400`, and
+click `Connect`.
+
+The verified adapter responded from the same virtual environment with:
+```text
+ATI: ELM327 v2.1
+ATRV: 12.1V
+status: Car Connected
+protocol: ISO 15765-4 (CAN 11/500)
+```
+
+You can inspect or remove the RFCOMM connection with:
+```bash
+rfcomm
+sudo rfcomm release rfcomm0
+```
+
+If you prefer a binding that does not keep `rfcomm` in the foreground, use
+`bind` instead of `connect`. The connection will then be opened when pyobd opens
+`/dev/rfcomm0`, but the foreground `connect` command above is easier to debug:
+```bash
+sudo rfcomm release rfcomm0
+sudo rfcomm bind rfcomm0 XX:XX:XX:XX:XX:XX 2
 ```
 
 ### MacOS-Script
