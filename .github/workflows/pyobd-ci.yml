@@ -35,7 +35,7 @@ jobs:
         run: python -m venv venv
       - name: Install requirements
         run: |
-          ./venv/bin/pip install -r /requirements/requirements-ubuntu.txt --verbose
+          ./venv/bin/pip install -r ./requirements/requirements-ubuntu.txt --verbose
       #- name: Run tests 
       #  run: |
       #    . venv/bin/activate
