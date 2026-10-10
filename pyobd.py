@@ -24,53 +24,29 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ############################################################################
 
-#import pint
-#from mem_top import mem_top
-#import logging
 import numpy as np
-#import multiprocessing
-#from multiprocessing import Queue, Process
-# import wxversion
-# wxversion.select("2.6")
-#import matplotlib
 from wx.lib import plot as wxplot
-#from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-
-#from matplotlib.figure import Figure
-#import matplotlib.pyplot as plt
-#matplotlib.use('wxAgg')
-#from matplotlib.animation import FuncAnimation
-#from matplotlib import style
-#import numpy.oldnumeric as _Numeric
-
-#from wxplot import PlotCanvas, PlotGraphics, PolyLine, PolyMarker, PolySpline
 import gc
-#from pympler.tracker import SummaryTracker
-#tracker = SummaryTracker()
 import traceback
 import wx
-#import pdb
 import obd_io  # OBD2 funcs
 import os  # os.environ
-#import decimal
-#import glob
 import datetime
 import threading
 import sys
 import serial
-#import platform
+import re
+import json
+import subprocess
+from serial.tools import list_ports
 import time
 import configparser  # safe application configuration
 import webbrowser  # open browser from python
-#from multiprocessing import Process
-#from multiprocessing import Queue
 
 from obd2_codes import pcodes
-#from obd2_codes import ptest
 
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 import obd
-#from obd import OBDStatus
 
 from obd.utils import OBDStatus
 
@@ -151,146 +127,129 @@ def EVT_RESULT(win, func, id):
     """Define Result Event."""
     win.Connect(-1, -1, id, func)
 
-"""
-class MyPanel(wx.Panel):
-    def __init__(self, parent):
-        super(MyPanel, self).__init__(parent)
-
-        self.label = wx.StaticText(self, label="What Programming Language You Like?", pos=(50, 30))
-
-        languages = ['Java', 'C++', 'C#', 'Python', 'Erlang', 'PHP', 'Ruby']
-        self.combobox = wx.ComboBox(self, choices=languages, pos=(50, 50))
-
-        self.label2 = wx.StaticText(self, label="", pos=(50, 80))
-
-        self.Bind(wx.EVT_COMBOBOX, self.OnCombo)
-
-    def OnCombo(self, event):
-        self.label2.SetLabel("You Like " + self.combobox.GetValue())
-"""
 # event pro akutalizaci Trace tabu
-class ResultEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class ResultEvent(wx.PyEvent):
+    """Event to carry arbitrary result data for sensor results."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize ResultEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_RESULT_ID)
         self.data = data
 
-class FreezeframeResultEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class FreezeframeResultEvent(wx.PyEvent):
+    """Event to carry arbitrary result data for freeze frame results."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize FreezeframeResultEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_FREEZEFRAME_RESULT_ID)
         self.data = data
 
-class InsertSensorRowEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class InsertSensorRowEvent(wx.PyEvent):
+    """Event to insert a sensor row in the UI."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize InsertSensorRowEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_INSERT_SENSOR_ROW_ID)
         self.data = data
 
-class InsertFreezeframeRowEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class InsertFreezeframeRowEvent(wx.PyEvent):
+    """Event to insert a freeze frame row in the UI."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize InsertFreezeframeRowEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_INSERT_FREEZEFRAME_ROW_ID)
         self.data = data
 
-class BuildComboBoxGraphEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class BuildComboBoxGraphEvent(wx.PyEvent):
+    """Event to build a ComboBox for graph selection."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize BuildComboBoxGraphEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_BUILD_COMBOBOXGRAPH_ID)
         self.data = data
 
-class BuildComboBoxGraphsEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class BuildComboBoxGraphsEvent(wx.PyEvent):
+    """Event to build ComboBoxes for multiple graph selections."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize BuildComboBoxGraphsEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_BUILD_COMBOBOXGRAPHS_ID)
         self.data = data
 
-class BuildComboBoxGraphs8Event(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class BuildComboBoxGraphs8Event(wx.PyEvent):
+    """Event to build ComboBoxes for 8-graph selection."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize BuildComboBoxGraphs8Event with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_BUILD_COMBOBOXGRAPHS8_ID)
         self.data = data
 
-class DestroyComboBoxEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class DestroyComboBoxEvent(wx.PyEvent):
+    """Event to destroy ComboBox widgets in the UI."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize DestroyComboBoxEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_DESTROY_COMBOBOX_ID)
         self.data = data
 
-class GetSelectionComboBoxGraphEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class GetSelectionComboBoxGraphEvent(wx.PyEvent):
+    """Event to get selection from a graph ComboBox."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize GetSelectionComboBoxGraphEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_COMBOBOXGRAPH_GETSELECTION_ID)
         self.data = data
 
-class GetSelectionComboBoxGraphsEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class GetSelectionComboBoxGraphsEvent(wx.PyEvent):
+    """Event to get selection from multiple graph ComboBoxes."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize GetSelectionComboBoxGraphsEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_COMBOBOXGRAPHS_GETSELECTION_ID)
         self.data = data
 
-class GetSelectionComboBoxGraphs8Event(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class GetSelectionComboBoxGraphs8Event(wx.PyEvent):
+    """Event to get selection from 8-graph ComboBoxes."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize GetSelectionComboBoxGraphs8Event with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_COMBOBOXGRAPHS8_GETSELECTION_ID)
         self.data = data
 
-class SetSelectionComboBoxGraphEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class SetSelectionComboBoxGraphEvent(wx.PyEvent):
+    """Event to set selection in a graph ComboBox."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize SetSelectionComboBoxGraphEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_COMBOBOXGRAPH_SETSELECTION_ID)
         self.data = data
 
-class SetSelectionComboBoxGraphsEvent(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class SetSelectionComboBoxGraphsEvent(wx.PyEvent):
+    """Event to set selection in multiple graph ComboBoxes."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize SetSelectionComboBoxGraphsEvent with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_COMBOBOXGRAPHS_SETSELECTION_ID)
         self.data = data
 
-class SetSelectionComboBoxGraphs8Event(wx.PyEvent):
-    """Simple event to carry arbitrary result data."""
 
+class SetSelectionComboBoxGraphs8Event(wx.PyEvent):
+    """Event to set selection in 8-graph ComboBoxes."""
     def __init__(self, data):
-        """Init Result Event."""
+        """Initialize SetSelectionComboBoxGraphs8Event with data."""
         wx.PyEvent.__init__(self)
         self.SetEventType(EVT_COMBOBOXGRAPHS8_SETSELECTION_ID)
         self.data = data
@@ -414,6 +373,424 @@ class MyApp(wx.App):
             wx.ListCtrl.__init__(self, parent, id, pos, size, style)
             ListCtrlAutoWidthMixin.__init__(self)
 
+    STATUS_TOOLBAR_MAP = {
+        0: "link",
+        1: "protocol",
+        2: "adapter",
+        3: "port",
+        4: "vin",
+        5: "voltage",
+    }
+
+    def _build_bottom_status_toolbar(self):
+        self.bottom_toolbar = wx.Panel(self.frame, -1)
+        self.bottom_toolbar.SetBackgroundColour(wx.Colour(24, 31, 42))
+        self.bottom_toolbar_values = {}
+
+        toolbar_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.bottom_toolbar.SetSizer(toolbar_sizer)
+        self.bottom_toolbar.SetMinSize((-1, 82))
+
+        toolbar_fields = [
+            ("link", "Link", "Disconnected"),
+            ("protocol", "Protocol", "----"),
+            ("adapter", "Adapter", "----"),
+            ("port", "Port", "----"),
+            ("vin", "VIN", "----"),
+            ("voltage", "Voltage", "----"),
+        ]
+
+        for index, (key, label, value) in enumerate(toolbar_fields):
+            field_sizer = wx.BoxSizer(wx.VERTICAL)
+
+            title = wx.StaticText(self.bottom_toolbar, -1, label.upper())
+            title.SetForegroundColour(wx.Colour(155, 168, 186))
+            title.SetFont(wx.Font(8, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
+
+            value_widget = wx.StaticText(self.bottom_toolbar, -1, value)
+            value_widget.SetForegroundColour(wx.Colour(236, 242, 255))
+            value_widget.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+
+            self.bottom_toolbar_values[key] = value_widget
+
+            field_sizer.Add(title, 0, wx.BOTTOM, 2)
+            field_sizer.Add(value_widget, 0)
+            toolbar_sizer.Add(field_sizer, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 10)
+
+            if index < len(toolbar_fields) - 1:
+                toolbar_sizer.Add(wx.StaticLine(self.bottom_toolbar, style=wx.LI_VERTICAL), 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 10)
+
+    def _set_bottom_status_defaults(self):
+        defaults = {
+            "link": "Disconnected",
+            "protocol": "----",
+            "adapter": "----",
+            "port": "----",
+            "vin": "----",
+            "voltage": "----",
+        }
+        for key, value in defaults.items():
+            if key in self.bottom_toolbar_values:
+                self.bottom_toolbar_values[key].SetLabel(value)
+        self.bottom_toolbar.Layout()
+
+    def _update_bottom_status(self, status_index, value):
+        status_key = self.STATUS_TOOLBAR_MAP.get(status_index)
+        if status_key and status_key in self.bottom_toolbar_values:
+            self.bottom_toolbar_values[status_key].SetLabel(str(value))
+            self.bottom_toolbar.Layout()
+
+    def _apply_touch_friendly_style(self):
+        self.touch_font = wx.Font(11, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        self.touch_font_bold = wx.Font(11, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.home_title_font = wx.Font(17, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.home_tile_font = wx.Font(14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        # Keep native tabs and their labels on the same system theme, including
+        # dark themes where a fixed light background hides the tab text.
+        tab_background = wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNFACE)
+        tab_foreground = wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNTEXT)
+        self.frame.SetBackgroundColour(tab_background)
+        self.nb.SetBackgroundColour(tab_background)
+        self.nb.SetForegroundColour(tab_foreground)
+        self.frame.SetFont(self.touch_font)
+
+        try:
+            self.nb.SetPadding(wx.Size(20, 10))
+        except Exception:
+            pass
+        self.nb.SetFont(self.touch_font_bold)
+
+        controls = [
+            self.status,
+            self.OBDTests,
+            self.sensors,
+            self.freezeframe,
+            self.dtc,
+            self.trace,
+            self.graph_list_ctrl,
+        ]
+        if hasattr(self, "graphs_list_ctrl"):
+            controls.append(self.graphs_list_ctrl)
+        if hasattr(self, "graphs8_list_ctrl"):
+            controls.append(self.graphs8_list_ctrl)
+        for control in controls:
+            control.SetFont(self.touch_font)
+
+        self.GetDTCButton.SetMinSize((140, 40))
+        self.GetDTCButton.SetFont(self.touch_font_bold)
+        self.ClearDTCButton.SetMinSize((140, 40))
+        self.ClearDTCButton.SetFont(self.touch_font_bold)
+
+        if hasattr(self, "add_graph_pid_button"):
+            self.add_graph_pid_button.SetFont(self.touch_font_bold)
+            self.remove_graph_pid_button.SetFont(self.touch_font_bold)
+            self.graph_play_button.SetFont(self.touch_font_bold)
+            self.graph_list_ctrl.SetFont(self.touch_font)
+
+        if hasattr(self, "home_title"):
+            self.home_title.SetFont(self.home_title_font)
+
+        if hasattr(self, "home_scan_button"):
+            self.home_scan_button.SetFont(self.home_tile_font)
+            self.home_services_button.SetFont(self.home_tile_font)
+            self.home_graphs_button.SetFont(self.home_tile_font)
+
+    def _go_to_page(self, page):
+        page_index = wx.NOT_FOUND
+        for i in range(self.nb.GetPageCount()):
+            if self.nb.GetPage(i) is page:
+                page_index = i
+                break
+
+        if page_index != wx.NOT_FOUND:
+            self.nb.SetSelection(page_index)
+
+    def _swap_notebook_pages(self, title_a, title_b):
+        idx_a = wx.NOT_FOUND
+        idx_b = wx.NOT_FOUND
+        for i in range(self.nb.GetPageCount()):
+            page_title = self.nb.GetPageText(i)
+            if page_title == title_a:
+                idx_a = i
+            elif page_title == title_b:
+                idx_b = i
+
+        if idx_a == wx.NOT_FOUND or idx_b == wx.NOT_FOUND or idx_a == idx_b:
+            return
+
+        if idx_a > idx_b:
+            idx_a, idx_b = idx_b, idx_a
+            title_a, title_b = title_b, title_a
+
+        page_a = self.nb.GetPage(idx_a)
+        page_b = self.nb.GetPage(idx_b)
+
+        self.nb.RemovePage(idx_b)
+        self.nb.RemovePage(idx_a)
+        self.nb.InsertPage(idx_a, page_b, title_b)
+        self.nb.InsertPage(idx_b, page_a, title_a)
+
+    def _create_home_tile(self, parent, label, bg_colour, fg_colour, handler):
+        button = wx.Button(parent, -1, label)
+        button.SetMinSize((260, 130))
+        button.SetBackgroundColour(bg_colour)
+        button.SetForegroundColour(fg_colour)
+        button.Bind(wx.EVT_BUTTON, handler)
+        return button
+
+    def _build_graph_command_catalog(self):
+        excluded = {b"0100", b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"}
+        catalog = []
+        for command in obd.commands[1]:
+            if command and command.command not in excluded:
+                catalog.append(command)
+        catalog.append(obd.commands.ELM_VOLTAGE)
+
+        self.graph_command_catalog = catalog
+        self.graph_command_labels = [f"{cmd.command.decode(errors='ignore')} - {cmd.desc}" for cmd in catalog]
+        self.selected_graph_commands = []
+
+    def _set_graph_streaming(self, enabled):
+        self.graph_streaming_enabled = bool(enabled)
+        if hasattr(self, "graph_play_button"):
+            self.graph_play_button.SetLabel("Stop" if self.graph_streaming_enabled else "Play")
+        if hasattr(self, "add_graph_pid_button"):
+            self.add_graph_pid_button.Enable(not self.graph_streaming_enabled)
+        if hasattr(self, "remove_graph_pid_button"):
+            self.remove_graph_pid_button.Enable(not self.graph_streaming_enabled)
+
+        if not self.graph_streaming_enabled:
+            for row in range(self.graph_list_ctrl.GetItemCount()):
+                self.graph_list_ctrl.SetItem(row, 2, "---")
+            if hasattr(self, "panel"):
+                try:
+                    self.panel.Clear()
+                except Exception:
+                    pass
+
+    def OnToggleGraphStreaming(self, event):
+        if not self.graph_streaming_enabled:
+            if len(self.selected_graph_commands) == 0:
+                wx.MessageBox(
+                    "Add at least one PID before starting the graph.",
+                    "Graph",
+                    wx.OK | wx.ICON_INFORMATION,
+                )
+                return
+            self._set_graph_streaming(True)
+        else:
+            self._set_graph_streaming(False)
+
+    def _refresh_graph_selection_ui(self):
+        self.graph_list_ctrl.DeleteAllItems()
+        for idx, command in enumerate(self.selected_graph_commands):
+            self.graph_list_ctrl.InsertItem(idx, command.command.decode(errors='ignore'))
+            self.graph_list_ctrl.SetItem(idx, 1, command.desc)
+            self.graph_list_ctrl.SetItem(idx, 2, "---")
+
+        self._layout_graph_page()
+
+    def _add_graph_commands_by_catalog_indices(self, catalog_indices):
+        added_count = 0
+        for index in catalog_indices:
+            if index < 0 or index >= len(self.graph_command_catalog):
+                continue
+            selected_command = self.graph_command_catalog[index]
+            if selected_command not in self.selected_graph_commands:
+                self.selected_graph_commands.append(selected_command)
+                added_count += 1
+
+        if added_count > 0:
+            self._refresh_graph_selection_ui()
+        return added_count
+
+    def _show_add_graph_pid_dialog(self):
+        dialog = wx.Dialog(self.frame, -1, "Add PID", size=(680, 540))
+        root = wx.BoxSizer(wx.VERTICAL)
+
+        info_text = wx.StaticText(dialog, -1, "Search (contains):")
+        search_ctrl = wx.TextCtrl(dialog, -1, "")
+        list_box = wx.ListBox(dialog, -1, style=wx.LB_EXTENDED)
+
+        button_row = wx.BoxSizer(wx.HORIZONTAL)
+        add_selected_button = wx.Button(dialog, wx.ID_ANY, "Add Selected")
+        done_button = wx.Button(dialog, wx.ID_CANCEL, "Done")
+        button_row.Add(add_selected_button, 0)
+        button_row.AddStretchSpacer(1)
+        button_row.Add(done_button, 0)
+
+        helper_text = wx.StaticText(dialog, -1, "Tip: use Ctrl/Shift to select multiple PIDs.")
+
+        root.Add(info_text, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        root.Add(search_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
+        root.Add(list_box, 1, wx.EXPAND | wx.ALL, 10)
+        root.Add(helper_text, 0, wx.LEFT | wx.RIGHT, 10)
+        root.Add(button_row, 0, wx.EXPAND | wx.ALL, 10)
+
+        dialog.SetSizer(root)
+
+        filtered_indices = []
+        selected_catalog_indices = set()
+
+        def current_catalog_indices_from_list_selection():
+            selected_indices = list_box.GetSelections()
+            result = []
+            for selected_index in selected_indices:
+                if 0 <= selected_index < len(filtered_indices):
+                    result.append(filtered_indices[selected_index])
+            return result
+
+        def update_filter(_evt=None):
+            for catalog_index in current_catalog_indices_from_list_selection():
+                selected_catalog_indices.add(catalog_index)
+
+            query = search_ctrl.GetValue().strip().lower()
+
+            list_box.Clear()
+            filtered_indices.clear()
+
+            for idx, label in enumerate(self.graph_command_labels):
+                if query == "" or query in label.lower():
+                    filtered_indices.append(idx)
+                    list_box.Append(label)
+
+            for view_index, catalog_index in enumerate(filtered_indices):
+                if catalog_index in selected_catalog_indices:
+                    list_box.SetSelection(view_index)
+
+            add_selected_button.Enable(bool(filtered_indices))
+
+        def on_add_selected(_evt=None):
+            for catalog_index in current_catalog_indices_from_list_selection():
+                selected_catalog_indices.add(catalog_index)
+
+            if not selected_catalog_indices:
+                wx.MessageBox("Select at least one PID to add.", "Graph", wx.OK | wx.ICON_INFORMATION)
+                return
+
+            self._add_graph_commands_by_catalog_indices(sorted(selected_catalog_indices))
+            selected_catalog_indices.clear()
+            update_filter()
+            search_ctrl.SetFocus()
+
+        def on_double_click(_evt):
+            on_add_selected()
+
+        search_ctrl.Bind(wx.EVT_TEXT, update_filter)
+        add_selected_button.Bind(wx.EVT_BUTTON, on_add_selected)
+        list_box.Bind(wx.EVT_LISTBOX_DCLICK, on_double_click)
+
+        update_filter()
+        search_ctrl.SetFocus()
+        dialog.ShowModal()
+        dialog.Destroy()
+
+    def OnAddGraphPid(self, event):
+        if self.graph_streaming_enabled:
+            return
+        self._show_add_graph_pid_dialog()
+
+    def OnRemoveGraphPid(self, event):
+        if self.graph_streaming_enabled:
+            return
+        selected_index = self.graph_list_ctrl.GetFirstSelected()
+        if selected_index != wx.NOT_FOUND:
+            del self.selected_graph_commands[selected_index]
+            self._refresh_graph_selection_ui()
+            if self.graph_list_ctrl.GetItemCount() > 0:
+                self.graph_list_ctrl.Select(min(selected_index, self.graph_list_ctrl.GetItemCount() - 1))
+
+    def _layout_graph_page(self):
+        if not hasattr(self, "graph_panel"):
+            return
+
+        width, height = self.graph_panel.GetClientSize()
+        if width <= 0 or height <= 0:
+            return
+
+        top_padding = 10
+        button_height = 42
+        list_top = top_padding + button_height + 12
+        row_count = max(1, len(self.selected_graph_commands))
+        desired_list_height = 36 * (row_count + 1)
+        list_height = min(max(120, desired_list_height), max(150, int(height * 0.45)))
+
+        self.add_graph_pid_button.SetPosition((10, top_padding))
+        self.add_graph_pid_button.SetSize((150, button_height))
+        self.remove_graph_pid_button.SetPosition((170, top_padding))
+        self.remove_graph_pid_button.SetSize((160, button_height))
+        self.graph_play_button.SetPosition((340, top_padding))
+        self.graph_play_button.SetSize((120, button_height))
+        self.graph_list_ctrl.SetSize(10, list_top, max(300, width - 20), list_height)
+
+        plot_top = list_top + list_height + 8
+        plot_height = max(120, height - plot_top - 10)
+        if hasattr(self, "panel"):
+            self.panel.SetSize(10, plot_top, max(300, width - 20), plot_height)
+
+    def OnGraphPanelResize(self, event):
+        self._layout_graph_page()
+        event.Skip()
+
+    def build_home_page(self):
+        self.home_panel = wx.Panel(self.nb, -1)
+        self.home_panel.SetBackgroundColour(wx.Colour(236, 240, 245))
+        self.home_panel.SetForegroundColour(wx.Colour(24, 31, 42))
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+        header_sizer = wx.BoxSizer(wx.VERTICAL)
+        grid = wx.GridBagSizer(16, 16)
+
+        self.home_title = wx.StaticText(self.home_panel, -1, "pyOBD Home — Modified by FareBrothers")
+        self.home_title.SetForegroundColour(wx.Colour(24, 31, 42))
+
+        self.home_scan_button = self._create_home_tile(
+            self.home_panel,
+            "SCAN\nDTC",
+            wx.Colour(25, 118, 210),
+            wx.Colour(255, 255, 255),
+            self.OnHomeScan,
+        )
+        self.home_services_button = self._create_home_tile(
+            self.home_panel,
+            "SERVICES",
+            wx.Colour(46, 125, 50),
+            wx.Colour(255, 255, 255),
+            self.OnHomeServices,
+        )
+        self.home_graphs_button = self._create_home_tile(
+            self.home_panel,
+            "GRAPHS",
+            wx.Colour(2, 136, 209),
+            wx.Colour(255, 255, 255),
+            self.OnHomeGraphs,
+        )
+
+        header_sizer.Add(self.home_title, 0, wx.BOTTOM, 4)
+
+        grid.Add(self.home_scan_button, (0, 0), span=(1, 1), flag=wx.EXPAND)
+        grid.Add(self.home_services_button, (0, 1), span=(1, 1), flag=wx.EXPAND)
+        grid.Add(self.home_graphs_button, (1, 0), span=(1, 2), flag=wx.EXPAND)
+        grid.AddGrowableCol(0, 1)
+        grid.AddGrowableCol(1, 1)
+        grid.AddGrowableRow(0, 1)
+        grid.AddGrowableRow(1, 1)
+
+        root_sizer.Add(header_sizer, 0, wx.ALL, 18)
+        root_sizer.Add(grid, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 18)
+        self.home_panel.SetSizer(root_sizer)
+
+        self.nb.AddPage(self.home_panel, "Home")
+
+    def OnHomeScan(self, event):
+        self.GetDTC(None)
+
+    def OnHomeServices(self, event):
+        self._go_to_page(self.status)
+
+    def OnHomeGraphs(self, event):
+        self._go_to_page(self.graph_panel)
+
     class sensorProducer(threading.Thread):
         def __init__(self, _notify_window, portName, SERTIMEOUT, RECONNATTEMPTS, BAUDRATE, FAST, _nb):
             #from queue import Queue
@@ -428,6 +805,10 @@ class MyApp(wx.App):
             threading.Thread.__init__(self)
             self.state = "started"
 
+        @staticmethod
+        def _is_connected_status(status):
+            return status in ("Car Connected", OBDStatus.CAR_CONNECTED)
+
         def initCommunication(self):
             try:
                 self.connection.close()
@@ -435,14 +816,15 @@ class MyApp(wx.App):
                 pass
             wx.PostEvent(self._notify_window, StatusEvent([0, 1, "Connecting...."]))
             self.connection = obd_io.OBDConnection(self.portName, self._notify_window, self.baudrate, self.SERTIMEOUT,self.RECONNATTEMPTS, self.FAST)
-            if self.connection.connection.status() != 'Car Connected':  # Cant open serial port
-                print(self.connection.connection.status())
+            current_status = self.connection.connection.status()
+            if not self._is_connected_status(current_status):  # Cant open serial port
+                print(current_status)
                 #wx.PostEvent(self._notify_window, StatusEvent([666]))  # signal apl, that communication was disconnected
                 #wx.PostEvent(self._notify_window, StatusEvent([0, 1, "Error cant connect..."]))
                 #self.state="finished"
                 self.stop()
                 return None
-            elif self.connection.connection.status() == 'Car Connected':
+            elif self._is_connected_status(current_status):
                 wx.PostEvent(self._notify_window, DebugEvent([1, "Communication initialized..."]))
                 wx.PostEvent(self._notify_window, StatusEvent([0, 1, "Car connected!"]))
 
@@ -470,15 +852,9 @@ class MyApp(wx.App):
 
         def run(self):
 
-            try:
-                init_ok = self.initCommunication() == "OK"
-            except Exception as e:
-                print(f"Initial connection failed with exception: {e}")
-                init_ok = False
-            if not init_ok:
+            if self.initCommunication() != "OK":
                 self._notify_window.ThreadControl = 666
                 self.state = "finished"
-                self.stop()
                 return None
 
             self.baudrate = self.connection.connection.interface.baudrate()
@@ -565,16 +941,12 @@ class MyApp(wx.App):
             init_all_graphs()
             def reconnect():
                 init_all_graphs()
-                try:
-                    if self.initCommunication() != "OK":
-                        self._notify_window.ThreadControl = 666
-                except Exception as e:
-                    print(f"Reconnect failed with exception: {e}")
+                if self.initCommunication() != "OK":
                     self._notify_window.ThreadControl = 666
 
             while self._notify_window.ThreadControl != 666:
                 print (self._notify_window.ThreadControl)
-                if self.connection.connection.status() != OBDStatus.CAR_CONNECTED:
+                if not self._is_connected_status(self.connection.connection.status()):
                     reconnect()
                     continue
                 prevstate = curstate
@@ -594,28 +966,15 @@ class MyApp(wx.App):
 
 
                 if curstate != 5 and self.graph_counter != 0:
-                    self.graph_x_vals = np.array([])
-                    self.graph_y_vals = np.array([])
+                    self.graph_series = {}
                     self.graph_counter = 0
                     self.first_time_graph_plot = True
-                    if self.first_time_graph_plot:
-                        self.unit = 'unit'
-                    if self.current_command == None:
-                        desc = 'None'
-                    else:
-                        desc = self.current_command.desc
-                    wx.PostEvent(self._notify_window,
-                                 GraphEvent(
-                                     [(self.graph_x_vals, self.graph_y_vals, self.unit, desc, self.graph_counter),
-                                      (self.first_time_graph_plot)
-                                      ]))
+                    wx.PostEvent(self._notify_window, GraphEvent([[], self.graph_counter, self.first_time_graph_plot]))
                     self.first_time_graph_plot = False
-                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 0, self.current_command.command]))
-                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 1, self.current_command.desc]))
 
 
 
-                if curstate != 6 and self.graph_counter1 != 0:
+                if hasattr(self._notify_window, "graphs_panel") and curstate != 6 and self.graph_counter1 != 0:
                     self.graph_x_vals1 = np.array([])
                     self.graph_y_vals1 = np.array([])
                     self.graph_x_vals2 = np.array([])
@@ -648,7 +1007,7 @@ class MyApp(wx.App):
                     wx.PostEvent(self._notify_window, GraphsValueEvent([3, 0, self.current_command4.command]))
                     wx.PostEvent(self._notify_window, GraphsValueEvent([3, 1, self.current_command4.desc]))
 
-                if curstate != 7 and self.graph_counter8_1 != 0:
+                if hasattr(self._notify_window, "graphs8_panel") and curstate != 7 and self.graph_counter8_1 != 0:
                     self.graph_x_vals8_1 = np.array([])
                     self.graph_y_vals8_1 = np.array([])
                     self.graph_x_vals8_2 = np.array([])
@@ -937,7 +1296,7 @@ class MyApp(wx.App):
                                         elif command.command == b"0103" and r.value != None:
                                             wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value[0])]))
                                         else:
-                                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
+                                            wx.PostEvent(self._notify_window, ResultEvent([counter, 2, self._notify_window.format_measurement_value(r.value)]))
                                         counter = counter + 1
                         #r = self.connection.connection.query(obd.commands.ELM_VOLTAGE)
                         #sensor_list.append([obd.commands.ELM_VOLTAGE, obd.commands.ELM_VOLTAGE.desc, str(r.value)])
@@ -968,7 +1327,7 @@ class MyApp(wx.App):
                             elif sens[0].command == b"0103" and r.value != None:
                                 wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value[0])]))
                             else:
-                                wx.PostEvent(self._notify_window, ResultEvent([counter, 2, str(r.value)]))
+                                wx.PostEvent(self._notify_window, ResultEvent([counter, 2, self._notify_window.format_measurement_value(r.value)]))
 
                             counter = counter + 1
 
@@ -1036,11 +1395,11 @@ class MyApp(wx.App):
                                     if r.value == None:
                                         continue
                                     else:
-                                        freezeframe_list.append([command.command, command.desc, str(r.value)])
+                                        freezeframe_list.append([command.command, command.desc, self._notify_window.format_measurement_value(r.value)])
                                         wx.PostEvent(self._notify_window, InsertFreezeframeRowEvent(counter))
                                         wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 0, command.command]))
                                         wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 1, str(command.desc)]))
-                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, str(r.value)]))
+                                        wx.PostEvent(self._notify_window, FreezeframeResultEvent([counter, 2, self._notify_window.format_measurement_value(r.value)]))
                                         counter = counter + 1
                     else:
                         counter = 0
@@ -1051,7 +1410,7 @@ class MyApp(wx.App):
                                     if r.value == None:
                                         #reconnect()
                                         continue
-                                    freezeframe_list[counter] = [command.command, command.desc, str(r.value)]
+                                    freezeframe_list[counter] = [command.command, command.desc, self._notify_window.format_measurement_value(r.value)]
                                     counter = counter + 1
                         counter = 0
                         for sens in freezeframe_list:
@@ -1064,116 +1423,81 @@ class MyApp(wx.App):
 
                 elif curstate == 5:  # show Graph tab
                     if first_time_graph:
-                        print("First time graph")
-                        #wx.PostEvent(self._notify_window, DestroyComboBoxEvent([]))
-                        self.graph_x_vals = np.array([])
-                        self.graph_y_vals = np.array([])
                         self.graph_counter = 0
-                        self.current_command = None
-
-
-                        graph_commands = []
-
-                        #wx.PostEvent(self._notify_window, GraphEvent((self.current_command, [], [])))
-                        prev_command = None
-
+                        self.graph_series = {}
+                        self.graph_emit_counter = 0
+                        self.graph_stream_active_last = False
                         first_time_graph = False
-                        for command in obd.commands[1]:
-                            if command:
-                                if command.command not in (b"0100" , b"0101", b"0120", b"0140", b"0103", b"0102", b"011C", b"0113", b"0141", b"0151"):
-                                    r = self.connection.connection.query(command)
-                                    if r.value == None:
-                                        continue
-                                    else:
-                                        graph_commands.append(command)
-                        graph_commands.append(obd.commands.ELM_VOLTAGE)
-                        sensor_descriptions = []
-                        #sensor_descriptions.append("None")
-                        for command in graph_commands:
-                            sensor_descriptions.append(command.desc)
-                        app.build_combobox_graph_event_finished = False
-                        wx.PostEvent(self._notify_window, BuildComboBoxGraphEvent(sensor_descriptions))
-                        while not app.build_combobox_graph_event_finished:
-                            time.sleep(0.01)
-                        app.combobox_graph_set_sel_finished=False
-                        wx.PostEvent(self._notify_window, SetSelectionComboBoxGraphEvent([]))
-                        while not app.combobox_graph_set_sel_finished:
-                            time.sleep(0.01)
-                    else:
 
-                        app.combobox_graph_get_sel_finished = False
-                        wx.PostEvent(self._notify_window, GetSelectionComboBoxGraphEvent([]))
-                        while not app.combobox_graph_get_sel_finished:
-                            time.sleep(0.01)
-                        curr_selection = app.combobox_selection
-
-                        if sensor_descriptions[curr_selection] == "None":
-                            curr_selection = -1
-                        if curr_selection != -1:
-                            prev_command = self.current_command
-                            self.current_command = graph_commands[curr_selection]
-                        else:
-                            self.current_command = None
-
-                        if self.current_command != None:
-                            if (prev_command == None) or (prev_command != self.current_command):
-                                self.graph_x_vals = np.array([])
-                                self.graph_y_vals = np.array([])
-                                self.graph_counter = 0
-                                wx.PostEvent(self._notify_window, GraphValueEvent([0, 0, self.current_command.command]))
-                                wx.PostEvent(self._notify_window, GraphValueEvent([0, 1, self.current_command.desc]))
-                            else:
-
-                                r = self.connection.connection.query(self.current_command)
-                                if r.value == None:
-                                    reconnect()
-                                    continue
-
-                                self.graph_x_vals = np.append(self.graph_x_vals, self.graph_counter)
-                                try:
-                                    self.graph_y_vals = np.append(self.graph_y_vals, float(r.value.magnitude))
-                                except AttributeError:
-                                    self.graph_y_vals = np.append(self.graph_y_vals, float(0))
-                                if len(self.graph_x_vals) > 450:
-                                    self.graph_x_vals = np.delete(self.graph_x_vals, (0))
-                                    self.graph_y_vals = np.delete(self.graph_y_vals, (0))
-
-                                self.graph_counter = self.graph_counter + 1
-                                prev_command = self.current_command
-
-
-                                if r.value == None:
-                                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 2, str(0)]))
-                                    self.unit = "unit"
-                                else:
-                                    wx.PostEvent(self._notify_window, GraphValueEvent([0, 2, str(r.value)]))
-                                    try:
-                                        self.unit = str(r.value).split(' ')[1]
-                                    except IndexError:
-                                        self.unit = "unit"
-
-
-                        else:
-                            self.graph_x_vals = np.array([])
-                            self.graph_y_vals = np.array([])
+                    if not self._notify_window.graph_streaming_enabled:
+                        if self.graph_stream_active_last:
                             self.graph_counter = 0
+                            self.graph_emit_counter = 0
+                            self.graph_series = {}
+                            self.first_time_graph_plot = True
+                            wx.PostEvent(self._notify_window, GraphEvent([[], 0, self.first_time_graph_plot]))
+                        self.graph_stream_active_last = False
+                        continue
 
+                    self.graph_stream_active_last = True
 
-                        if self.first_time_graph_plot:
-                            self.unit = 'unit'
+                    selected_commands = list(self._notify_window.selected_graph_commands)
+                    selected_keys = {command.command for command in selected_commands}
 
-                        if self.current_command == None:
-                            desc = 'None'
-                        else:
-                            desc = self.current_command.desc
+                    for stale_key in list(self.graph_series.keys()):
+                        if stale_key not in selected_keys:
+                            del self.graph_series[stale_key]
 
-                        wx.PostEvent(self._notify_window, GraphEvent([(self.graph_x_vals,self.graph_y_vals, self.unit, desc, self.graph_counter),
-                                                                      (self.first_time_graph_plot)
-                                                                      ]))
+                    plot_series = []
+                    for row, command in enumerate(selected_commands):
+                        command_key = command.command
+                        if command_key not in self.graph_series:
+                            self.graph_series[command_key] = {
+                                "x": np.array([]),
+                                "y": np.array([]),
+                                "unit": "value",
+                                "desc": command.desc,
+                            }
+
+                        r = self.connection.connection.query(command)
+                        if r.value is None:
+                            if self.graph_emit_counter < 2 or (self.graph_emit_counter % 3) == 0:
+                                wx.PostEvent(self._notify_window, GraphValueEvent([row, 0, command.command.decode(errors='ignore')]))
+                                wx.PostEvent(self._notify_window, GraphValueEvent([row, 1, command.desc]))
+                                wx.PostEvent(self._notify_window, GraphValueEvent([row, 2, "No data"]))
+                            continue
+
+                        series = self.graph_series[command_key]
+                        series["x"] = np.append(series["x"], self.graph_counter)
+                        converted_magnitude, converted_unit, value_text = self._notify_window.get_measurement_components(r.value)
+                        try:
+                            series["y"] = np.append(series["y"], float(converted_magnitude))
+                        except (AttributeError, TypeError, ValueError):
+                            series["y"] = np.append(series["y"], 0.0)
+
+                        if len(series["x"]) > 450:
+                            series["x"] = np.delete(series["x"], 0)
+                            series["y"] = np.delete(series["y"], 0)
+
+                        unit = converted_unit if converted_unit else "value"
+
+                        series["unit"] = unit
+                        series["desc"] = command.desc
+
+                        if self.graph_emit_counter < 2 or (self.graph_emit_counter % 3) == 0:
+                            wx.PostEvent(self._notify_window, GraphValueEvent([row, 0, command.command.decode(errors='ignore')]))
+                            wx.PostEvent(self._notify_window, GraphValueEvent([row, 1, command.desc]))
+                            wx.PostEvent(self._notify_window, GraphValueEvent([row, 2, value_text]))
+
+                        plot_series.append((series["x"], series["y"], series["unit"], series["desc"]))
+
+                    if self.graph_emit_counter < 2 or (self.graph_emit_counter % 2) == 0:
+                        wx.PostEvent(self._notify_window, GraphEvent([plot_series, self.graph_counter, self.first_time_graph_plot]))
                         self.first_time_graph_plot = False
-                        #time.sleep(0.2)
+                    self.graph_emit_counter = self.graph_emit_counter + 1
+                    self.graph_counter = self.graph_counter + 1
 
-                elif curstate == 6:  # show 4Graphs tab
+                elif hasattr(self._notify_window, "graphs_panel") and curstate == 6:  # show 4Graphs tab
                     if first_time_graphs:
                         print("First time graph")
                         #wx.PostEvent(self._notify_window, DestroyComboBoxEvent([]))
@@ -1487,7 +1811,7 @@ class MyApp(wx.App):
                                                                       ]))
                         self.first_time_graphs_plot = False
                         #time.sleep(0.2)
-                elif curstate == 7:  # show 8Graphs tab
+                elif hasattr(self._notify_window, "graphs8_panel") and curstate == 7:  # show 8Graphs tab
                     if first_time_8graphs:
                         print("First time 8graphs")
                         # wx.PostEvent(self._notify_window, DestroyComboBoxEvent([]))
@@ -2288,9 +2612,21 @@ class MyApp(wx.App):
         self.graph_list_ctrl.InsertColumn(1, "Sensor", format=wx.LIST_FORMAT_LEFT, width=320)
         self.graph_list_ctrl.InsertColumn(2, "Value")
 
-        self.graph_list_ctrl.InsertItem(0, "")
+        self._build_graph_command_catalog()
+
+        self.add_graph_pid_button = wx.Button(self.graph_panel, -1, "Add PID", pos=(10, 10), size=(150, 42))
+        self.remove_graph_pid_button = wx.Button(self.graph_panel, -1, "Remove PID", pos=(170, 10), size=(160, 42))
+        self.graph_play_button = wx.Button(self.graph_panel, -1, "Play", pos=(340, 10), size=(120, 42))
+        self.graph_streaming_enabled = False
+
+        self.graph_panel.Bind(wx.EVT_BUTTON, self.OnAddGraphPid, self.add_graph_pid_button)
+        self.graph_panel.Bind(wx.EVT_BUTTON, self.OnRemoveGraphPid, self.remove_graph_pid_button)
+        self.graph_panel.Bind(wx.EVT_BUTTON, self.OnToggleGraphStreaming, self.graph_play_button)
+        self.graph_panel.Bind(wx.EVT_SIZE, self.OnGraphPanelResize)
+
         self.nb.AddPage(self.graph_panel, "Graph")
-        self.graph_list_ctrl.SetSize(0, 0, 800, 48)
+        self._set_graph_streaming(False)
+        self._layout_graph_page()
         """
         ####################################################################
         # This little bit of magic keeps the list the same size as the frame
@@ -2505,26 +2841,44 @@ class MyApp(wx.App):
             self.configfilepath = os.environ['HOME'] + '/.pyobdrc'
         if self.config.read(self.configfilepath) == []:
             self.COMPORT = "AUTO"
+            self.CONNECTION_TYPE = "AUTO"
+            self.CONNECTION_TARGET = ""
             self.RECONNATTEMPTS = 5
             self.SERTIMEOUT = 1
             self.BAUDRATE = "AUTO"
             self.FAST = "NORMAL"
+            self.MEASUREMENT_SYSTEM = "IMPERIAL"
         else:
             try:
                 self.COMPORT = self.config.get("pyOBD", "COMPORT")
+                self.CONNECTION_TYPE = self.config.get("pyOBD", "CONNECTION_TYPE", fallback="")
+                self.CONNECTION_TARGET = self.config.get("pyOBD", "CONNECTION_TARGET", fallback="")
                 self.RECONNATTEMPTS = self.config.getint("pyOBD", "RECONNATTEMPTS")
                 self.SERTIMEOUT = self.config.get("pyOBD", "SERTIMEOUT")
                 self.BAUDRATE = self.config.get("pyOBD", "BAUDRATE")
                 self.FAST = self.config.get("pyOBD", "FAST")
+                self.MEASUREMENT_SYSTEM = self.config.get("pyOBD", "MEASUREMENT_SYSTEM", fallback="IMPERIAL").upper()
             except Exception as e:
                 print(e)
                 self.COMPORT = "AUTO"
+                self.CONNECTION_TYPE = "AUTO"
+                self.CONNECTION_TARGET = ""
                 self.RECONNATTEMPTS = 5
                 self.SERTIMEOUT = 5
                 self.BAUDRATE = "AUTO"
                 self.FAST = "FAST"
+                self.MEASUREMENT_SYSTEM = "IMPERIAL"
 
-        self.frame = wx.Frame(None, -1, "pyOBD-II ver. 1.19")
+        if self.MEASUREMENT_SYSTEM not in ["IMPERIAL", "METRIC"]:
+            self.MEASUREMENT_SYSTEM = "IMPERIAL"
+
+        self.CONNECTION_TYPE, self.CONNECTION_TARGET = self._infer_connection_from_comport(
+            self.CONNECTION_TYPE,
+            self.CONNECTION_TARGET,
+            self.COMPORT,
+        )
+
+        self.frame = wx.Frame(None, -1, "pyOBD-II v2.0")
         ico = wx.Icon(resource_path('pyobd.ico'), wx.BITMAP_TYPE_ICO)
         self.frame.SetIcon(ico)
 
@@ -2614,13 +2968,24 @@ class MyApp(wx.App):
 
 
         self.build_graph_page()
-        self.build_graphs_page()
-        self.build_graphs8_page()
+        # Legacy 4-Graphs and 8-Graphs pages removed.
         self.trace = self.MyListCtrl(self.nb, tID, style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         self.trace.InsertColumn(0, "Level", width=40)
         self.trace.InsertColumn(1, "Message")
         self.nb.AddPage(self.trace, "Trace")
         self.TraceDebug(1, "Application started")
+        self.build_home_page()
+        self._swap_notebook_pages("Home", "Status")
+
+        self._build_bottom_status_toolbar()
+        self._set_bottom_status_defaults()
+
+        self.main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.main_sizer.Add(self.nb, 1, wx.EXPAND | wx.ALL, 8)
+        self.main_sizer.Add(self.bottom_toolbar, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+        self.frame.SetSizer(self.main_sizer)
+
+        self._apply_touch_friendly_style()
 
 
 
@@ -2668,8 +3033,11 @@ class MyApp(wx.App):
 
         self.SetTopWindow(self.frame)
 
+        self.frame.SetSize((1180, 900))
+        self.frame.SetMinSize((960, 700))
+        self.frame.Centre()
+        self._go_to_page(self.home_panel)
         self.frame.Show(True)
-        self.frame.SetSize((1024, 920))
         self.sensor_control_off() # ??? JURE POLJSAK
 
 
@@ -2728,8 +3096,18 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def OnStatus(self, event):
         if event.data[0] == 666:  # signal, that connection falied
             self.sensor_control_off()
+            self._set_bottom_status_defaults()
         else:
             self.status.SetItem(event.data[0], event.data[1], event.data[2])
+            self._update_bottom_status(event.data[0], event.data[2])
+            # Drive UI control state from actual connection state notifications.
+            if event.data[0] == 0:
+                state_text = str(event.data[2])
+                if state_text == "Car connected!":
+                    self.sensor_control_on()
+                elif state_text == "Disconnected":
+                    self.sensor_control_off()
+                    self._set_graph_streaming(False)
 
     def OnTests(self, event):
         self.OBDTests.SetItem(event.data[0], event.data[1], event.data[2])
@@ -2750,25 +3128,38 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         self.freezeframe.InsertItem(counter, "")
 
     def BuildComboBoxGraph(self, event):
-        self.combobox = wx.ComboBox(self.graph_panel, choices=event.data, pos=(0, 65))
+        self.combobox = wx.ComboBox(self.graph_panel, choices=event.data, pos=(0, 65), size=(360, 42))
+        self.combobox.SetFont(self.touch_font)
         self.build_combobox_graph_event_finished=True
 
     def BuildComboBoxGraphs(self, event):
-        self.combobox1 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(0, 140))
-        self.combobox2 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(0, 190))
-        self.combobox3 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(330, 140))
-        self.combobox4 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(330, 190))
+        self.combobox1 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(0, 140), size=(310, 42))
+        self.combobox2 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(0, 190), size=(310, 42))
+        self.combobox3 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(330, 140), size=(310, 42))
+        self.combobox4 = wx.ComboBox(self.graphs_panel, choices=event.data, pos=(330, 190), size=(310, 42))
+        self.combobox1.SetFont(self.touch_font)
+        self.combobox2.SetFont(self.touch_font)
+        self.combobox3.SetFont(self.touch_font)
+        self.combobox4.SetFont(self.touch_font)
         self.build_combobox_graphs_event_finished=True
 
     def BuildComboBoxGraphs8(self, event):
-        self.combobox8_1 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(0, 240))
-        self.combobox8_2 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(0, 290))
-        self.combobox8_3 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(330, 240))
-        self.combobox8_4 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(330, 290))
-        self.combobox8_5 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(660, 240))
-        self.combobox8_6 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(660, 290))
-        self.combobox8_7 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(990, 240))
-        self.combobox8_8 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(990, 290))
+        self.combobox8_1 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(0, 240), size=(300, 42))
+        self.combobox8_2 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(0, 290), size=(300, 42))
+        self.combobox8_3 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(330, 240), size=(300, 42))
+        self.combobox8_4 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(330, 290), size=(300, 42))
+        self.combobox8_5 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(660, 240), size=(300, 42))
+        self.combobox8_6 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(660, 290), size=(300, 42))
+        self.combobox8_7 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(990, 240), size=(300, 42))
+        self.combobox8_8 = wx.ComboBox(self.graphs8_panel, choices=event.data, pos=(990, 290), size=(300, 42))
+        self.combobox8_1.SetFont(self.touch_font)
+        self.combobox8_2.SetFont(self.touch_font)
+        self.combobox8_3.SetFont(self.touch_font)
+        self.combobox8_4.SetFont(self.touch_font)
+        self.combobox8_5.SetFont(self.touch_font)
+        self.combobox8_6.SetFont(self.touch_font)
+        self.combobox8_7.SetFont(self.touch_font)
+        self.combobox8_8.SetFont(self.touch_font)
         self.build_combobox_graphs8_event_finished=True
 
     def DestroyComboBox(self, event):
@@ -2866,6 +3257,28 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         #while self.senprod.state != "finished":
         #    time.sleep(0.1)
         print("on close!")
+
+        def reset_list_if_present(name, row_count):
+            list_ctrl = getattr(self, name, None)
+            if list_ctrl is None:
+                return
+            try:
+                list_ctrl.DeleteAllItems()
+                for idx in range(row_count):
+                    list_ctrl.InsertItem(idx, "")
+            except Exception:
+                pass
+
+        def destroy_if_present(*names):
+            for name in names:
+                control = getattr(self, name, None)
+                if control is None:
+                    continue
+                try:
+                    control.Destroy()
+                except Exception:
+                    pass
+
         self.sensors.DeleteAllItems()
         self.freezeframe.DeleteAllItems()
         self.OBDTests.DeleteAllItems()
@@ -2898,74 +3311,23 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         self.OBDTests.Append(["MISFIRE CYLINDER 12", "---", "---"])
         self.dtc.DeleteAllItems()
 
+        reset_list_if_present("graphs_list_ctrl", 4)
+        reset_list_if_present("graphs8_list_ctrl", 8)
+        reset_list_if_present("graph_list_ctrl", 1)
 
-        self.graphs_list_ctrl.DeleteAllItems()
-        self.graphs_list_ctrl.InsertItem(0, "")
-        self.graphs_list_ctrl.InsertItem(1, "")
-        self.graphs_list_ctrl.InsertItem(2, "")
-        self.graphs_list_ctrl.InsertItem(3, "")
-        self.graphs8_list_ctrl.DeleteAllItems()
-        self.graphs8_list_ctrl.InsertItem(0, "")
-        self.graphs8_list_ctrl.InsertItem(1, "")
-        self.graphs8_list_ctrl.InsertItem(2, "")
-        self.graphs8_list_ctrl.InsertItem(3, "")
-        self.graphs8_list_ctrl.InsertItem(4, "")
-        self.graphs8_list_ctrl.InsertItem(5, "")
-        self.graphs8_list_ctrl.InsertItem(6, "")
-        self.graphs8_list_ctrl.InsertItem(7, "")
+        destroy_if_present("combobox")
+        destroy_if_present("combobox1", "combobox2", "combobox3", "combobox4")
+        destroy_if_present(
+            "combobox8_1", "combobox8_2", "combobox8_3", "combobox8_4",
+            "combobox8_5", "combobox8_6", "combobox8_7", "combobox8_8"
+        )
 
-        try:
-            self.combobox.Destroy()
-        except:
-            pass
-        try:
-            self.combobox1.Destroy()
-            self.combobox2.Destroy()
-            self.combobox3.Destroy()
-            self.combobox4.Destroy()
-        except:
-            pass
-        try:
-            self.combobox8_1.Destroy()
-            self.combobox8_2.Destroy()
-            self.combobox8_3.Destroy()
-            self.combobox8_4.Destroy()
-            self.combobox8_5.Destroy()
-            self.combobox8_6.Destroy()
-            self.combobox8_7.Destroy()
-            self.combobox8_8.Destroy()
-        except:
-            pass
-
-
-        try:
-            self.panel.Destroy()
-        except:
-            traceback.print_exc()
-        try:
-            self.graph_list_ctrl.DeleteAllItems()
-            self.graph_list_ctrl.InsertItem(0, "")
-        except:
-            traceback.print_exc()
-        try:
-            self.panel1.Destroy()
-            self.panel2.Destroy()
-            self.panel3.Destroy()
-            self.panel4.Destroy()
-
-        except:
-            traceback.print_exc()
-        try:
-            self.panel8_1.Destroy()
-            self.panel8_2.Destroy()
-            self.panel8_3.Destroy()
-            self.panel8_4.Destroy()
-            self.panel8_5.Destroy()
-            self.panel8_6.Destroy()
-            self.panel8_7.Destroy()
-            self.panel8_8.Destroy()
-        except:
-            pass
+        destroy_if_present("panel")
+        destroy_if_present("panel1", "panel2", "panel3", "panel4")
+        destroy_if_present(
+            "panel8_1", "panel8_2", "panel8_3", "panel8_4",
+            "panel8_5", "panel8_6", "panel8_7", "panel8_8"
+        )
         try:
             self.ThreadControl = 666
 
@@ -2976,32 +3338,50 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
             traceback.print_exc()
 
     def OnGraph(self, event):
-        xy_data = list(zip(event.data[0][0],event.data[0][1]))
-        unit = event.data[0][2]
-        command_desc = event.data[0][3]
-        graph_counter = event.data[0][4]
-        first_time_graph_plot = event.data[1]
-
-        def animate():
-            if not first_time_graph_plot:
-                self.line = wxplot.PolySpline(xy_data, colour = 'blue', width = 1, style=wx.PENSTYLE_SOLID)
-                self.graphics = wxplot.PlotGraphics([self.line], command_desc, 'frame', unit)
-                if sys.platform.startswith("linux"):
-                    if os.environ.get("DESKTOP_SESSION") == "gnome" or os.environ.get("DESKTOP_SESSION") == "ubuntu":
-                        self.panel.Destroy()
-                        self.panel = wxplot.PlotCanvas(self.graph_panel, pos=(0, 100))
-                        self.panel.SetInitialSize(size=wx.Size(900, 400))
-                self.panel.Draw(self.graphics, xAxis=(graph_counter - 450, graph_counter))
+        plot_series = event.data[0]
+        graph_counter = event.data[1]
+        first_time_graph_plot = event.data[2]
 
         if first_time_graph_plot:
             try:
                 self.panel.Destroy()
             except:
                 pass
-            self.panel = wxplot.PlotCanvas(self.graph_panel, pos=(0, 100))
+            self.panel = wxplot.PlotCanvas(self.graph_panel, pos=(10, 200))
             self.panel.SetInitialSize(size=wx.Size(900, 400))
-        else:
-            animate()
+            self._layout_graph_page()
+
+        colours = ["blue", "red", "green", "orange", "purple", "brown", "black", "cyan"]
+        lines = []
+        for idx, series in enumerate(plot_series):
+            xy_data = list(zip(series[0], series[1]))
+            if len(xy_data) < 2:
+                continue
+            # PolySpline can be unstable for short traces; use PolyLine until 3+ points exist.
+            if len(xy_data) >= 3:
+                lines.append(wxplot.PolySpline(xy_data, colour=colours[idx % len(colours)], width=2, style=wx.PENSTYLE_SOLID))
+            else:
+                lines.append(wxplot.PolyLine(xy_data, colour=colours[idx % len(colours)], width=2, style=wx.PENSTYLE_SOLID))
+
+        # wx.lib.plot cannot render an empty PlotGraphics object list.
+        if len(lines) == 0:
+            try:
+                self.panel.Clear()
+            except Exception:
+                pass
+            return
+
+        graphics = wxplot.PlotGraphics(lines, "Live Graphs", "frame", "value")
+
+        x_min = max(0, graph_counter - 450)
+        try:
+            self.panel.Draw(graphics, xAxis=(x_min, max(1, graph_counter)))
+        except Exception:
+            # Keep UI responsive if wxplot rejects a transient frame.
+            try:
+                self.panel.Clear()
+            except Exception:
+                pass
 
     def OnGraphs(self, event):
         xy_data1 = list(zip(event.data[0][0],event.data[0][1]))
@@ -3302,10 +3682,13 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.senprod.stop()
         self.ThreadControl = 0
 
+        # Prevent reconfigure/reconnect clicks while connection attempt is in progress.
+        self.settingmenu.Enable(ID_CONFIG, False)
+        self.settingmenu.Enable(ID_RESET, False)
+        self.settingmenu.Enable(ID_DISCONNECT, False)
+
         self.senprod = self.sensorProducer(self, self.COMPORT, self.SERTIMEOUT, self.RECONNATTEMPTS, self.BAUDRATE, self.FAST, self.nb)
         self.senprod.start()
-
-        self.sensor_control_on()
 
     def GetDTC(self, e):
         self.nb.SetSelection(3)
@@ -3379,77 +3762,481 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
     def scanSerial(self):  # NEW
 
         """scan for available ports. return a list of serial names"""
-        available = []
-        available = obd.scan_serial()
+        available = self._get_connected_port_names()
 
         return available
+
+    def _get_connected_port_infos(self):
+        try:
+            return sorted(list(list_ports.comports()), key=lambda p: p.device or "")
+        except Exception:
+            traceback.print_exc()
+            return []
+
+    def _get_connected_port_names(self):
+        names = [p.device for p in self._get_connected_port_infos() if p.device]
+        if "AUTO" not in names:
+            names.append("AUTO")
+        if not names:
+            names = ["AUTO"]
+        return names
+
+    def _get_bluetooth_adapter_choices(self):
+        def _windows_bt_name_by_mac():
+            if os.name != "nt":
+                return {}
+
+            command = (
+                "Get-PnpDevice -Class Bluetooth | "
+                "Select-Object FriendlyName,InstanceId | ConvertTo-Json -Compress"
+            )
+            try:
+                result = subprocess.run(
+                    ["powershell", "-NoProfile", "-Command", command],
+                    capture_output=True,
+                    text=True,
+                    timeout=4,
+                )
+            except Exception:
+                return {}
+
+            if result.returncode != 0 or result.stdout.strip() == "":
+                return {}
+
+            try:
+                parsed = json.loads(result.stdout)
+            except Exception:
+                return {}
+
+            entries = parsed if isinstance(parsed, list) else [parsed]
+            name_by_mac = {}
+            for entry in entries:
+                if not isinstance(entry, dict):
+                    continue
+
+                friendly_name = str(entry.get("FriendlyName") or "").strip()
+                instance_id = str(entry.get("InstanceId") or "")
+
+                if friendly_name == "" or friendly_name.lower().startswith("standard serial over bluetooth"):
+                    continue
+
+                matches = re.findall(r"(?<![0-9A-Fa-f])[0-9A-Fa-f]{12}(?![0-9A-Fa-f])", instance_id)
+                for mac12 in matches:
+                    mac = ":".join(mac12[i:i + 2] for i in range(0, 12, 2)).upper()
+                    name_by_mac[mac] = friendly_name
+
+            return name_by_mac
+
+        def _first_mac_like(text):
+            if not text:
+                return ""
+            match = re.search(r"(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}", text)
+            return match.group(0).upper() if match else ""
+
+        def _compact_name(text):
+            name = (text or "Bluetooth Adapter").strip()
+            name = re.sub(r"\s*\(COM\d+\)\s*$", "", name, flags=re.IGNORECASE)
+            return name or "Bluetooth Adapter"
+
+        def _compact_label(name, adapter_id, max_len=44):
+            label = f"{name} ({adapter_id})"
+            if len(label) <= max_len:
+                return label
+            reserve = len(adapter_id) + 5
+            short_name_len = max(10, max_len - reserve)
+            return f"{name[:short_name_len].rstrip()}... ({adapter_id})"
+
+        bt_name_by_mac = _windows_bt_name_by_mac()
+        choices = []
+        fallback_choices = []
+
+        for port_info in self._get_connected_port_infos():
+            device = (port_info.device or "").strip()
+            if device == "":
+                continue
+
+            description = _compact_name(port_info.description or port_info.product or "")
+            candidates = [
+                getattr(port_info, "serial_number", "") or "",
+                port_info.description or "",
+                port_info.hwid or "",
+                getattr(port_info, "location", "") or "",
+                getattr(port_info, "manufacturer", "") or "",
+            ]
+
+            adapter_id = ""
+            for candidate in candidates:
+                adapter_id = _first_mac_like(candidate)
+                if adapter_id:
+                    break
+
+            if adapter_id == "":
+                adapter_id = device
+
+            if adapter_id in bt_name_by_mac:
+                description = _compact_name(bt_name_by_mac[adapter_id])
+
+            label = _compact_label(description, adapter_id)
+            lower = label.lower()
+
+            if "bluetooth" in lower or " bt" in lower or lower.startswith("bt"):
+                choices.append((label, device))
+            fallback_choices.append((label, device))
+
+        if not choices:
+            choices = fallback_choices
+
+        choices.insert(0, ("AUTO", "AUTO"))
+        return choices
+
+    def _infer_connection_from_comport(self, connection_type, connection_target, comport):
+        if connection_type in ["AUTO", "SERIAL", "WIFI", "BLUETOOTH", "CUSTOM", "DEMO"]:
+            return connection_type, connection_target
+
+        if comport == "AUTO":
+            return "AUTO", ""
+        if comport == "DEMO":
+            return "DEMO", ""
+
+        if isinstance(comport, str):
+            upper = comport.upper()
+            if upper.startswith("WIFI:"):
+                return "WIFI", comport[5:]
+            if upper.startswith("BT:"):
+                return "BLUETOOTH", comport[3:]
+            if comport.startswith("socket://"):
+                return "WIFI", comport[len("socket://"):]
+            if comport.startswith("rfcomm://"):
+                return "BLUETOOTH", comport[len("rfcomm://"):]
+            if "://" in comport:
+                return "CUSTOM", comport
+
+        return "SERIAL", comport
+
+    def _compose_comport(self, connection_type, serial_port, target):
+        target = (target or "").strip()
+
+        if connection_type == "AUTO":
+            return "AUTO"
+        if connection_type == "DEMO":
+            return "DEMO"
+        if connection_type == "SERIAL":
+            return serial_port
+        if connection_type == "WIFI":
+            if target == "":
+                target = "192.168.0.10:35000"
+            return "WIFI:" + target
+        if connection_type == "BLUETOOTH":
+            return "BT:" + target
+        return target
+
+    @staticmethod
+    def _normalize_unit_label(unit_label):
+        return str(unit_label or "").strip().lower().replace(" ", "")
+
+    @staticmethod
+    def _canonical_unit_label(unit_label):
+        normalized = MyApp._normalize_unit_label(unit_label)
+        aliases = {
+            "mph": "mph",
+            "mi/h": "mph",
+            "mile/hour": "mph",
+            "miles/hour": "mph",
+            "kph": "kph",
+            "km/h": "kph",
+            "kilometer/hour": "kph",
+            "kilometers/hour": "kph",
+            "psi": "psi",
+            "kpa": "kPa",
+            "kilopascal": "kPa",
+            "kilopascals": "kPa",
+            "c": "C",
+            "degc": "C",
+            "celsius": "C",
+            "f": "F",
+            "degf": "F",
+            "fahrenheit": "F",
+            "lb/min": "lb/min",
+            "lbs/min": "lb/min",
+            "g/s": "g/s",
+            "gram/second": "g/s",
+            "grams/second": "g/s",
+        }
+        return aliases.get(normalized, str(unit_label or "").strip())
+
+    def _target_unit_for_measurement_system(self, unit_label):
+        normalized = self._normalize_unit_label(unit_label)
+        if self.MEASUREMENT_SYSTEM == "METRIC":
+            metric_map = {
+                "mph": "kph",
+                "mi/h": "kph",
+                "mile/hour": "kph",
+                "miles/hour": "kph",
+                "psi": "kPa",
+                "f": "degC",
+                "degf": "degC",
+                "fahrenheit": "degC",
+                "lb/min": "g/s",
+                "lbs/min": "g/s",
+            }
+            return metric_map.get(normalized)
+
+        imperial_map = {
+            "kph": "mph",
+            "km/h": "mph",
+            "kilometer/hour": "mph",
+            "kilometers/hour": "mph",
+            "kpa": "psi",
+            "kilopascal": "psi",
+            "kilopascals": "psi",
+            "c": "degF",
+            "degc": "degF",
+            "celsius": "degF",
+            "g/s": "lb/min",
+            "gram/second": "lb/min",
+            "grams/second": "lb/min",
+        }
+        return imperial_map.get(normalized)
+
+    def _manual_convert_quantity(self, magnitude, unit_label):
+        normalized = self._normalize_unit_label(unit_label)
+        if self.MEASUREMENT_SYSTEM == "METRIC":
+            if normalized in ("mph", "mi/h", "mile/hour", "miles/hour"):
+                return magnitude * 1.609344, "kph"
+            if normalized == "psi":
+                return magnitude * 6.894757293168361, "kPa"
+            if normalized in ("f", "degf", "fahrenheit"):
+                return ((magnitude - 32.0) * 5.0 / 9.0), "C"
+            if normalized in ("lb/min", "lbs/min"):
+                return magnitude * 7.559872833333334, "g/s"
+            return magnitude, self._canonical_unit_label(unit_label)
+
+        if normalized in ("kph", "km/h", "kilometer/hour", "kilometers/hour"):
+            return magnitude * 0.621371192237334, "mph"
+        if normalized in ("kpa", "kilopascal", "kilopascals"):
+            return magnitude * 0.14503773773020923, "psi"
+        if normalized in ("c", "degc", "celsius"):
+            return ((magnitude * 9.0 / 5.0) + 32.0), "F"
+        if normalized in ("g/s", "gram/second", "grams/second"):
+            return magnitude * 0.13227735731092652, "lb/min"
+        return magnitude, self._canonical_unit_label(unit_label)
+
+    @staticmethod
+    def _format_quantity_text(magnitude, unit_label):
+        if unit_label:
+            return f"{magnitude:.2f} {unit_label}"
+        return f"{magnitude:.2f}"
+
+    def get_measurement_components(self, value):
+        if value is None:
+            return None, "value", "No data"
+
+        if hasattr(value, "magnitude"):
+            try:
+                magnitude = float(value.magnitude)
+            except Exception:
+                return None, "value", str(value)
+
+            unit_obj = getattr(value, "units", None)
+            unit_label = str(unit_obj) if unit_obj is not None else str(getattr(value, "unit", ""))
+            target_unit = self._target_unit_for_measurement_system(unit_label)
+
+            if target_unit and hasattr(value, "to"):
+                try:
+                    converted = value.to(target_unit)
+                    magnitude = float(converted.magnitude)
+                    unit_label = str(getattr(converted, "units", target_unit))
+                except Exception:
+                    magnitude, unit_label = self._manual_convert_quantity(magnitude, unit_label)
+            else:
+                magnitude, unit_label = self._manual_convert_quantity(magnitude, unit_label)
+
+            display_unit = self._canonical_unit_label(unit_label)
+            return magnitude, display_unit or "value", self._format_quantity_text(magnitude, display_unit)
+
+        return None, "value", str(value)
+
+    def format_measurement_value(self, value):
+        return self.get_measurement_components(value)[2]
 
     def Configure(self, e=None):
         id = 0
         diag = wx.Dialog(self.frame, id, title="Configure")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        ports = obd.scan_serial()
-        if ports == []:
-            ports = ["AUTO"]
-        else:
-            ports.append("AUTO")
+        ports = self._get_connected_port_names()
+        bt_choices = self._get_bluetooth_adapter_choices()
+        bt_labels = [label for (label, _value) in bt_choices]
+        bt_value_by_label = dict(bt_choices)
 
-        # web open link button
-        self.OpenLinkButton = wx.Button(diag, -1, "Click here to order ELM-USB interface", size=(260, 30))
+        connection_types = ["AUTO", "DEMO", "SERIAL", "WIFI", "BLUETOOTH", "CUSTOM"]
+        baudrates = [
+            "AUTO", "38400", "9600", "115200", "57600", "19200", "14400", "3000000", "2000000",
+            "1000000", "250000", "230400", "128000", "500000", "460800", "576000", "921600",
+            "1152000", "1500000", "2500000", "3500000", "4000000",
+        ]
+
+        connection_type, connection_target = self._infer_connection_from_comport(
+            self.CONNECTION_TYPE,
+            self.CONNECTION_TARGET,
+            self.COMPORT,
+        )
+
+        header_box = wx.StaticBoxSizer(wx.VERTICAL, diag, "Connection")
+        top_row = wx.BoxSizer(wx.HORIZONTAL)
+
+        type_label = wx.StaticText(diag, -1, "Connection type:")
+        connection_type_choice = wx.Choice(diag, -1, choices=connection_types)
+        connection_type_choice.SetSelection(connection_types.index(connection_type))
+        auto_connect_check = wx.CheckBox(diag, -1, "Auto-connect")
+        auto_connect_check.Disable()
+
+        top_row.Add(type_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        top_row.Add(connection_type_choice, 0, wx.RIGHT, 10)
+        top_row.Add(auto_connect_check, 0, wx.ALIGN_CENTER_VERTICAL)
+        header_box.Add(top_row, 0, wx.ALL, 6)
+        sizer.Add(header_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
+
+        transport_row = wx.BoxSizer(wx.HORIZONTAL)
+
+        bt_box = wx.StaticBoxSizer(wx.VERTICAL, diag, "Bluetooth Adapter")
+        bluetooth_combo = wx.ComboBox(diag, -1, choices=bt_labels, style=wx.CB_DROPDOWN)
+        bt_box.Add(bluetooth_combo, 0, wx.EXPAND | wx.ALL, 6)
+
+        wifi_box = wx.StaticBoxSizer(wx.VERTICAL, diag, "WiFi settings")
+        wifi_grid = wx.FlexGridSizer(rows=3, cols=2, vgap=4, hgap=6)
+        wifi_grid.Add(wx.StaticText(diag, -1, "IP:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        wifi_ip_ctrl = wx.TextCtrl(diag, -1, "192.168.0.10", size=(130, -1))
+        wifi_grid.Add(wifi_ip_ctrl, 0, wx.EXPAND)
+        wifi_grid.Add(wx.StaticText(diag, -1, "Port:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        wifi_port_ctrl = wx.TextCtrl(diag, -1, "35000", size=(130, -1))
+        wifi_grid.Add(wifi_port_ctrl, 0, wx.EXPAND)
+        wifi_grid.Add(wx.StaticText(diag, -1, "Timeout:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        timeoutCtrl = wx.TextCtrl(diag, -1, "5", size=(80, -1))
+        wifi_grid.Add(timeoutCtrl, 0, wx.EXPAND)
+        wifi_box.Add(wifi_grid, 0, wx.ALL, 6)
+
+        com_box = wx.StaticBoxSizer(wx.VERTICAL, diag, "COM settings")
+        com_grid = wx.FlexGridSizer(rows=3, cols=2, vgap=4, hgap=6)
+        com_grid.Add(wx.StaticText(diag, -1, "COM port:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        com_choice = wx.Choice(diag, -1, choices=ports)
+        com_grid.Add(com_choice, 0, wx.EXPAND)
+        com_grid.Add(wx.StaticText(diag, -1, "Baud rate:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        baud_choice = wx.Choice(diag, -1, choices=baudrates)
+        com_grid.Add(baud_choice, 0, wx.EXPAND)
+        auto_increase_check = wx.CheckBox(diag, -1, "Auto-increase")
+        auto_increase_check.Disable()
+        com_grid.Add(auto_increase_check, 0, wx.ALIGN_CENTER_VERTICAL)
+        com_grid.Add((1, 1), 0)
+        com_grid.AddGrowableCol(1, 1)
+        com_box.Add(com_grid, 1, wx.EXPAND | wx.ALL, 6)
+
+        transport_row.Add(bt_box, 1, wx.EXPAND | wx.ALL, 3)
+        transport_row.Add(wifi_box, 0, wx.EXPAND | wx.ALL, 3)
+        transport_row.Add(com_box, 0, wx.EXPAND | wx.ALL, 3)
+        sizer.Add(transport_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
+
+        advanced_row = wx.BoxSizer(wx.HORIZONTAL)
+
+        custom_box = wx.StaticBoxSizer(wx.VERTICAL, diag, "Custom target")
+        custom_target_ctrl = wx.TextCtrl(diag, -1, "", size=(280, -1))
+        custom_help = wx.StaticText(diag, -1, "Examples: socket://192.168.0.10:35000 or rfc2217://host:port")
+        custom_box.Add(custom_target_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 6)
+        custom_box.Add(custom_help, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+
+        protocol_box = wx.StaticBoxSizer(wx.VERTICAL, diag, "Protocol")
+        mode_choice = wx.Choice(diag, -1, choices=["FAST", "NORMAL"])
+        measurement_choice = wx.Choice(diag, -1, choices=["IMPERIAL", "METRIC"])
+        reconnect_row = wx.BoxSizer(wx.HORIZONTAL)
+        reconnect_row.Add(wx.StaticText(diag, -1, "Reconnect attempts:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        reconnectCtrl = wx.TextCtrl(diag, -1, str(self.RECONNATTEMPTS), size=(70, -1))
+        reconnect_row.Add(reconnectCtrl, 0)
+        protocol_box.Add(wx.StaticText(diag, -1, "Send mode:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 6)
+        protocol_box.Add(mode_choice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
+        protocol_box.Add(wx.StaticText(diag, -1, "Measurements:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 6)
+        protocol_box.Add(measurement_choice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
+        protocol_box.Add(reconnect_row, 0, wx.LEFT | wx.RIGHT | wx.TOP | wx.BOTTOM, 6)
+
+        advanced_row.Add(custom_box, 1, wx.EXPAND | wx.ALL, 3)
+        advanced_row.Add(protocol_box, 0, wx.EXPAND | wx.ALL, 3)
+        sizer.Add(advanced_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
+
+        note_text = wx.StaticText(diag, -1, "Note: these changes will be applied on the next connect to vehicle")
+        sizer.Add(note_text, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
+        link_and_buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self.OpenLinkButton = wx.Button(diag, -1, "Order OBD adapter", size=(160, 30))
         diag.Bind(wx.EVT_BUTTON, self.OnHelpOrder, self.OpenLinkButton)
-        sizer.Add(self.OpenLinkButton)
-        rb = wx.RadioBox(diag, id, "Choose Serial Port",
-                         choices=ports, style=wx.RA_SPECIFY_COLS,
-                         majorDimension=2)
+        link_and_buttons.Add(self.OpenLinkButton, 0, wx.RIGHT, 10)
+        link_and_buttons.AddStretchSpacer(1)
+        link_and_buttons.Add(wx.Button(diag, wx.ID_OK), 0, wx.RIGHT, 6)
+        link_and_buttons.Add(wx.Button(diag, wx.ID_CANCEL), 0)
+        sizer.Add(link_and_buttons, 0, wx.EXPAND | wx.ALL, 8)
 
-        sizer.Add(rb, 0)
-        baudrates = ['AUTO', "38400", "9600",  "115200", "57600", "19200", "14400", "3000000", "2000000", "1000000", "250000", "230400", "128000", "500000", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000"]
-        brb = wx.RadioBox(diag, id, "Choose Baud Rate",
-                         choices=baudrates, style=wx.RA_SPECIFY_COLS,
-                         majorDimension=2)
-
-        sizer.Add(brb, 0)
-        fb = wx.RadioBox(diag, id, "FAST or NORMAL:",
-                         choices=["FAST","NORMAL"], style=wx.RA_SPECIFY_COLS,
-                         majorDimension=2)
-
-        sizer.Add(fb, 0)
-        # timeOut input control
-        timeoutPanel = wx.Panel(diag, -1)
-        timeoutCtrl = wx.TextCtrl(timeoutPanel, -1, '', pos=(140, 0), size=(40, 25))
-        timeoutStatic = wx.StaticText(timeoutPanel, -1, 'Timeout:', pos=(3, 5), size=(140, 20))
-        timeoutCtrl.SetValue(str(self.SERTIMEOUT))
-
-        # reconnect attempt input control
-        reconnectPanel = wx.Panel(diag, -1)
-        reconnectCtrl = wx.TextCtrl(reconnectPanel, -1, '', pos=(140, 0), size=(40, 25))
-        reconnectStatic = wx.StaticText(reconnectPanel, -1, 'Reconnect attempts:', pos=(3, 5), size=(140, 20))
-        reconnectCtrl.SetValue(str(self.RECONNATTEMPTS))
-
-
-
-        # set actual serial port choice
         if (self.COMPORT != 0) and (self.COMPORT in ports):
-            rb.SetSelection(ports.index(self.COMPORT))
-        baudrates = ['AUTO', "38400", "9600",  "115200", "57600", "19200", "14400", "3000000", "2000000", "1000000", "250000", "230400", "128000", "500000", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000"]
+            com_choice.SetSelection(ports.index(self.COMPORT))
+        else:
+            com_choice.SetSelection(ports.index("AUTO") if "AUTO" in ports else 0)
+
         if (self.BAUDRATE != 0) and (self.BAUDRATE in baudrates):
-            brb.SetSelection(baudrates.index(self.BAUDRATE))
+            baud_choice.SetSelection(baudrates.index(self.BAUDRATE))
+        else:
+            baud_choice.SetSelection(baudrates.index("AUTO"))
+
         if (self.FAST == "FAST") or (self.FAST == "NORMAL"):
-            fb.SetSelection(["FAST","NORMAL"].index(self.FAST))
+            mode_choice.SetSelection(["FAST", "NORMAL"].index(self.FAST))
+        else:
+            mode_choice.SetSelection(0)
 
+        if self.MEASUREMENT_SYSTEM in ["IMPERIAL", "METRIC"]:
+            measurement_choice.SetSelection(["IMPERIAL", "METRIC"].index(self.MEASUREMENT_SYSTEM))
+        else:
+            measurement_choice.SetSelection(0)
 
-        sizer.Add(timeoutPanel, 0)
-        sizer.Add(reconnectPanel, 0)
+        timeoutCtrl.SetValue(str(self.SERTIMEOUT or "5"))
 
-        box = wx.BoxSizer(wx.HORIZONTAL)
-        box.Add(wx.Button(diag, wx.ID_OK), 0)
-        box.Add(wx.Button(diag, wx.ID_CANCEL), 1)
+        wifi_target = str(connection_target or "")
+        if connection_type == "WIFI":
+            if wifi_target.startswith("socket://"):
+                wifi_target = wifi_target[len("socket://"):]
+            if ":" in wifi_target:
+                wifi_host, wifi_port = wifi_target.rsplit(":", 1)
+            else:
+                wifi_host, wifi_port = wifi_target, "35000"
+            if wifi_host.strip() != "":
+                wifi_ip_ctrl.SetValue(wifi_host.strip())
+            if wifi_port.strip() != "":
+                wifi_port_ctrl.SetValue(wifi_port.strip())
 
-        sizer.Add(box, 0)
+        bt_target = str(connection_target or "").strip()
+        if connection_type == "BLUETOOTH" and bt_target != "":
+            selected_label = None
+            for label, value in bt_choices:
+                if value == bt_target:
+                    selected_label = label
+                    break
+            if selected_label is not None:
+                bluetooth_combo.SetValue(selected_label)
+            else:
+                bluetooth_combo.SetValue(bt_target)
+        else:
+            bluetooth_combo.SetValue(bt_labels[0] if bt_labels else "AUTO")
+
+        if connection_type == "CUSTOM":
+            custom_target_ctrl.SetValue(str(connection_target or ""))
+
+        # Keep all sections editable; selected connection type only determines which target is used on save.
+        com_choice.Enable(True)
+        baud_choice.Enable(True)
+        bluetooth_combo.Enable(True)
+        wifi_ip_ctrl.Enable(True)
+        wifi_port_ctrl.Enable(True)
+        custom_target_ctrl.Enable(True)
+
         diag.SetSizer(sizer)
         diag.SetAutoLayout(True)
         sizer.Fit(diag)
+        diag.SetMinSize((840, 500))
         r = diag.ShowModal()
         if r == wx.ID_OK:
 
@@ -3458,16 +4245,40 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.config.add_section("pyOBD")
             # set and save COMPORT
 
-            self.COMPORT = ports[rb.GetSelection()]
+            self.CONNECTION_TYPE = connection_types[connection_type_choice.GetSelection()]
+
+            selected_port = ports[com_choice.GetSelection()]
+            if self.CONNECTION_TYPE == "WIFI":
+                wifi_host = wifi_ip_ctrl.GetValue().strip() or "192.168.0.10"
+                wifi_port = wifi_port_ctrl.GetValue().strip() or "35000"
+                self.CONNECTION_TARGET = wifi_host + ":" + wifi_port
+            elif self.CONNECTION_TYPE == "BLUETOOTH":
+                bt_value = bluetooth_combo.GetValue().strip() or "AUTO"
+                self.CONNECTION_TARGET = bt_value_by_label.get(bt_value, bt_value)
+            elif self.CONNECTION_TYPE == "CUSTOM":
+                self.CONNECTION_TARGET = custom_target_ctrl.GetValue().strip()
+            else:
+                self.CONNECTION_TARGET = ""
+
+            self.COMPORT = self._compose_comport(
+                self.CONNECTION_TYPE,
+                selected_port,
+                self.CONNECTION_TARGET,
+            )
             COMPORT = self.COMPORT
             self.config.set("pyOBD", "COMPORT", self.COMPORT)
+            self.config.set("pyOBD", "CONNECTION_TYPE", self.CONNECTION_TYPE)
+            self.config.set("pyOBD", "CONNECTION_TARGET", self.CONNECTION_TARGET)
 
-            self.BAUDRATE = baudrates[brb.GetSelection()]
+            self.BAUDRATE = baudrates[baud_choice.GetSelection()]
             BAUDRATE = self.BAUDRATE
             self.config.set("pyOBD", "BAUDRATE", self.BAUDRATE)
 
-            self.FAST = ["FAST","NORMAL"][fb.GetSelection()]
+            self.FAST = ["FAST", "NORMAL"][mode_choice.GetSelection()]
             self.config.set("pyOBD", "FAST", self.FAST)
+
+            self.MEASUREMENT_SYSTEM = ["IMPERIAL", "METRIC"][measurement_choice.GetSelection()]
+            self.config.set("pyOBD", "MEASUREMENT_SYSTEM", self.MEASUREMENT_SYSTEM)
 
             # set and save SERTIMEOUT
             self.SERTIMEOUT = timeoutCtrl.GetValue()
@@ -3475,7 +4286,10 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
 
 
             # set and save RECONNATTEMPTS
-            self.RECONNATTEMPTS = int(reconnectCtrl.GetValue())
+            try:
+                self.RECONNATTEMPTS = max(1, int(reconnectCtrl.GetValue()))
+            except ValueError:
+                self.RECONNATTEMPTS = 5
             self.config.set("pyOBD", "RECONNATTEMPTS", self.RECONNATTEMPTS)
 
             # write configuration to cfg file
