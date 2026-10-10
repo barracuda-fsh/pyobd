@@ -1,7 +1,1 @@
-wxpython
-pyserial
-numpy
-tornado
-pint
-pillow
-six
+-r ../requirements.txt

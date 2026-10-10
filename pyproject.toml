@@ -1,12 +1,9 @@
 [project]
 dependencies = [
-    "wxpython~=4.2.1",
-    "pyserial~=3.5",
-    "numpy~=1.23",
-    "tornado~=3.2.1",
-    "pint==0.20.1",
-    "pillow==10.4.0",
-    "six==1.16.0",
+    "wxPython>=4.2.1,<5",
+    "numpy>=1.23",
+    "Pint>=0.20.1",
+    "pyserial>=3.5,<4",
 ]
 
 name = "pyobd2"
