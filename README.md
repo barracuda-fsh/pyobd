@@ -8,28 +8,18 @@ project by Donour Sizemore. Licensed under GPL-2.0; see [COPYING](COPYING).
 
 ## About FareBrothers
 
-I'm releasing this version after about a year of messing around with pyOBD on
-the side. I've been making changes as time allows, and figured it was time to
-share it. Credit for the original app and earlier work stays with its authors.
+Operating since 2023, FareBrothers, LLC develops iOS and Android applications
+and maintains automotive software projects including pyOBD, DodgeOBD, and
+NissanOBD. Through Great Lakes IT Services, the company also provides website
+hosting and game server hosting.
 
-I build apps, software tools, and automation under FareBrothers / Fare Brothers
-LLC. My projects range from everyday utilities to tools for organizing work
-and hobbies. You can find more about what I do at [Farebros.com](https://farebros.com).
+### More from us
 
-Some of my other apps:
-
-- **FreeScan / FScan** — QR and barcode scanning for
-  [iOS](https://apps.apple.com/pl/app/freescan-code-scanner/id6776308551) and
-  [Android](https://play.google.com/store/apps/details?id=com.farebros.freescan).
-- **Textory** — text editing for iPhone and iPad, with **Textory Pro** on Mac.
-- **Shop Shot** — a photo organizer for work photos on iPhone and iPad.
-- **MeshScan** — a 3D scanning app for iPhone and iPad.
-- **Shot Timer+** — a shooting practice timer for iPhone and iPad.
-- **Vault Armory** — firearm and ammunition inventory records on
-  [Android](https://play.google.com/store/apps/details?id=com.farebros.vaultarmory).
-
-Browse my [Apple App Store page](https://apps.apple.com/gr/developer/fare-brothers/id1869971574)
-for iOS and Mac apps, or follow the Android links above for Google Play.
+Visit [Farebros.com](https://farebros.com) or explore the
+[FareBrothers divisions](https://farebros.com/divisions.php). Our mobile apps
+are available through the
+[Apple App Store](https://apps.apple.com/us/developer/fare-brothers/id1869971574)
+and [Google Play](https://play.google.com/store/apps/developer?id=FareBrothers).
 
 ## Ubuntu setup
 
@@ -123,6 +113,14 @@ ignition on. Open **Configure**, choose a connection type, and click **Connect**
 On Home, **Scan DTC** reads trouble codes, **Services** opens vehicle status,
 and **Graphs** opens live plots. Available readings depend on the vehicle;
 some require the engine to be running.
+
+### Graph views
+
+Add or remove PIDs before or during playback. Click a PID to select it and click
+it again to unselect it; several rows can stay selected for removal. Right-click
+a PID to delete selected rows, isolate that PID on the graph, show all PIDs, or
+clear the selection. The symbol at the right side of the toolbar switches
+between the combined graph and individual scrolling graphs.
 
 This app supports engine OBD-II data. It does not provide manufacturer-specific
 ABS, airbag, or body-module diagnostics. Recording and replay are not implemented.
