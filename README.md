@@ -111,6 +111,15 @@ python3 pyobd.py
 ```
 
 ### Linux-Script
+_Debian 13_
+```bash
+cd pyobd-main
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install -r requirements.txt
+python3 pyobd.py
+```
+
 On Debian 10 and 11 and on Ubuntu, type these commands to install the requirements(on Ubuntu replace libgstreamer-plugins-base1.0 with libgstreamer-plugins-base1.0-0): 
 ```bash
 sudo apt-get install dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl1.2-dev libgstreamer-plugins-base1.0 libnotify-dev freeglut3 freeglut3-dev libsm-dev libgtk-3-dev libwebkit2gtk-4.0-dev libxtst-dev gettext python3-dev python3-pip
