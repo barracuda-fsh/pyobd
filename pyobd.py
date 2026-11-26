@@ -3406,7 +3406,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         rb = wx.RadioBox(
             diag,
             id,
-            "Choose Serial Port",
+            "Choose Serial Port / WIFI port (Wifi choose MANUAL)",
             choices=ports,
             style=wx.RA_SPECIFY_COLS,
             majorDimension=2
