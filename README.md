@@ -26,7 +26,7 @@ This is the remake of the program pyobd, a free and open-source program for auto
 ## Prerequisites:
 You need an ELM327 adapter, a laptop, and a car that supports OBD2 to use this program. All cars in Europe made since 2001 should support it. And in the USA, all cars made since 1996.
 
-**Which ELM327 adapters have been reported to work? Most if not all adapters for $10 or more should work.**<br/>
+**Which ELM327 adapters have been reported to work? Most if not all adapters for $10 or more should work. Now it should work with USB, bluetooth and WiFi adapters. Wifi needs to be tested.**<br/>
 This is the list of the ones I tried and worked:<br/>
 * VGate Vlinker FS USB
 * [OBDPro USB Scantool](http://www.obdpros.com/product_info.php?products_id=133)<br/>
