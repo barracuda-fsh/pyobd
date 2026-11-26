@@ -3391,31 +3391,89 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
 
         ports = obd.scan_serial()
         if ports == []:
-            ports = ["AUTO"]
+            ports = ["AUTO", "MANUAL"]
         else:
-            ports.append("AUTO")
+            ports.extend(["AUTO", "MANUAL"])
 
-        # web open link button
-        self.OpenLinkButton = wx.Button(diag, -1, "Click here to order ELM-USB interface", size=(260, 30))
+        self.OpenLinkButton = wx.Button(
+            diag, -1,
+            "Click here to order ELM-USB interface",
+            size=(260, 30)
+        )
         diag.Bind(wx.EVT_BUTTON, self.OnHelpOrder, self.OpenLinkButton)
         sizer.Add(self.OpenLinkButton)
-        rb = wx.RadioBox(diag, id, "Choose Serial Port",
-                         choices=ports, style=wx.RA_SPECIFY_COLS,
-                         majorDimension=2)
 
+        rb = wx.RadioBox(
+            diag,
+            id,
+            "Choose Serial Port",
+            choices=ports,
+            style=wx.RA_SPECIFY_COLS,
+            majorDimension=2
+        )
         sizer.Add(rb, 0)
-        baudrates = ['AUTO', "38400", "9600",  "115200", "57600", "19200", "14400", "3000000", "2000000", "1000000", "250000", "230400", "128000", "500000", "460800", "500000", "576000", "921600", "1000000", "1152000", "1500000", "2000000", "2500000", "3000000", "3500000", "4000000"]
-        brb = wx.RadioBox(diag, id, "Choose Baud Rate",
-                         choices=baudrates, style=wx.RA_SPECIFY_COLS,
-                         majorDimension=2)
 
+        manualPanel = wx.Panel(diag)
+        manualSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        manualSizer.Add(
+            wx.StaticText(manualPanel, label="Manual serial port:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            5
+        )
+
+        manualCtrl = wx.TextCtrl(manualPanel, size=(220, -1))
+        manualSizer.Add(manualCtrl, 1, wx.EXPAND)
+
+        manualPanel.SetSizer(manualSizer)
+        sizer.Add(manualPanel, 0, wx.EXPAND | wx.ALL, 5)
+
+        manualPanel.Hide()
+
+        def UpdateManualPanel():
+            show = rb.GetStringSelection() == "MANUAL"
+            manualPanel.Show(show)
+            sizer.Layout()
+            diag.Fit()
+
+        def OnRadioSelected(evt):
+            UpdateManualPanel()
+            evt.Skip()
+
+        rb.Bind(wx.EVT_RADIOBOX, OnRadioSelected)
+
+        UpdateManualPanel()
+        rb.Bind(wx.EVT_RADIOBOX, OnRadioSelected)
+
+        baudrates = [
+            'AUTO', "38400", "9600", "115200", "57600", "19200", "14400",
+            "3000000", "2000000", "1000000", "250000", "230400", "128000",
+            "500000", "460800", "500000", "576000", "921600", "1000000",
+            "1152000", "1500000", "2000000", "2500000", "3000000",
+            "3500000", "4000000"
+        ]
+
+        brb = wx.RadioBox(
+            diag,
+            id,
+            "Choose Baud Rate",
+            choices=baudrates,
+            style=wx.RA_SPECIFY_COLS,
+            majorDimension=2
+        )
         sizer.Add(brb, 0)
-        fb = wx.RadioBox(diag, id, "FAST or NORMAL:",
-                         choices=["FAST","NORMAL"], style=wx.RA_SPECIFY_COLS,
-                         majorDimension=2)
 
+        fb = wx.RadioBox(
+            diag,
+            id,
+            "FAST or NORMAL:",
+            choices=["FAST", "NORMAL"],
+            style=wx.RA_SPECIFY_COLS,
+            majorDimension=2
+        )
         sizer.Add(fb, 0)
-        # timeOut input control
+
         timeoutPanel = wx.Panel(diag, -1)
         timeoutCtrl = wx.TextCtrl(timeoutPanel, -1, '', pos=(140, 0), size=(40, 25))
         timeoutStatic = wx.StaticText(timeoutPanel, -1, 'Timeout:', pos=(3, 5), size=(140, 20))
@@ -3458,7 +3516,13 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 self.config.add_section("pyOBD")
             # set and save COMPORT
 
-            self.COMPORT = ports[rb.GetSelection()]
+            selection = rb.GetStringSelection()
+
+            if selection == "MANUAL":
+                port = manualCtrl.GetValue().strip()
+            else:
+                port = selection
+            self.COMPORT = port
             COMPORT = self.COMPORT
             self.config.set("pyOBD", "COMPORT", self.COMPORT)
 
