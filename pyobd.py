@@ -3417,7 +3417,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
         manualSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         manualSizer.Add(
-            wx.StaticText(manualPanel, label="Manual serial port(or wifi elm37 address like socket://127.0.0.1:35000):"),
+            wx.StaticText(manualPanel, label="""Manual serial port(or wifi elm37 address like "socket://127.0.0.1:35000"):"""),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             5
